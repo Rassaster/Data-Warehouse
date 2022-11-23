@@ -1,0 +1,1941 @@
+openapi: 3.0.0
+servers:
+  - description: localhost server
+    url: http://localhost:5000/dataWarehouseAPI
+info:
+  version: 1.0.0
+  title: dataWarehouse
+  description: "FALTA ESTA PARTE"
+  contact:
+    email: jmrassaproduccion@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+- name: admins
+  description: "Users with permissions that allow all type of CRUD operations across the API."
+- name: users
+  description: "Users with restrictions: they can only login and make CRUD operations over the data of contacts, companies, and regions."
+paths:
+  # LOGIN ENDPOINT:
+  /login:                           # (Admins + Users)>C.
+    post:
+      summary: "Login to Data Warehouse: Admins and Users."
+      operationId: "login"
+      tags:
+        - admins
+        - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/req.loginUserSchema"
+      responses:
+        400:
+          description: "Bad Request: Something in the request body is missing or does not match the schema."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unmatchedSchema"
+        403:
+          description: "Forbidden: No valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        200:
+          description: "OK: Login successful."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.loginJWT"  
+  #+++++++++++++++++++++++++++++++++++++++++++++++++#
+  # USERS ENDPOINTS:
+  /users:                           # [Admins]>C+R.
+    post: #Create new user.
+      summary: "Registration of a new user."
+      operationId: "registerUser"
+      description: "Creates a new user registration with all the required schema information. Please refer to the 'req.registerUserSchema' in the Schemas section to understand how to grant or deny Admins permissions."
+      tags:
+        - admins
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/req.registerUserSchema"
+      responses:
+        400:
+          description: "Bad Request: Something in the request body is missing or does not match the schema."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unmatchedSchema"
+        409:
+          description: "Conflict: One of the received values must be unique in the data base and has been found registered in other user's information."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.registerConflict"
+        201:
+          description: "Created: User created successfully."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.userCreated"
+    get:  #Get all registered users. 
+      summary: "Obtain the accessible info of all users: just Admins."
+      operationId: "getAllUsers"
+      description: "The server delivers all of the registered users' information. It is worth to note that the passwords are encrypted."
+      tags:
+        - admins
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: The list of all the registered users was obtained."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.getAllUsers"
+  /users/id:{userID}:               # [Admins]>R+U+D.
+    get:    # Get user's infomration by ID. 
+      tags:
+        - admins
+      summary: "Obtain the user's information by their ID."
+      operationId: "getUserById"
+      parameters:
+        - name: userID
+          in: path
+          description: ID of the user.
+          required: true
+          schema:
+            type: string
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: If found, the user's information is delivered, otherwise, it is indicated that the user doesn't exists."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.getUser"
+    put:    # Update user's information by their ID.
+      tags:
+        - admins
+      summary: "Update the user's info by their email."
+      operationId: "updateUserByID"
+      description: "Admins can update any of the user information."
+      parameters:
+        - name: userID
+          in: path
+          description: ID of the user.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/req.updateUserSchema"
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        400:
+          description: "Bad Request: Something in the request body is missing or does not match the schema."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unmatchedSchema"
+        409:
+          description: "Conflict: One of the received values must be unique in the data base and has been found registered in other user's information."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.registerConflict"
+        200:
+          description: "OK: The request was received and processed, but no user was found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.userNotFound"
+        204:
+          description: "No Content: The update was successful."
+    delete: # Delete a user by their ID.
+      tags:
+        - admins
+      summary: "Delete any user by their ID."
+      operationId: "deleteUserByID"
+      description: "Admins can delete any user from the system's database."
+      parameters:
+      - name: userID
+        in: path 
+        required: true
+        description: ID of the user.
+        schema:
+          type: string
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: The request was received and processed, but no user was found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.userNotFound"
+        204:
+          description: "No Content: The deletion was successful."  
+  /users/email:{userEmail}:         # [Admins]>R+U+D.
+    get:  # Get user's information by their email. 
+      summary: "Obtain the user's information by their email."
+      operationId: "getUserByEmail"
+      tags:
+        - admins
+      parameters:
+        - name: userEmail
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            type: string
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: If found, the user's information is delivered, otherwise, it is indicated that the user doesn't exists."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.getUser"
+    put:  # Update user's information by their email.
+      tags:
+      - admins
+      summary: "Update the user's info by their email."
+      operationId: "updateUserByEmail"
+      description: "Admins can update any of the user information."
+      parameters:
+        - name: userEmail
+          in: path
+          description: Email of the user.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/req.updateUserSchema"
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        400:
+          description: "Bad Request: Something in the request body is missing or does not match the schema."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unmatchedSchema"
+        409:
+          description: "Conflict: One of the received values must be unique in the data base and has been found registered in other user's information."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.registerConflict"
+        200:
+          description: "OK: The request was received and processed, but no user was found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.userNotFound"
+        204:
+          description: "No Content: The update was successful."
+    delete: # Delete a user by their email.
+      tags:
+      - admins
+      summary: "Delete any user by their email."
+      operationId: "deleteUserByEmail"
+      description: "Admins can delete any user from the system's database."
+      parameters:
+      - name: userEmail
+        in: path 
+        required: true
+        description: Email of the user
+        schema:
+          type: string
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: The request was received and processed, but no user was found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.userNotFound"
+        204:
+          description: "No Content: The deletion was successful."
+  #+++++++++++++++++++++++++++++++++++++++++++++++++#
+  # CONTACTS ENDPOINTS:
+  /contacts:                         # (Admins + Users)>C+R.
+    post: #Create new contact.
+      summary: "Registration of new contact."
+      operationId: "registerContact"
+      description: "Creates a new contact registration with all the required schema information. Please refer to the 'req.registerSchema' in the Schemas section to understand how to grant or deny Admins permissions."
+      tags:
+        - admins
+        - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/req.registerContactSchema"
+      responses:
+        400:
+          description: "Bad Request: Something in the request body is missing or does not match the schema."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unmatchedSchema"
+        409:
+          description: "Conflict: One of the received values must be unique in the data base and has been found registered in other user's information."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.registerConflict"
+        201:
+          description: "Created: User created successfully."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.userCreated"
+    get:  #Get all registered contacts. 
+      summary: "Obtain the accessible info of all users."
+      operationId: "getAllContacts"
+      description: "The server delivers all of the registered contacts' information."
+      tags:
+        - admins
+        - users
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: The list of all the registered users was obtained."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.getAllUsers"
+  /contacts/id:{clientID}:           # (Admins + Users)>R+U+D.
+    get:  # Get all registered contacts by ID. 
+      summary: "Obtain the contact's information by their ID."
+      operationId: "getContactById"
+      tags:
+        - admins
+        - users
+      parameters:
+        - name: contactID
+          in: path
+          description: ID of the contact.
+          required: true
+          schema:
+            type: string
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: If found, the user's information is delivered, otherwise, it is indicated that the user doesn't exists."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.getUser"
+    put:  # Update contact's information by their ID.
+      tags:
+      - admins
+      - users
+      summary: "Update the contact's info by their email."
+      operationId: "updateContactByID"
+      description: "Admins and Users can update any of the contact information."
+      parameters:
+        - name: contactID
+          in: path
+          description: ID of the contact.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/req.updateContactSchema"
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        400:
+          description: "Bad Request: Something in the request body is missing or does not match the schema."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unmatchedSchema"
+        409:
+          description: "Conflict: One of the received values must be unique in the data base and has been found registered in other user's information."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.registerConflict"
+        200:
+          description: "OK: The request was received and processed, but no user was found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.userNotFound"
+        204:
+          description: "No Content: The update was successful."
+    delete: # Delete a contact by their ID.
+      tags:
+        - admins
+        - users
+      summary: "Delete any contact by their ID."
+      operationId: "deleteContactByID"
+      description: "Admins and Users can delete any contact from the system's database."
+      parameters:
+      - name: contactID
+        in: path 
+        required: true
+        description: ID of the contact.
+        schema:
+          type: string
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: The request was received and processed, but no user was found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.userNotFound"
+        204:
+          description: "No Content: The deletion was successful."  
+  /contacts/email:{clientEmail}:     # (Admins + Users)>R+U+D.
+    get:  # Get all registered contacts by Email. 
+      summary: "Obtain the contact's information by their Email."
+      operationId: "getContactByEmail"
+      tags:
+        - admins
+        - users
+      parameters:
+        - name: contactEmail
+          in: path
+          description: Email of the contact.
+          required: true
+          schema:
+            type: string
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: If found, the user's information is delivered, otherwise, it is indicated that the user doesn't exists."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.getUser"
+    put:  # Update contact's information by their Email.
+      tags:
+        - admins
+        - users
+      summary: "Update the contact's info by their Email."
+      operationId: "updateContactByEmail"
+      description: "Admins and Users can update any of the contact information."
+      parameters:
+        - name: contactEmail
+          in: path
+          description: Email of the contact.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/req.updateContactSchema"
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        400:
+          description: "Bad Request: Something in the request body is missing or does not match the schema."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unmatchedSchema"
+        409:
+          description: "Conflict: One of the received values must be unique in the data base and has been found registered in other user's information."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.registerConflict"
+        200:
+          description: "OK: The request was received and processed, but no user was found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.userNotFound"
+        204:
+          description: "No Content: The update was successful."
+    delete: # Delete a contact by their Email.
+      tags:
+        - admins
+        - users
+      summary: "Delete any contact by their Email."
+      operationId: "deleteContactByEmail"
+      description: "Admins and Users can delete any contact from the system's database."
+      parameters:
+      - name: contactEmail
+        in: path 
+        required: true
+        description: Email of the contact.
+        schema:
+          type: string
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: The request was received and processed, but no user was found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.userNotFound"
+        204:
+          description: "No Content: The deletion was successful."
+  #+++++++++++++++++++++++++++++++++++++++++++++++++#
+  # COMPANIES ENDPOINTS:
+  /companies:                       # (Admins + Users)>C+R+U+D.
+    post: #Create new company.
+      summary: "Creation of a new company."
+      operationId: "createCompany"
+      description: "Creates a new company with all the required schema information. Please refer to the 'req.createCompanySchema' in the Schemas section to understand how to grant or deny Admins permissions."
+      tags:
+        - admins
+        - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/req.createCompanySchema"
+      responses:
+        400:
+          description: "Bad Request: Something in the request body is missing or does not match the schema."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unmatchedSchema"
+        409:
+          description: "Conflict: One of the received values must be unique in the data base and has been found registered in other user's information."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.registerConflict"
+        201:
+          description: "Created: User created successfully."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.companyCreated"
+    get:  #Get all registered companies. 
+      summary: "Obtain the info of all the companies."
+      operationId: "getAllCompanies"
+      description: "The server delivers all of the registered companies' information."
+      tags:
+        - admins
+        - users
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: The list of all the registered companies was obtained."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.getAllUsers"
+  /companies/id:{companyID}:        # (Admins + Users)>R+U+D.
+    get:    # Get company's information by its ID. 
+      tags:
+        - admins
+        - users
+      summary: "Obtain the company's information by its ID."
+      operationId: "getCompanyById"
+      parameters:
+        - name: companyID
+          in: path
+          description: ID of the company.
+          required: true
+          schema:
+            type: string
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: If found, the company's information is delivered, otherwise, it is indicated that the user doesn't exists."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.getCompany"
+    put:    # Update company's information by its ID.
+      tags:
+        - admins
+        - users
+      summary: "Update the company's info by its ID."
+      operationId: "updateCompanyByID"
+      description: "Admins and Users can update any of the company's information."
+      parameters:
+        - name: companyID
+          in: path
+          description: ID of the company.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/req.updateCompanySchema"
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        400:
+          description: "Bad Request: Something in the request body is missing or does not match the schema."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unmatchedSchema"
+        409:
+          description: "Conflict: One of the received values must be unique in the data base and has been found registered in other user's information."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.registerConflict"
+        200:
+          description: "OK: The request was received and processed, but no company was found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.companyNotFound"
+        204:
+          description: "No Content: The update was successful."
+    delete: # Delete a compnay by its ID.
+      tags:
+        - admins
+        - users
+      summary: "Delete any company by its ID."
+      operationId: "deleteCompanyByID"
+      description: "Admins and Users can delete any company from the system's database."
+      parameters:
+      - name: companyID
+        in: path 
+        required: true
+        description: ID of the company.
+        schema:
+          type: string
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: The request was received and processed, but no user was found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.companyNotFound"
+        204:
+          description: "No Content: The deletion was successful."
+  /companies/email:{companyEmail}:  # (Admins + Users)>R+U+D.
+    get:    # Get company's information by its email. 
+      tags:
+        - admins
+        - users
+      summary: "Obtain the company's information by its email."
+      operationId: "getCompanyByEmail"
+      parameters:
+        - name: companyEmail
+          in: path
+          description: Email of the company.
+          required: true
+          schema:
+            type: string
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: If found, the company's information is delivered, otherwise, it is indicated that the user doesn't exists."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.getCompany"
+    put:    # Update company's information by its email.
+      tags:
+        - admins
+        - users
+      summary: "Update the company's info by its email."
+      operationId: "updateCompanyByEmail"
+      description: "Admins and Users can update any of the company's information."
+      parameters:
+        - name: companyEmail
+          in: path
+          description: Email of the company.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/req.updateCompanySchema"
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        400:
+          description: "Bad Request: Something in the request body is missing or does not match the schema."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unmatchedSchema"
+        409:
+          description: "Conflict: One of the received values must be unique in the data base and has been found registered in other user's information."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.registerConflict"
+        200:
+          description: "OK: The request was received and processed, but no company was found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.companyNotFound"
+        204:
+          description: "No Content: The update was successful."
+    delete: # Delete a compnay by its email.
+      tags:
+        - admins
+        - users
+      summary: "Delete any company by its email."
+      operationId: "deleteCompanyByEmail"
+      description: "Admins and Users can delete any company from the system's database."
+      parameters:
+      - name: companyEmail
+        in: path 
+        required: true
+        description: Email of the company.
+        schema:
+          type: string
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: The request was received and processed, but no company was found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.companyNotFound"
+        204:
+          description: "No Content: The deletion was successful."
+  #+++++++++++++++++++++++++++++++++++++++++++++++++#
+  # REGIONS ENDPOINTS:
+  /regions:                         # (Admins + Users)>C+R+U+D.
+    get:  #Get All the Regions
+      summary: "Obtain all of the regions registered: for Admins and Users."
+      operationId: "getAllRegions"
+      description: "The server delivers all of the regions stored."
+      tags:
+        - admins
+        - users
+      responses: 
+  /regions/id:{regionID}:           # (Admins + Users)>R+U+D.
+    get:    # Get region's information by its ID. 
+      tags:
+        - admins
+        - users
+      summary: "Obtain the regions's information by its ID."
+      operationId: "getRegionById"
+      parameters:
+        - name: regionID
+          in: path
+          description: ID of the region.
+          required: true
+          schema:
+            type: string
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: If found, the regions's information is delivered, otherwise, it is indicated that the user doesn't exists."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.getRegion"
+    put:    # Update region's information by its ID.
+      tags:
+        - admins
+        - users
+      summary: "Update the region's info by its ID."
+      operationId: "updateRegionByID"
+      description: "Admins and Users can update any of the region's information."
+      parameters:
+        - name: regionID
+          in: path
+          description: ID of the region.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/req.updateRegionSchema"
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        400:
+          description: "Bad Request: Something in the request body is missing or does not match the schema."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unmatchedSchema"
+        409:
+          description: "Conflict: One of the received values must be unique in the data base and has been found registered in other user's information."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.registerConflict"
+        200:
+          description: "OK: The request was received and processed, but no region was found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.companyNotFound"
+        204:
+          description: "No Content: The update was successful."
+    delete: # Delete a region by its ID.
+      tags:
+        - admins
+        - users
+      summary: "Delete any region by its ID."
+      operationId: "deleteRegionyID"
+      description: "Admins and Users can delete any region from the system's database."
+      parameters:
+      - name: regionID
+        in: path 
+        required: true
+        description: ID of the region.
+        schema:
+          type: string
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: The request was received and processed, but no user was found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.regionNotFound"
+        204:
+          description: "No Content: The deletion was successful."
+  /regions/name:{regionName}:       # (Admins + Users)>R+U+D.
+    get:    # Get region's information by its name. 
+      tags:
+        - admins
+        - users
+      summary: "Obtain the comregionpany's information by its name."
+      operationId: "getRegionByName"
+      parameters:
+        - name: companyName
+          in: path
+          description: Name of the company.
+          required: true
+          schema:
+            type: string
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: If found, the region's information is delivered, otherwise, it is indicated that the user doesn't exists."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.getRegion"
+    put:    # Update region's information by its name.
+      tags:
+        - admins
+        - users
+      summary: "Update the region's info by its name."
+      operationId: "updateRegionByName"
+      description: "Admins and Users can update any of the region's information."
+      parameters:
+        - name: companyName
+          in: path
+          description: Name of the company.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/req.updateRegionSchema"
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        400:
+          description: "Bad Request: Something in the request body is missing or does not match the schema."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unmatchedSchema"
+        409:
+          description: "Conflict: One of the received values must be unique in the data base and has been found registered in other user's information."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.registerConflict"
+        200:
+          description: "OK: The request was received and processed, but no region was found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.regionNotFound"
+        204:
+          description: "No Content: The update was successful."
+    delete: # Delete a region by its name.
+      tags:
+        - admins
+        - users
+      summary: "Delete any region by its name."
+      operationId: "deleteRegionByName"
+      description: "Admins and Users can delete any region from the system's database."
+      parameters:
+      - name: companyName
+        in: path 
+        required: true
+        description: Name of the region.
+        schema:
+          type: string
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: The request was received and processed, but no region was found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.regionNotFound"
+        204:
+          description: "No Content: The deletion was successful."
+  #+++++++++++++++++++++++++++++++++++++++++++++++++#
+  # COUNTRIES ENDPOINTS:
+  /countries:                       # (Admins + Users)>C+R+U+D.
+  /countries/id:{countryID}:        # (Admins + Users)>R+U+D.
+  /countries/name:{countryName}:    # (Admins + Users)>R+U+D.
+  #+++++++++++++++++++++++++++++++++++++++++++++++++#
+  # CITIES ENDPOINTS:
+  /cities:                          # (Admins + Users)>C+R+U+D.
+  /cities/id:{cityID}:              # (Admins + Users)>R+U+D.
+  /cities/name:{cityName}:          # (Admins + Users)>R+U+D.
+  #+++++++++++++++++++++++++++++++++++++++++++++++++#
+components:
+  schemas:
+    #++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+    #++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+    #   ENTITIES  ENTITIES  ENTITIES  ENTITIES  ENTITIES   #
+    User:
+      type: object
+      properties:
+        user_id: 
+          type: integer
+          example: 1
+        name: 
+          type: string
+          example: "Julian"
+        last_name: 
+          type: string
+          example: "Blackburn"
+        email: 
+          type: string
+          example: "jblackburn@kpenterprise.com"
+        profile: 
+          type: string
+          example: "Julian"
+          is_admin: 
+          type: boolean
+          example: "false"
+        user_password: 
+          type: string
+          example: "myOrYourpass32"
+        salt: 
+          type: string
+          example: "Street 125 # 12 - 23"
+        last_update: 
+          type: string
+          example: "2021-07-08T14:41:50.000Z"
+    UserNoPassword:
+      type: object
+      properties:
+        user_id: 
+          type: integer
+          example: 1
+        name: 
+          type: string
+          example: "Jim"
+        last_name: 
+          type: string
+          example: "Harper"
+        email: 
+          type: string
+          example: "jharpern@d&mcompany.com"
+        is_admin: 
+          type: boolean
+          example: "false"
+        last_update: 
+          type: string
+          example: "2021-07-08T14:41:50.000Z"
+    Company:
+      type: "object"
+      properties:
+        company_id: 
+          type: integer
+          example: 1
+        name: 
+          type: string
+          example: "Dunder & Mifflin Company"
+        address: 
+          type: string
+          example: "1725 Slough Avenue in Scranton, PA"
+        email: 
+          type: string
+          example: "jblackburn@dwenterprise.com"
+        phone_number: 
+          type: integer
+          example: 31243212
+        last_update: 
+          type: string
+          example: "2021-07-08T14:41:50.000Z"
+        city_id:
+          type: integer
+          example: 23    
+    Client:
+      type: "object"
+      properties:
+        client_id: 
+          type: integer
+          example: 1
+        name: 
+          type: string
+          example: "Kelly"
+        last_name: 
+          type: string
+          example: "Kapour"
+        email: 
+          type: string
+          example: "jblackburn@dwenterprise.com"
+        company_id: 
+          type: integer
+          example: 3
+        city_id: 
+          type: integer
+          example: 5
+        address: 
+          type: string
+          example: "Harmington St. Nº 899-23"
+        last_update: 
+          type: string
+          example: "2021-07-08T14:41:50.000Z"
+        contact_channel:
+          type: string
+          example: "LinkedIn"
+        contact_info: 
+          type: string
+          example: "https://www.linkedin.com/in/rassaster/"
+    Region:
+      type: "object"
+      properties:
+        region_id:
+          type: integer
+          example: 1
+        acronym:
+          type: string
+          example: "AS"
+        name: 
+          type: string
+          example: "América del Sur"
+    #++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+    #++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+    #   REQUESTS  REQUESTS  REQUESTS  REQUESTS  REQUESTS   #
+    ##  Users' requests:
+    req.registerUserSchema:
+      type: object
+      required:
+        - name
+        - last_name
+        - email
+        - profile
+        - is_admin
+        - user_password
+        - user_password_confirmation
+      properties:
+        name:
+          type: string
+          example: "Michael"
+          description: "Only alphabetical characters."
+        last_name:
+          type: string
+          example: "Scott"
+          description: "Alphabetical characters."
+        email:
+          type: string
+          example: "admin1@gmail.com"
+          description: "Must match the pattern '^[A-Za-z0-9.!#$%&‘*+=?^_`{|}~-]{6,}$'."
+        profile:
+          type: string
+          example: "Michael"
+          description: "Only alphabetical characters."
+        is_admin:
+          type: string
+          enum: ["T", "F"]
+          description: "For Admins permissions, value must be `T`. If Admins permissions are not granted, value must be `F`."
+        user_password:
+          type: string
+          example: "admin1"
+          description: "Must match the pattern '^[A-Za-z0-9.!#$%&‘*+=?^_`{|}~-]{6,}$'. Must have at least 6 characters."
+        user_password_confirmation:
+          type: string
+          example: "admin1"
+          description: "Must match the value of the field 'user_password'."
+    req.loginUserSchema:
+      type: object
+      required: 
+      - email
+      - user_password
+      properties:
+        email:
+          type: string
+          example: "adm.lsteinber@gmail.com"
+          description: "Must match the pattern '^[A-Za-z0-9.!#$%&‘*+=?^_`{|}~-]{6,}$'."
+        user_password:
+          type: string
+          example: "admin1"
+          description: "Must match the pattern '^[A-Za-z0-9.!#$%&‘*+=?^_`{|}~-]{6,}$'. Must have at least 6 characters."
+    req.updateUserSchema:
+      type: object
+      required:
+      - upd_name
+      - upd_last_name
+      - upd_email
+      - upd_profile
+      - upd_is_admin
+      - upd_user_password
+      - upd_user_password_confirmation
+      properties:
+        upd_name:
+          type: string
+          example: "Pam"
+          description: "Alphanumeric characters."
+        upd_last_name:
+          type: string
+          example: "Bisley"
+          description: "Alphabetical characters."
+        upd_email:
+          type: string
+          example: "pamb@d&mcompany.com"
+          description: "Must match the pattern '^[A-Za-z0-9.!#$%&‘*+=?^_`{|}~-]{6,}$'."
+        upd_is_admin:
+          type: string
+          example: true
+          description: "For Admins permissions, value must be `true`. If Admins permissions are not granted, value must be `false`."
+        upd_user_password:
+          type: string
+          example: "admin1"
+          description: "Must match the pattern '^[A-Za-z0-9.!#$%&‘*+=?^_`{|}~-]{6,}$'. Must have at least 6 characters."
+        upd_user_password_confirmation:
+          type: string
+          example: "admin1"
+          description: "Must match the value of the field 'user_password'."
+    #*******************************************************#
+    ##  Companies' requests:
+    req.createCompanySchema:
+      type: object
+      required:
+        - name
+        - address
+        - email
+        - phone_number
+        - city_id
+      properties: 
+        name:
+          type: string
+          example: "Dunder & Mifflin Company"
+          description: "Only alphabetical characters."
+        address:
+          type: string
+          example: "1725 Slough Avenue in Scranton, PA"
+          description: "Alphanumeric and special characters are allowed."
+        email: 
+          type: string
+          example: "d&f@d&fcompany.com"
+          description: "Must match the pattern '^[A-Za-z0-9.!#$%&‘*+=?^_`{|}~-]{6,}$'."
+        phone_number: 
+          type: string
+          example: "3104345665"
+          description: "Numerical characters."
+        city_id: 
+          type: integer
+          example: 3
+          description: "ID number of the city in which the company was founded."
+    req.updateCompanySchema:
+      type: object
+      required:
+        - upd_name
+        - upd_address
+        - upd_email
+        - upd_phone_number
+        - upd_city_id
+      properties: 
+        upd_name:
+          type: string
+          example: "Dunder & Mifflin Company"
+          description: "Only alphabetical characters."
+        upd_address:
+          type: string
+          example: "1725 Slough Avenue in Scranton, PA"
+          description: "Alphanumeric and special characters are allowed."
+        upd_email: 
+          type: string
+          example: "d&f@d&fcompany.com"
+          description: "Must match the pattern '^[A-Za-z0-9.!#$%&‘*+=?^_`{|}~-]{6,}$'."
+        upd_phone_number: 
+          type: string
+          example: "3104345665"
+          description: "Numerical characters."
+        upd_city_id: 
+          type: integer
+          example: 3
+          description: "ID number of the city in which the company was founded."
+    #*******************************************************#
+    ##  Regions' requests:
+    req.createRegionSchema:
+      type: object
+      required:
+        - acronym
+        - name
+      properties: 
+        acronym:
+          type: string
+          example: "AS"
+          description: "Only alphabetical characters."
+        name:
+          type: string
+          example: "América del Sur"
+          description: "Only alphabetical characters."
+    req.updateRegionSchema:
+      type: object
+      required:
+        - upd_acronym
+        - upd_name
+      properties: 
+        upd_acronym:
+          type: string
+          example: "AN"
+          description: "Only alphabetical characters."
+        upd_name:
+          type: string
+          example: "América del Norte"
+          description: "Only alphabetical characters."
+    #*******************************************************#
+    ##  Countries' requests:
+    req.createCountrySchema:
+      type: object
+      required:
+        - acronym
+        - name
+      properties: 
+        acronym:
+          type: string
+          example: "COL"
+          description: "Only alphabetical characters."
+        name:
+          type: string
+          example: "Colombia"
+          description: "Only alphabetical characters."
+    req.updateCountrySchema:
+      type: object
+      required:
+        - upd_acronym
+        - upd_name
+      properties: 
+        upd_acronym:
+          type: string
+          example: "COL"
+          description: "Only alphabetical characters."
+        upd_name:
+          type: string
+          example: "Colombia"
+          description: "Only alphabetical characters."
+    #*******************************************************#
+    ##  Cities' requests:
+    req.createCitySchema:
+      type: object
+      required:
+        - acronym
+        - name
+      properties: 
+        acronym:
+          type: string
+          example: "Bog"
+          description: "Only alphabetical characters."
+        name:
+          type: string
+          example: "Bogotá"
+          description: "Only alphabetical characters."
+    req.updateCitySchema:
+      type: object
+      required:
+        - upd_acronym
+        - upd_name
+      properties: 
+        upd_acronym:
+          type: string
+          example: "Med"
+          description: "Only alphabetical characters."
+        upd_name:
+          type: string
+          example: "Medellín"
+          description: "Only alphabetical characters."
+    #*******************************************************#
+    ##  Clients' requests:
+    req.createClientSchema:
+      ype: object
+      required:
+        - name
+        - email
+        - region_id
+        - country_id
+        - company_id
+        - position
+        - contact_channels
+        - interest
+      properties:
+        name:
+          type: string
+          example: "Michael"
+          description: "Only alphabetical characters."
+        email:
+          type: string
+          example: "admin1@gmail.com"
+          description: "Must match the pattern '^[A-Za-z0-9.!#$%&‘*+=?^_`{|}~-]{6,}$'."
+        region:
+          type: integer
+          example: 1
+          description: "Region's ID. Only number"
+        country:
+          type: integer
+          example: 1
+          description: "Country's ID. Only number"
+        company:
+          type: integer
+          example: 1
+          description: "Company's ID. Only number"
+        position:
+          type: string
+          example: "Account Manager"
+          description: "Only alphabetical characters."
+        contact_channels:
+          type: "array",
+          items: {
+            type: "string",
+            enum: ["whatsapp", "gmail", "llamada", "pending"]
+          }
+          description: "Only alphabetical characters. Preffered channel of communication."
+        interest:
+          type: integer
+          example: 80
+          description: "Only number characters, representing the contact's interesent in percentage."
+    req.updateClientSchema:
+    #*******************************************************#
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+    #   RESPONSES RESPONSES RESPONSES RESPONSES RESPONSES   #
+    ##  Globals
+    res.unmatchedSchema:      # 400 BadRequest
+      type: object
+      properties:
+        Status:
+          type: integer
+          example: 200
+        Message:
+          type: string
+          example: "The request body information is not in the propper format. Please review the API Documentation in relation to the JSON format expected."
+        Result:
+          type: string
+          example: "The request could not be completed. No data was registered nor updated."
+        MissingProperties:
+          type: string
+          example: "The following properties are missing and are required: 'is_admin'"
+          description: All the missing properties that are required to match the schema, will be indicated here.
+    res.unauthorizedAccess:   # 401 Unauthorized
+      type: object
+      properties:
+        Status:
+          type: integer
+          example: 401
+        Message:
+          type: string
+          example: "The user's cretendials doesn't allow them to complete this request. Only an Administrator has the authorization."
+        Result:
+          type: string
+          example: "Unauthorized."
+    res.forbiddenAccess:      # 403 Forbidden
+      type: object
+      properties:
+        Status:
+          type: integer
+          example: 403
+        Message:
+          type: string
+          example: "Incorrect password or email."
+        Result:
+          type: string
+          example: "Forbidden access."
+    res.registerConflict:     # 409 Conflict
+      type: object
+      properties:
+        Status: 
+          type: integer
+          example: 409
+        Message:
+          type: string
+          example: "The email 'adm.lsteinber@gmail.com' is already registered. Please enter a new email."
+          description: This error will indicate if the "email" is already registered.
+        Result:
+          type: string
+          example: "Conflict"
+    #++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+    #++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+    ##  Users' responses: 
+    res.userCreated:          # 201 Created
+      type: object
+      properties:
+        Status:
+          type: number
+          example: 201
+        Message: 
+          type: string
+          example: "User created successfully."
+        Result:
+          type: object
+          properties:
+            user_id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: "Michael"
+            last_name: 
+              type: string
+              example: "Scott"
+            email:
+              type: string
+              example: "mScott@dfpapercompany.com"
+            is_admin: 
+              type: string
+              example: true
+    res.loginJWT:             # 200 OK
+      type: object
+      properties:
+        Status:
+          type: integer
+          example: 200
+        Message:
+          type: string
+          example: "User successfully authenticated."
+        Token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoyLCJyZWdpc3Rlcl9kYXRlIjoiMjAyMS0wNy0wN1QyMzoxMTo1OS4wMDBaIiwidXNlcm5hbWUiOiJhZG1pbjFfTFN0ZWluYmVyZyIsImZ1bGxuYW1lIjoiTGF1cmEgU3RlaW5iZXJnIiwiZW1haWwiOiJhZG0ubHN0ZWluYmVyQGdtYWlsLmNvbSIsImNlbGxwaG9uZV9udW1iZXIiOiIzMTA0MzQ1NjY1IiwiZGVsaXZlcnlfYWRkcmVzcyI6IkNhbGxlIDEyNSAjIDEyIC0gMjMiLCJ1c2VyX3Bhc3N3b3JkIjoiYTZkYzk1ZDIyNWQ4ZWI1YjJlYTMyN2VjYmY0YzIwZjg3ODUxZDQwMjVhMTMzZTg0MWU1ZmNlNGRiZTY0ZjJhMiIsInNhbHQiOiI2MGI3YmZkZi04ODQ2LTRkN2UtYjJkMC03NjAxMWM3NDBiYTkiLCJpc19hZG1pbiI6IlQiLCJpYXQiOjE2MjU3NjY3ODcsImV4cCI6MTYyNTc2Nzk4N30.AqTDL44Tpi-SbEwhGmxWZbF0OnGPQqLoPdkLCg9_m0I"
+          description: "The Token is generated by the server once the credentials verification is successfully made."
+    res.getAllUsers:          # 200 OK
+      type: object
+      properties:
+        Status:
+          type: integer
+          example: 200
+        Message:
+          type: integer
+          example: "List of all registered users obtained."
+        Result:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+    res.getUser:              # 200 OK
+      type: object
+      properties:
+        Status:
+          type: integer
+          example: 200
+        Message: 
+          type: string
+          example: "User found."
+        Result:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserNoPassword"
+        UserFound:
+          type: boolean
+          example: true
+    res.userNotFound:         # 200 OK
+      type: object
+      properties:
+        Status: 
+          type: integer
+          example: 200
+        Message: 
+          type: string
+          example: "User not found."
+        Result: 
+          type: string
+          example: "The user doesn't exist in the registers, therefore no update or deletion can be done."
+        UserFound: 
+          type: boolean
+          example: false
+    #*******************************************************#
+    ##  Companies' responses:
+    res.companyCreated:       # 201 Created
+      type: object
+      properties:
+        Status:
+          type: number
+          example: 201
+        Message: 
+          type: string
+          example: "Company created successfully."
+        Result:
+          type: object
+          properties:
+            company_id: 
+              type: integer
+              example: 1
+            name: 
+              type: string
+              example: "Dunder & Mifflin Company"
+            address: 
+              type: string
+              example: "1725 Slough Avenue in Scranton, PA"
+            email: 
+              type: string
+              example: "jblackburn@dwenterprise.com"
+            phone_number: 
+              type: integer
+              example: 31243212
+            last_update: 
+              type: string
+              example: "2021-07-08T14:41:50.000Z"
+            city_id:
+              type: integer
+              example: 23    
+    res.getAllCompanies:      # 200 OK
+      type: object
+      properties:
+        Status:
+          type: integer
+          example: 200
+        Message:
+          type: integer
+          example: "List of all registered companies obtained."
+        Result:
+          type: array
+          items:
+            $ref: "#/components/schemas/Company"
+    res.getCompany:           # 200 OK
+      type: object
+      properties:
+        Status:
+          type: integer
+          example: 200
+        Message: 
+          type: string
+          example: "Company found."
+        Result:
+          type: array
+          items:
+            $ref: "#/components/schemas/Company"
+        CompanyFound:
+          type: boolean
+          example: true
+    res.companyNotFound:      # 200 OK
+      type: object
+      properties:
+        Status: 
+          type: integer
+          example: 200
+        Message: 
+          type: string
+          example: "Company not found."
+        Result: 
+          type: string
+          example: "The company doesn't exist in the registers, therefore no update or deletion can be done."
+        CompanyFound: 
+          type: boolean
+          example: false
+    #*******************************************************#
+    ##  Regions' responses:
+    res.regionCreated:        # 201 Created
+      type: object
+      properties:
+        Status:
+          type: number
+          example: 201
+        Message: 
+          type: string
+          example: "Region stored successfully."
+        Result:
+          type: object
+          properties:
+            region_id:
+              type: integer
+              example: 1
+            acronym:
+              type: string
+              example: "AS"
+            name: 
+              type: string
+              example: "América del Sur"
+    res.getAllRegions:        # 200 OK
+      type: object
+      properties:
+        Status:
+          type: integer
+          example: 200
+        Message:
+          type: integer
+          example: "List of all the stored regions."
+        Result:
+          type: array
+          items:
+            $ref: "#/components/schemas/Region"
+    res.getRegion:            # 200 OK
+      type: object
+        properties:
+          Status:
+            type: integer
+            example: 200
+          Message: 
+            type: string
+            example: "Region found."
+          Result:
+            type: array
+            items:
+              $ref: "#/components/schemas/Region"
+          RegionFound:
+            type: boolean
+            example: true
+    res.regionNotFound:       # 200 OK
+      type: object
+      properties:
+        Status: 
+          type: integer
+          example: 200
+        Message: 
+          type: string
+          example: "Region not found."
+        Result: 
+          type: string
+          example: "The Region doesn't exist in the registers, therefore no update or deletion can be done."
+        RegionFound: 
+          type: boolean
+          example: false
+    #*******************************************************#
+    ##  Countries' responses:
+    res.countryCreated:
+    res.getAllCountries:
+    res.getCountry:
+    res.countryNotFound:
+    #*******************************************************#
+    ##  Cities' responses:
+    res.cityCreated:
+    res.getAllCities:
+    res.getCity:
+    res.cityNotFound:
+    #*******************************************************#
+    ##  Clients' responses:
+    res.clientCreated:
+    res.getAllClients:
+    res.getClient:
+    res.clientNotFound:
+    #*******************************************************#
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+    #+++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
