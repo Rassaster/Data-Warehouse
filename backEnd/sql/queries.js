@@ -10,7 +10,7 @@ const newUser =  (last_update, name, last_name, email, profile, is_admin, user_p
 };
 // INSERT create new product in Products:
 const newRegion =  (acronym, name) => {
-  return sequelize.query("INSERT INTO products(acronym, name) VALUES(?, ?)", {
+  return sequelize.query("INSERT INTO regions(acronym, name) VALUES(?, ?)", {
     replacements: [acronym, name],
     type: sequelize.QueryTypes.INSERT
   });

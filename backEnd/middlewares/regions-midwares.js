@@ -7,17 +7,17 @@ const { newRegion, selectFromTableWhereFieldIsValue, selectAllFromTable, selectP
 const createNewRegion = async (req, res, next) => {
   try {
     const { acronym, name } = req.body;
-    const createdProduct = await newRegion(acronym, name); 
-    createdResponse201["Message"] = "Product created successfully.";
-    const newCreatedProduct = {
-      id_product: createdProduct[0],
+    const createdRegion = await newRegion(acronym, name); 
+    createdResponse201["Message"] = "Region created successfully.";
+    const newCreatedRegion = {
+      id_region: createdRegion[0],
       acronym: req.body.acronym,
       name: req.body.name
     };
-    createdResponse201["Result"] = newCreatedProduct;
-    req.productCreation = createdResponse201;
+    createdResponse201["Result"] = newCreatedRegion;
+    req.regionCreation = createdResponse201;
     return next();
-  } catch {
+  } catch (error) {
     internalServerError500["Message"] = error.parent.sqlMessage;
     internalServerError500["Description"] = "Please review the API Documentation in relation to the JSON format expected.";
     internalServerError500["ReceivedQueryJSON"] = req.body;
