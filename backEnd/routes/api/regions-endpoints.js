@@ -9,7 +9,7 @@ const { jwtokenExtraction, jwtokenVerification } = require("../../middlewares/jw
 // Security/Credentials middlewares:
 const { checkUserPermissions, justAdminGate } = require("../../middlewares/users-midwares");
 // CRUD middlewares:
-const { createNewRegion, getProductById, getProductByName, getAllProducts, updateProductById, deleteProductById } = require("../../middlewares/regions-midwares");
+const { createNewRegion, getRegionById, getProductByName, getAllProducts, updateProductById, deleteProductById } = require("../../middlewares/regions-midwares");
 // ******************** ENDPOINTS ******************** //
 // -> /dataWarehouse/regions/create Create new product. Just admin:
 router.post("/create", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, validateJSONSchema(regionSchema), createNewRegion, (req, res) => {
@@ -20,13 +20,13 @@ router.post("/create", jwtokenExtraction, jwtokenVerification, checkUserPermissi
 
 
 
-/*
+
 // -> /dataWarehouse/products/productId:productId. Just Admin:
-router.get("/productId::productId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getProductById, (req, res) =>{
-  res.status(200).json(req.productById);
-  delete req.productById["ProductFound"];
+router.get("/regionId::regionId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getRegionById, (req, res) =>{
+  res.status(200).json(req.regionById);
+  delete req.regionById["RegionFound"];
 });
-*/
+
 
 
 /*

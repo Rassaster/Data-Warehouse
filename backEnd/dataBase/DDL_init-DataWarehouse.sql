@@ -32,17 +32,27 @@ CREATE TABLE Users (
 -- *********************************************************
 -- Regions:
 CREATE TABLE Regions (
-  id_user integer
+  id_region integer
     NOT NULL
     AUTO_INCREMENT,
   acronym varchar(5)
     NOT NULL,
   name varchar(60)
     NOT NULL,
-  PRIMARY KEY (id_user)
+  PRIMARY KEY (id_region)
 );
 -- *********************************************************
 -- Countries:
+CREATE TABLE Countries (
+  id_country integer
+    NOT NULL
+    AUTO_INCREMENT,
+  name varchar(60)
+    NOT NULL,
+  id_region varchar(5)
+    NOT NULL,
+  PRIMARY KEY (id_country)
+);
 -- *********************************************************
 -- Cities:
 -- *********************************************************

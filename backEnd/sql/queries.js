@@ -16,7 +16,7 @@ const newRegion =  (acronym, name) => {
   });
 };
 // INSERT create new order in Orders:
-const newOrder =  (last_update_date, id_user, products, totalOrderCost, id_paying_method) => {
+const newCountry =  (last_update_date, id_user, products, totalOrderCost, id_paying_method) => {
   return sequelize.query("INSERT INTO orders(last_update_date, id_user, products, total_cost, id_paying_method) VALUES(?, ?, ?, ?, ?)", {
     replacements: [last_update_date, id_user, products, totalOrderCost, id_paying_method],
     type: sequelize.QueryTypes.INSERT
@@ -82,7 +82,7 @@ const deleteTableRegisterWhereIdIsValue = (table, field, value) => {
 module.exports = {
   newUser,
   newRegion,
-  // newOrder,
+  newCountry,
   // newRequiredProduct,
   selectFromTableWhereFieldIsValue,
   selectAllFromTable,

@@ -27,25 +27,23 @@ const createNewRegion = async (req, res, next) => {
     return;
   };
 };
-// -getProductById:
-const getProductById = async (req, res, next) => {
+// -getRegionById:
+const getRegionById = async (req, res, next) => {
   try {
-    const product = await selectFromTableWhereFieldIsValue("products", "id_product", req.params.productId)
-    if (product.length === 0) {
-      okReponse200["Message"] = "Product not found.";
-      okReponse200["Result"] = `The product with id ${req.params.productId} doesn't exist.`;
-      okReponse200["ProductFound"] = false;
-      req.productById = okReponse200;
-    } else {
-      req.productFound = product;
-      // Search of the product's category name by ID in products_categories table. This, for delivering the category name in the server response.
-      let product_category = await selectFromTableWhereFieldIsValue("products_categories", "id_product_category", product[0].id_product_category);
-      req.productFound[0].product_category_desc = product_category[0]["category_name"];
-      delete req.productFound[0].id_product_category 
-      okReponse200["Message"] = "Product found.";
-      okReponse200["Result"] = req.productFound;
-      okReponse200["ProductFound"] = true;
-      req.productById = okReponse200;
+    const region = await selectFromTableWhereFieldIsValue("regions", "id_region", req.params.regionId)
+    if (region.length === 0) {
+      okReponse200["Message"] = "Region not found.";
+      okReponse200["Result"] = `The region with id ${req.params.regionId} doesn't exist.`;
+      okReponse200["RegionFound"] = false;
+      req.regionById = okReponse200;
+    } 
+    else {
+      req.regionFound = region;
+      // delete req.regionFound[0];
+      okReponse200["Message"] = "Region found.";
+      okReponse200["Result"] = region[0];
+      okReponse200["RegionFound"] = true;
+      req.regionById = okReponse200;
     };
     return next();
   } catch {
@@ -148,7 +146,7 @@ const deleteProductById = (req, res, next) => {
 // Exports:
 module.exports = {
   createNewRegion,
-  // getProductById,
+  getRegionById,
   // getProductByName,
   // getAllProducts,
   // updateProductById,
