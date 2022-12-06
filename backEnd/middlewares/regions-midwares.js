@@ -120,18 +120,18 @@ const updateRegionById = async (req, res, next) => {
     return res.status(500).send(internalServerError500);
   };
 };
-// -deleteProductById
-const deleteProductById = (req, res, next) => {
+// -deleteRegionById
+const deleteRegionById = (req, res, next) => {
   try {
-    if (!req.productById["ProductFound"]) {
-      okReponse200["Message"] = "Product not found.";
-      okReponse200["Result"] = `The product with id ${req.params.productId} doesn't exist, therefore no deletion can be done.`;
-      okReponse200["ProductDeleted"] = false;
-      req.productDeletion = okReponse200;
-    } else if (req.productById["ProductFound"]) {
-      const deleteProduct = deleteTableRegisterWhereIdIsValue("products", "id_product", req.params.productId);
-      okReponse200["ProductDeleted"] = true;
-      req.productDeletion = okReponse200;
+    if (!req.regionById["RegionFound"]) {
+      okReponse200["Message"] = "Region not found.";
+      okReponse200["Result"] = `The region with id ${req.params.regionId} doesn't exist, therefore no deletion can be done.`;
+      okReponse200["RegionDeleted"] = false;
+      req.regionDeletion = okReponse200;
+    } else if (req.regionById["RegionFound"]) {
+      const deleteRegion = deleteTableRegisterWhereIdIsValue("regions", "id_region", req.params.regionId);
+      okReponse200["RegionDeleted"] = true;
+      req.regionDeletion = okReponse200;
     };
     return next();
   } catch {
@@ -146,5 +146,5 @@ module.exports = {
   getRegionByName,
   getAllRegions,
   updateRegionById,
-  // deleteProductById
+  deleteRegionById
 };

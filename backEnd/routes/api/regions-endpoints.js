@@ -9,9 +9,9 @@ const { jwtokenExtraction, jwtokenVerification } = require("../../middlewares/jw
 // Security/Credentials middlewares:
 const { checkUserPermissions, justAdminGate } = require("../../middlewares/users-midwares");
 // CRUD middlewares:
-const { createNewRegion, getRegionById, getRegionByName, getAllRegions, updateRegionById, deleteProductById } = require("../../middlewares/regions-midwares");
+const { createNewRegion, getRegionById, getRegionByName, getAllRegions, updateRegionById, deleteRegionById } = require("../../middlewares/regions-midwares");
 // ******************** ENDPOINTS ******************** //
-// -> /dataWarehouse/regions/create Create new product. Admin and User:
+// -> /dataWarehouse/regions/create Create new product. Just Admin:
 router.post("/create", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, validateJSONSchema(regionSchema), createNewRegion, (req, res) => {
   if (req.regionCreation["Status"] === 201) {
     res.status(201).json(req.regionCreation)
@@ -31,9 +31,6 @@ router.get("/regionName::regionName", jwtokenExtraction, jwtokenVerification, ch
 router.get("/listAll", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getAllRegions, (req, res) => {
   res.status(200).json(req.getAllRegions);
 });
-
-
-
 // Update region by Id:
 // -> /dataWarehouse/regions/updateRegionId::{regionId}. Admin and User:
 router.put("/updateRegionId::regionId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getRegionById, validateJSONSchema(regionSchema), updateRegionById, (req, res) => {
@@ -47,24 +44,17 @@ router.put("/updateRegionId::regionId", jwtokenExtraction, jwtokenVerification, 
   delete req.regionById["RegionFound"];
   delete req.updateRegionByID["RegionUpdated"];
 });
-
-
-
-
-
-
-// -> /dataWarehouse/products/deleteProductId::productId. Just Admin:
-/*
-router.delete("/deleteProductId::productId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, getProductById, deleteProductById, (req, res) => {
-  if (!req.productDeletion["ProductDeleted"]) {
-    res.status(200).json(req.productDeletion);
+// -> /dataWarehouse/regions/deleteRegionId::{regionId}. Admin and User:
+router.delete("/deleteRegionId::regionId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, getRegionById, deleteRegionById, (req, res) => {
+  if (!req.regionDeletion["RegionDeleted"]) {
+    res.status(200).json(req.regionDeletion);
   } else {
     res.status(204).send("");
   };
-  delete req.productById["ProductFound"];
-  delete req.productDeletion["ProductDeleted"];
+  delete req.regionById["RegionFound"];
+  delete req.regionDeletion["RegionDeleted"];
 });
-*/
+
 
 // Exports:
 module.exports = router;
