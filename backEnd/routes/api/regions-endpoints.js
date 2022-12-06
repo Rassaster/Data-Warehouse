@@ -9,7 +9,7 @@ const { jwtokenExtraction, jwtokenVerification } = require("../../middlewares/jw
 // Security/Credentials middlewares:
 const { checkUserPermissions, justAdminGate } = require("../../middlewares/users-midwares");
 // CRUD middlewares:
-const { createNewRegion, getRegionById, getProductByName, getAllProducts, updateProductById, deleteProductById } = require("../../middlewares/regions-midwares");
+const { createNewRegion, getRegionById, getProductByName, getAllRegions, updateProductById, deleteProductById } = require("../../middlewares/regions-midwares");
 // ******************** ENDPOINTS ******************** //
 // -> /dataWarehouse/regions/create Create new product. Just admin:
 router.post("/create", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, validateJSONSchema(regionSchema), createNewRegion, (req, res) => {
@@ -17,10 +17,6 @@ router.post("/create", jwtokenExtraction, jwtokenVerification, checkUserPermissi
     res.status(201).json(req.regionCreation)
   };
 });
-
-
-
-
 // -> /dataWarehouse/products/productId:productId. Just Admin:
 router.get("/regionId::regionId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getRegionById, (req, res) =>{
   res.status(200).json(req.regionById);
@@ -40,12 +36,11 @@ router.get("/productName::productName", jwtokenExtraction, jwtokenVerification, 
 
 
 
-// -> /dataWarehouse/products/allProducts. For both Admins and Users.
-/*
-router.get("/allProducts", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getAllProducts, (req, res) => {
-  res.status(200).json(req.getAllProducts);
+// -> /dataWarehouse/regions. For both Admins and Users.
+router.get("/listAll", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getAllRegions, (req, res) => {
+  res.status(200).json(req.getAllRegions);
 });
-*/
+
 
 
 

@@ -77,16 +77,16 @@ const getProductByName = async (req, res, next) => {
     return res.status(500).send(internalServerError500)
   };
 };
-// -getAllProducts (JOIN with Products_Categories):
-const getAllProducts = async (req, res, next) => {
+// -getAllRegions:
+const getAllRegions = async (req, res, next) => {
   try {
-    const productsList = await selectProductsJoinCategories();
-    okReponse200["Message"] = "List of all registered products obtained.";
-    okReponse200["Result"] = productsList;
-    req.getAllProducts = okReponse200
+    const regionsList = await selectAllFromTable("regions");
+    okReponse200["Message"] = "List of all registered regions obtained.";
+    okReponse200["Result"] = regionsList;
+    req.getAllRegions = okReponse200
     return next();
   } catch {
-    internalServerError500["Message"] = "An error has occurred while obtaining all the registered products.";
+    internalServerError500["Message"] = "An error has occurred while obtaining all the registered regions.";
     return res.status(500).send(internalServerError500);
   };
 };
@@ -148,7 +148,7 @@ module.exports = {
   createNewRegion,
   getRegionById,
   // getProductByName,
-  // getAllProducts,
+  getAllRegions,
   // updateProductById,
   // deleteProductById
 };
