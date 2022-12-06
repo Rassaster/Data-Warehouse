@@ -8,17 +8,17 @@ const newUser =  (last_update, name, last_name, email, profile, is_admin, user_p
     type: sequelize.QueryTypes.INSERT
   });
 };
-// INSERT create new product in Products:
+// INSERT create new region in Regions:
 const newRegion =  (acronym, name) => {
   return sequelize.query("INSERT INTO regions(acronym, name) VALUES(?, ?)", {
     replacements: [acronym, name],
     type: sequelize.QueryTypes.INSERT
   });
 };
-// INSERT create new order in Orders:
-const newCountry =  (last_update_date, id_user, products, totalOrderCost, id_paying_method) => {
-  return sequelize.query("INSERT INTO orders(last_update_date, id_user, products, total_cost, id_paying_method) VALUES(?, ?, ?, ?, ?)", {
-    replacements: [last_update_date, id_user, products, totalOrderCost, id_paying_method],
+// INSERT create new country in Countries:
+const newCountry =  (acronym, name, id_region) => {
+  return sequelize.query("INSERT INTO countries(acronym, name, id_region) VALUES(?, ?, ?)", {
+    replacements: [acronym, name, id_region],
     type: sequelize.QueryTypes.INSERT
   });
 };

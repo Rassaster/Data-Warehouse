@@ -47,6 +47,8 @@ CREATE TABLE Countries (
   id_country integer
     NOT NULL
     AUTO_INCREMENT,
+  acronym varchar(5)
+    NOT NULL,
   name varchar(60)
     NOT NULL,
   id_region varchar(5)

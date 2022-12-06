@@ -11,13 +11,13 @@ const { checkUserPermissions, justAdminGate } = require("../../middlewares/users
 // CRUD middlewares:
 const { createNewRegion, getRegionById, getRegionByName, getAllRegions, updateRegionById, deleteRegionById } = require("../../middlewares/regions-midwares");
 // ******************** ENDPOINTS ******************** //
-// -> /dataWarehouse/regions/create Create new product. Just Admin:
+// -> /dataWarehouse/regions/create Create new regions. Just Admin:
 router.post("/create", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, validateJSONSchema(regionSchema), createNewRegion, (req, res) => {
   if (req.regionCreation["Status"] === 201) {
     res.status(201).json(req.regionCreation)
   };
 });
-// -> /dataWarehouse/regions/regionsId:{regionsId}. Admin and User:
+// -> /dataWarehouse/regions/regionId:{regionId}. Admin and User:
 router.get("/regionId::regionId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getRegionById, (req, res) =>{
   res.status(200).json(req.regionById);
   delete req.regionById["RegionFound"];
