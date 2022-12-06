@@ -47,7 +47,7 @@ const getRegionById = async (req, res, next) => {
     };
     return next();
   } catch {
-    internalServerError500["Message"] = "An error has occurred while searching for the product by ID.";
+    internalServerError500["Message"] = "An error has occurred while searching for the region by ID.";
     return res.status(500).send(internalServerError500)
   };
 };
@@ -86,37 +86,37 @@ const getAllRegions = async (req, res, next) => {
     return res.status(500).send(internalServerError500);
   };
 };
-// -updateProductById
-const updateProductById = async (req, res, next) => {
+// -updateRegionById
+const updateRegionById = async (req, res, next) => {
   try {
-    // If product is NOT found, doesn't exist, the operation is stoped:
-    if (!req.productById["ProductFound"]) {
-      okReponse200["Message"] = "Product not found.";
-      okReponse200["Result"] = `The product with id ${req.params.productId} doesn't exist, therefore,there is no information to be updated. Please proceed to the product creation endopoint.`;
-      okReponse200["ProductFound"] = false;
-      req.updateProductByID = okReponse200;
+    // If region is NOT found, doesn't exist, the operation is stoped:
+    if (!req.regionById["RegionFound"]) {
+      okReponse200["Message"] = "Region not found.";
+      okReponse200["Result"] = `The region with id ${req.params.regionId} doesn't exist, therefore,there is no information to be updated. Please proceed to the region creation endopoint.`;
+      okReponse200["RegionFound"] = false;
+      req.updateRegionByID = okReponse200;
     };
-    // If the product IS found, the UPDATE query is executed:
-    if (req.productById["ProductFound"]) {
+    // If the region IS found, the UPDATE query is executed:
+    if (req.regionById["RegionFound"]) {
       // The UPDATE query returns an array. 
-      const product = await updateTableRegisterWhereIdIsValue("products", req.body, "id_product", req.params.productId);
+      const region = await updateTableRegisterWhereIdIsValue("regions", req.body, "id_region", req.params.regionId);
       // // If array[1] === 0 -> No information was updated.
-      if (product[1] === 0) {
+      if (region[1] === 0) {
         conflictResponse409["Message"] = "No information was updated.";
-        conflictResponse409["Result"] = `The information of the product with id ${req.params.productId} did not suffer any changes. The data that was sent matches exactly with the one already registered.`;
-        conflictResponse409["ProductUpdated"] = false;
-        req.updateProductByID = conflictResponse409;
+        conflictResponse409["Result"] = `The information of the region with id ${req.params.regionId} did not suffer any changes. The data that was sent matches exactly with the one already registered.`;
+        conflictResponse409["RegionUpdated"] = false;
+        req.updateRegionByID = conflictResponse409;
         // // If array[1] === 1 -> Changes have been received and updated.
-      } else if (product[1] === 1) {
-        okReponse200["Message"] = "Product information updated with success.";
+      } else if (region[1] === 1) {
+        okReponse200["Message"] = "Reguib information updated succesfully.";
         okReponse200["Result"] = req.body;
-        okReponse200["ProductUpdated"] = true;
-        req.updateProductByID = okReponse200;
+        okReponse200["RegionUpdated"] = true;
+        req.updateRegionByID = okReponse200;
       };
     };
     return next();
   } catch {
-    internalServerError500["Message"] = "An error has occurred while updating the product's information by id.";
+    internalServerError500["Message"] = "An error has occurred while updating the region's information by id.";
     return res.status(500).send(internalServerError500);
   };
 };
@@ -145,6 +145,6 @@ module.exports = {
   getRegionById,
   getRegionByName,
   getAllRegions,
-  // updateProductById,
+  updateRegionById,
   // deleteProductById
 };

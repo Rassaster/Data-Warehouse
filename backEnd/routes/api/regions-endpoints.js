@@ -9,7 +9,7 @@ const { jwtokenExtraction, jwtokenVerification } = require("../../middlewares/jw
 // Security/Credentials middlewares:
 const { checkUserPermissions, justAdminGate } = require("../../middlewares/users-midwares");
 // CRUD middlewares:
-const { createNewRegion, getRegionById, getRegionByName, getAllRegions, updateProductById, deleteProductById } = require("../../middlewares/regions-midwares");
+const { createNewRegion, getRegionById, getRegionByName, getAllRegions, updateRegionById, deleteProductById } = require("../../middlewares/regions-midwares");
 // ******************** ENDPOINTS ******************** //
 // -> /dataWarehouse/regions/create Create new product. Admin and User:
 router.post("/create", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, validateJSONSchema(regionSchema), createNewRegion, (req, res) => {
@@ -22,20 +22,11 @@ router.get("/regionId::regionId", jwtokenExtraction, jwtokenVerification, checkU
   res.status(200).json(req.regionById);
   delete req.regionById["RegionFound"];
 });
-
-
-
-
 // -> /dataWarehouse/regions/regionName:{regionName}. Admin and User:
 router.get("/regionName::regionName", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getRegionByName, (req, res) => {
   res.status(200).json(req.regionByName);
   delete req.regionByName["RegionFound"];
 });
-
-
-
-
-
 // -> /dataWarehouse/regions. For both Admins and Users.
 router.get("/listAll", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getAllRegions, (req, res) => {
   res.status(200).json(req.getAllRegions);
@@ -43,25 +34,19 @@ router.get("/listAll", jwtokenExtraction, jwtokenVerification, checkUserPermissi
 
 
 
-
-
-
-
-// Update product by Id:
-// -> /dataWarehouse/products/updateProductId::productId. Just Admin:
-/*
-router.put("/updateProductId::productId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, getProductById, validateJSONSchema(productSchema), updateProductById, (req, res) => {
-  if (!req.updateProductByID["ProductFound"]) {
-    res.status(200).json(req.updateProductByID);
-  } else if (!req.updateProductByID["ProductUpdated"]) {
-    res.status(409).json(req.updateProductByID);
-  } else if (req.updateProductByID["ProductUpdated"]) {
-    res.status(204).json(req.updateProductByID);
+// Update region by Id:
+// -> /dataWarehouse/regions/updateRegionId::{regionId}. Admin and User:
+router.put("/updateRegionId::regionId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getRegionById, validateJSONSchema(regionSchema), updateRegionById, (req, res) => {
+  if (!req.updateRegionByID["RegionFound"]) {
+    res.status(200).json(req.updateRegionByID);
+  } else if (!req.updateRegionByID["RegionUpdated"]) {
+    res.status(409).json(req.updateRegionByID);
+  } else if (req.updateRegionByID["RegionUpdated"]) {
+    res.status(204).json(req.updateRegionByID);
   };
-  delete req.productById["ProductFound"];
-  delete req.updateProductByID["ProductUpdated"];
+  delete req.regionById["RegionFound"];
+  delete req.updateRegionByID["RegionUpdated"];
 });
-*/
 
 
 
