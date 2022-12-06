@@ -33,7 +33,7 @@ router.get("/listAll", jwtokenExtraction, jwtokenVerification, checkUserPermissi
 });
 // Update city by Id:
 // -> /dataWarehouse/cities/updateCityId::{cityId}. Admin and User:
-router.put("/updateCityId::cityId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getCityById, validateJSONSchema(citySchema), updateCityById, (req, res) => {
+router.put("/updateCityId::cityId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, getCityById, validateJSONSchema(citySchema), updateCityById, (req, res) => {
   if (!req.updateCityByID["CityFound"]) {
     res.status(200).json(req.updateCityByID);
   } else if (!req.updateCityByID["CityUpdated"]) {

@@ -33,7 +33,7 @@ router.get("/listAll", jwtokenExtraction, jwtokenVerification, checkUserPermissi
 });
 // Update region by Id:
 // -> /dataWarehouse/regions/updateRegionId::{regionId}. Admin and User:
-router.put("/updateRegionId::regionId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getRegionById, validateJSONSchema(regionSchema), updateRegionById, (req, res) => {
+router.put("/updateRegionId::regionId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, getRegionById, validateJSONSchema(regionSchema), updateRegionById, (req, res) => {
   if (!req.updateRegionByID["RegionFound"]) {
     res.status(200).json(req.updateRegionByID);
   } else if (!req.updateRegionByID["RegionUpdated"]) {

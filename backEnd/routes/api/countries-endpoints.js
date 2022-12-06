@@ -33,7 +33,7 @@ router.get("/listAll", jwtokenExtraction, jwtokenVerification, checkUserPermissi
 });
 // Update country by Id:
 // -> /dataWarehouse/countries/updateCountryId::{countryId}. Admin and User:
-router.put("/updateCountryId::countryId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getCountryById, validateJSONSchema(countrySchema), updateCountryById, (req, res) => {
+router.put("/updateCountryId::countryId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, getCountryById, validateJSONSchema(countrySchema), updateCountryById, (req, res) => {
   if (!req.updateCountryByID["CountryFound"]) {
     res.status(200).json(req.updateCountryByID);
   } else if (!req.updateCountryByID["CountryUpdated"]) {
