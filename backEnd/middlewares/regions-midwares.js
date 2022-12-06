@@ -51,25 +51,21 @@ const getRegionById = async (req, res, next) => {
     return res.status(500).send(internalServerError500)
   };
 };
-// -getProductByName:
-const getProductByName = async (req, res, next) => {
+// -getRegionByName:
+const getRegionByName = async (req, res, next) => {
   try {
-    const product = await selectFromTableWhereFieldIsValue("products", "product_name", req.params.productName);
-    if (product.length === 0) {
-      okReponse200["Message"] = "Product not found.";
-      okReponse200["Result"] = `The product '${req.params.productName}' doesn't exist.`;
-      okReponse200["ProductFound"] = false;
-      req.productByName = okReponse200;
+    const region = await selectFromTableWhereFieldIsValue("regions", "name", req.params.regionName);
+    if (region.length === 0) {
+      okReponse200["Message"] = "Region not found.";
+      okReponse200["Result"] = `The region '${req.params.regionName}' doesn't exist.`;
+      okReponse200["RegionFound"] = false;
+      req.regionByName = okReponse200;
     } else {
-      req.productFound = product;
-      // Search of the product's category name by ID in products_categories table. This, for delivering the category name in the server response.
-      let product_category = await selectFromTableWhereFieldIsValue("products_categories", "id_product_category", product[0].id_product_category);
-      req.productFound[0].product_category_desc = product_category[0]["category_name"];
-      delete req.productFound[0].id_product_category 
-      okReponse200["Message"] = "Product found.";
-      okReponse200["Result"] = req.productFound;
-      okReponse200["ProductFound"] = true;
-      req.productByName = okReponse200;
+      req.regionFound = region;
+      okReponse200["Message"] = "Region found.";
+      okReponse200["Result"] = req.regionFound;
+      okReponse200["RegionFound"] = true;
+      req.regionByName = okReponse200;
     };
     return next();
   } catch {
@@ -147,7 +143,7 @@ const deleteProductById = (req, res, next) => {
 module.exports = {
   createNewRegion,
   getRegionById,
-  // getProductByName,
+  getRegionByName,
   getAllRegions,
   // updateProductById,
   // deleteProductById
