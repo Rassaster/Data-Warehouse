@@ -48,6 +48,15 @@ const countrySchema = {
     id_region: { type: "number", minimum: 1, maximum: 6}
   }
 };
+const citySchema = {
+  type: "object",
+  required: ["acronym", "name", "id_country"],
+  properties: {
+    acronym: {type: "string"},
+    name: {type: "string"},
+    id_country: { type: "number", minimum: 1, maximum: 6}
+  }
+};
 const orderSchema = {
   type: "object",
   required: ["id_paying_method","products"],
@@ -69,6 +78,7 @@ module.exports = {
   loginSchema,
   updateUserSchema,
   regionSchema,
-  countrySchema
+  countrySchema,
+  citySchema
   // updateOrderStatusSchema
 };

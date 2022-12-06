@@ -57,6 +57,18 @@ CREATE TABLE Countries (
 );
 -- *********************************************************
 -- Cities:
+CREATE TABLE Cities (
+  id_city integer
+    NOT NULL
+    AUTO_INCREMENT,
+  acronym varchar(5)
+    NOT NULL,
+  name varchar(60)
+    NOT NULL,
+  id_country varchar(5)
+    NOT NULL,
+  PRIMARY KEY (id_city)
+);
 -- *********************************************************
 -- Companies:
 -- *********************************************************
