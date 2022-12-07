@@ -12,9 +12,9 @@ USE DelilahResto;
 -- *********************************************************
 -- Initial data in table: Companies
 -- *********************************************************
--- Initial data in table: Clients
+-- Initial data in table: Contacts
 -- *********************************************************
--- Initial data in table: Clients_contacts
+-- Initial data in table: Contacts_contacts
 -- *********************************************************
--- Initial data in table: Clients_channels
+-- Initial data in table: Contacts_channels
 -- *********************************************************

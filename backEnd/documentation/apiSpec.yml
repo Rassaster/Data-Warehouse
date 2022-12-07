@@ -401,7 +401,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/res.getAllUsers"
-  /contacts/id:{clientID}:           # (Admins + Users)>R+U+D.
+  /contacts/id:{contactID}:           # (Admins + Users)>R+U+D.
     get:  # Get all registered contacts by ID. 
       summary: "Obtain the contact's information by their ID."
       operationId: "getContactById"
@@ -521,7 +521,7 @@ paths:
                 $ref: "#/components/schemas/res.userNotFound"
         204:
           description: "No Content: The deletion was successful."  
-  /contacts/email:{clientEmail}:     # (Admins + Users)>R+U+D.
+  /contacts/email:{contactEmail}:     # (Admins + Users)>R+U+D.
     get:  # Get all registered contacts by Email. 
       summary: "Obtain the contact's information by their Email."
       operationId: "getContactByEmail"
@@ -1283,10 +1283,10 @@ components:
         city_id:
           type: integer
           example: 23    
-    Client:
+    Contact:
       type: "object"
       properties:
-        client_id: 
+        contact_id: 
           type: integer
           example: 1
         name: 
@@ -1510,6 +1510,57 @@ components:
           type: integer
           example: 3
           description: "ID number of the city in which the company was founded."
+        #*******************************************************#
+    #*******************************************************#
+    ##  Contacts' requests:
+    req.createContactSchema:
+      ype: object
+      required:
+        - name
+        - email
+        - region_id
+        - country_id
+        - company_id
+        - position
+        - contact_channels
+        - interest
+      properties:
+        name:
+          type: string
+          example: "Michael"
+          description: "Only alphabetical characters."
+        email:
+          type: string
+          example: "admin1@gmail.com"
+          description: "Must match the pattern '^[A-Za-z0-9.!#$%&‘*+=?^_`{|}~-]{6,}$'."
+        region:
+          type: integer
+          example: 1
+          description: "Region's ID. Only number"
+        country:
+          type: integer
+          example: 1
+          description: "Country's ID. Only number"
+        company:
+          type: integer
+          example: 1
+          description: "Company's ID. Only number"
+        position:
+          type: string
+          example: "Account Manager"
+          description: "Only alphabetical characters."
+        contact_channels:
+          type: "array",
+          items: {
+            type: "string",
+            enum: ["whatsapp", "gmail", "llamada", "pending"]
+          }
+          description: "Only alphabetical characters. Preffered channel of communication."
+        interest:
+          type: integer
+          example: 80
+          description: "Only number characters, representing the contact's interesent in percentage."
+    req.updateContactSchema:
     #*******************************************************#
     ##  Regions' requests:
     req.createRegionSchema:
@@ -1620,56 +1671,6 @@ components:
           type: number
           example: 1
           description: "Id associated to the Countries's register."
-    #*******************************************************#
-    ##  Clients' requests:
-    req.createClientSchema:
-      ype: object
-      required:
-        - name
-        - email
-        - region_id
-        - country_id
-        - company_id
-        - position
-        - contact_channels
-        - interest
-      properties:
-        name:
-          type: string
-          example: "Michael"
-          description: "Only alphabetical characters."
-        email:
-          type: string
-          example: "admin1@gmail.com"
-          description: "Must match the pattern '^[A-Za-z0-9.!#$%&‘*+=?^_`{|}~-]{6,}$'."
-        region:
-          type: integer
-          example: 1
-          description: "Region's ID. Only number"
-        country:
-          type: integer
-          example: 1
-          description: "Country's ID. Only number"
-        company:
-          type: integer
-          example: 1
-          description: "Company's ID. Only number"
-        position:
-          type: string
-          example: "Account Manager"
-          description: "Only alphabetical characters."
-        contact_channels:
-          type: "array",
-          items: {
-            type: "string",
-            enum: ["whatsapp", "gmail", "llamada", "pending"]
-          }
-          description: "Only alphabetical characters. Preffered channel of communication."
-        interest:
-          type: integer
-          example: 80
-          description: "Only number characters, representing the contact's interesent in percentage."
-    req.updateClientSchema:
     #*******************************************************#
     #+++++++++++++++++++++++++++++++++++++++++++++++++++++++#
     #+++++++++++++++++++++++++++++++++++++++++++++++++++++++#
@@ -2096,12 +2097,11 @@ components:
           type: boolean
           example: false
     #*******************************************************#
-    ##  Clients' responses:
-    res.clientCreated:
-    res.getAllClients:
-    res.getClient:
-    res.clientNotFound:
-    #*******************************************************#
+    ##  Contacts' responses:
+    res.contactCreated:
+    res.getAllContacts:
+    res.getContact:
+    res.contactNotFound:
     #+++++++++++++++++++++++++++++++++++++++++++++++++++++++#
     #+++++++++++++++++++++++++++++++++++++++++++++++++++++++#
   securitySchemes:
