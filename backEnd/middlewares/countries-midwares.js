@@ -1,7 +1,7 @@
 // Import Server Responses:
 const {  okReponse200, createdResponse201, conflictResponse409, internalServerError500 } = require("../serverResponses")
 // Import MYSQL Queries functions:
-const { newCountry, selectFromTableWhereFieldIsValue, selectAllFromTable, selectProductsJoinCategories, updateTableRegisterWhereIdIsValue, deleteTableRegisterWhereIdIsValue } = require("../sql/queries"); 
+const { newCountry, selectFromTableWhereFieldIsValue, selectAllFromTable, selectCountriesFromRegionId, selectProductsJoinCategories, updateTableRegisterWhereIdIsValue, deleteTableRegisterWhereIdIsValue } = require("../sql/queries"); 
 // ***************************************** MIDDLEWARES *********************************************
 // -createNewCountry;
 const createNewCountry = async (req, res, next) => {
@@ -87,6 +87,30 @@ const getAllCountries = async (req, res, next) => {
     return res.status(500).send(internalServerError500);
   };
 };
+// -getCountriesByRegionId:
+const getCountriesByRegionId = async (req, res, next) => {
+  try {
+    const listOfCountries = await selectCountriesFromRegionId(req.params.regionId)
+    if (listOfCountries.length === 0) {
+      okReponse200["Message"] = "Empty response: Either the regionId doesn't exists, or the regionId doesn't have any country related.";
+      okReponse200["Result"] = `The region with id ${req.params.regionId} doesn't exist.`;
+      okReponse200["ListOfCountries"] = false;
+      req.countryByRegionId = okReponse200;
+    } 
+    else {
+      req.countryFound = listOfCountries;
+      // delete req.countryFound[0];
+      okReponse200["Message"] = "Country found.";
+      okReponse200["Result"] = listOfCountries;
+      okReponse200["RegionFound"] = true;
+      req.countryByRegionId = okReponse200;
+    };
+    return next();
+  } catch {
+    internalServerError500["Message"] = "An error has occurred while searching for the country by ID.";
+    return res.status(500).send(internalServerError500)
+  };
+};
 // -updateCountryById
 const updateCountryById = async (req, res, next) => {
   try {
@@ -146,6 +170,7 @@ module.exports = {
   getCountryById,
   getCountryByName,
   getAllCountries,
+  getCountriesByRegionId,
   updateCountryById,
   deleteCountryById
 };

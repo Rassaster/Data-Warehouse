@@ -9,7 +9,7 @@ const { jwtokenExtraction, jwtokenVerification } = require("../../middlewares/jw
 // Security/Credentials middlewares:
 const { checkUserPermissions, justAdminGate } = require("../../middlewares/users-midwares");
 // CRUD middlewares:
-const { createNewCountry, getCountryById, getCountryByName, getAllCountries, updateCountryById, deleteCountryById } = require("../../middlewares/countries-midwares");
+const { createNewCountry, getCountryById, getCountryByName, getAllCountries, getCountriesByRegionId, updateCountryById, deleteCountryById } = require("../../middlewares/countries-midwares");
 // ******************** ENDPOINTS ******************** //
 // -> /dataWarehouse/countries/create Create new country. Just Admin:
 router.post("/create", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, validateJSONSchema(countrySchema), createNewCountry, (req, res) => {
@@ -30,6 +30,11 @@ router.get("/countryName::countryName", jwtokenExtraction, jwtokenVerification, 
 // -> /dataWarehouse/countries. For both Admins and Users.
 router.get("/listAll", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getAllCountries, (req, res) => {
   res.status(200).json(req.getAllCountries);
+});
+// -> /dataWarehouse/countries/regionId:{regionId}. Admin and User:
+router.get("/regionId::regionId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getCountriesByRegionId, (req, res) =>{
+  res.status(200).json(req.countryByRegionId);
+  delete req.countryByRegionId["CountryFound"];
 });
 // Update country by Id:
 // -> /dataWarehouse/countries/updateCountryId::{countryId}. Admin and User:

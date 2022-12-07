@@ -50,12 +50,28 @@ const selectFromTableWhereFieldIsValue = (table, field, value) => {
     type: sequelize.QueryTypes.SELECT
   });
 };
-// SELECT p.id_product, p.product_name, pc.category_name, p.product_price FROM Products AS p JOIN Products_Categories as pc ON p.id_product_category=pc.id_product_categoryORDER BY p.id_product;
+// SELECT r.name_region, co.name_country, ci.name_city FROM Regions AS r JOIN Countries as co ON r.id_region=co.id_region JOIN Cities as ci ON co.id_country=ci.id_country;;
 const selectRegionsTree = () => {
   return sequelize.query("SELECT r.name_region, co.name_country, ci.name_city FROM Regions AS r JOIN Countries as co ON r.id_region=co.id_region JOIN Cities as ci ON co.id_country=ci.id_country;", {
     type: sequelize.QueryTypes.SELECT
   });
 };
+
+// SELECT name_country FROM Countries WHERE id_region=1;
+const selectCountriesFromRegionId = (regionId) => {
+  return sequelize.query("SELECT name_country FROM Countries WHERE id_region=?;", {
+    replacements: [ regionId],
+    type: sequelize.QueryTypes.SELECT
+  });
+};
+// SELECT name_city FROM Cities WHERE id_country=1;
+const selectCitiesFromCountryId = () => {
+  return sequelize.query("SELECT name_city FROM Cities WHERE id_country=1;", {
+    type: sequelize.QueryTypes.SELECT
+  });
+};
+
+
 const selectAllOrdersJoined = () => {
   return sequelize.query("SELECT o.id_order, u.username, o.last_update_date, os.status_description, o.products, pm.method_description, o.total_cost FROM Orders as o JOIN Users as u ON o.id_user = u.id_user JOIN Orders_Status as os ON o.id_order_status = os.id_order_status JOIN Paying_Methods as pm ON o.id_paying_method = pm.id_paying_method ORDER BY o.id_order;", {type: sequelize.QueryTypes.SELECT})
 };
@@ -95,6 +111,7 @@ module.exports = {
   selectFromTableWhereFieldIsValue,
   selectAllFromTable,
   selectRegionsTree,
+  selectCountriesFromRegionId,
   // selectAllOrdersJoined,
   // selectAllOrdersJoinedByUserId,
   updateTableRegisterWhereIdIsValue,
