@@ -1328,6 +1328,36 @@ components:
         name: 
           type: string
           example: "América del Sur"
+    Country:
+      type: "object"
+      properties:
+        region_id:
+          type: integer
+          example: 1
+        acronym:
+          type: string
+          example: "ARG"
+        name: 
+          type: string
+          example: "Argentina"
+        id_region:
+          type: number
+          example: 1
+    City:
+      type: "object"
+      properties:
+      region_id:
+        type: integer
+        example: 1
+      acronym:
+        type: string
+        example: "BA"
+      name: 
+        type: string
+        example: "Buenos Aires"
+      id_region:
+        type: number
+        example: 1
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++#
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++#
     #   REQUESTS  REQUESTS  REQUESTS  REQUESTS  REQUESTS   #
@@ -1517,6 +1547,7 @@ components:
       required:
         - acronym
         - name
+        - id_region
       properties: 
         acronym:
           type: string
@@ -1526,11 +1557,16 @@ components:
           type: string
           example: "Colombia"
           description: "Only alphabetical characters."
+        id_region:
+          type: number
+          example: 1
+          description: "Id associated to the Region's register."
     req.updateCountrySchema:
       type: object
       required:
         - upd_acronym
         - upd_name
+        - upd_id_region
       properties: 
         upd_acronym:
           type: string
@@ -1540,6 +1576,10 @@ components:
           type: string
           example: "Colombia"
           description: "Only alphabetical characters."
+        upd_id_region:
+          type: number
+          example: 1
+          description: "Id associated to the Region's register."
     #*******************************************************#
     ##  Cities' requests:
     req.createCitySchema:
@@ -1547,6 +1587,7 @@ components:
       required:
         - acronym
         - name
+        - id_country
       properties: 
         acronym:
           type: string
@@ -1556,11 +1597,16 @@ components:
           type: string
           example: "Bogotá"
           description: "Only alphabetical characters."
+        id_country:
+          type: number
+          example: 1
+          description: "Id associated to the Countries's register."
     req.updateCitySchema:
       type: object
       required:
         - upd_acronym
         - upd_name
+        - upd_id_country
       properties: 
         upd_acronym:
           type: string
@@ -1570,6 +1616,10 @@ components:
           type: string
           example: "Medellín"
           description: "Only alphabetical characters."
+        upd_id_country:
+          type: number
+          example: 1
+          description: "Id associated to the Countries's register."
     #*******************************************************#
     ##  Clients' requests:
     req.createClientSchema:
