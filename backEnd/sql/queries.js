@@ -51,8 +51,8 @@ const selectFromTableWhereFieldIsValue = (table, field, value) => {
   });
 };
 // SELECT p.id_product, p.product_name, pc.category_name, p.product_price FROM Products AS p JOIN Products_Categories as pc ON p.id_product_category=pc.id_product_categoryORDER BY p.id_product;
-const selectProductsJoinCategories = () => {
-  return sequelize.query("SELECT p.id_product, p.product_name, pc.category_name, p.product_price FROM Products AS p JOIN Products_Categories as pc ON p.id_product_category=pc.id_product_category ORDER BY p.id_product", {
+const selectRegionsTree = () => {
+  return sequelize.query("SELECT r.name, co.name FROM Regions AS r JOIN Countries as co ON r.id_region=co.id_region;", {
     type: sequelize.QueryTypes.SELECT
   });
 };
@@ -94,7 +94,7 @@ module.exports = {
   // newRequiredProduct,
   selectFromTableWhereFieldIsValue,
   selectAllFromTable,
-  selectProductsJoinCategories,
+  selectRegionsTree,
   // selectAllOrdersJoined,
   // selectAllOrdersJoinedByUserId,
   updateTableRegisterWhereIdIsValue,

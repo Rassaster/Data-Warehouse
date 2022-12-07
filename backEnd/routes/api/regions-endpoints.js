@@ -9,7 +9,7 @@ const { jwtokenExtraction, jwtokenVerification } = require("../../middlewares/jw
 // Security/Credentials middlewares:
 const { checkUserPermissions, justAdminGate } = require("../../middlewares/users-midwares");
 // CRUD middlewares:
-const { createNewRegion, getRegionById, getRegionByName, getAllRegions, updateRegionById, deleteRegionById } = require("../../middlewares/regions-midwares");
+const { createNewRegion, getRegionById, getRegionByName, getAllRegions, getRegionsTree, updateRegionById, deleteRegionById } = require("../../middlewares/regions-midwares");
 // ******************** ENDPOINTS ******************** //
 // -> /dataWarehouse/regions/create Create new regions. Just Admin:
 router.post("/create", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, validateJSONSchema(regionSchema), createNewRegion, (req, res) => {
@@ -30,6 +30,10 @@ router.get("/regionName::regionName", jwtokenExtraction, jwtokenVerification, ch
 // -> /dataWarehouse/regions. For both Admins and Users.
 router.get("/listAll", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getAllRegions, (req, res) => {
   res.status(200).json(req.getAllRegions);
+});
+// -> /dataWarehouse/regions/tree. For both Admins and Users.
+router.get("/tree", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getRegionsTree, (req, res) => {
+  res.status(200).json(req.getRegionsTree);
 });
 // Update region by Id:
 // -> /dataWarehouse/regions/updateRegionId::{regionId}. Admin and User:

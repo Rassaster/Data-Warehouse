@@ -1,7 +1,7 @@
 // Import Server Responses:
 const {  okReponse200, createdResponse201, conflictResponse409, internalServerError500 } = require("../serverResponses")
 // Import MYSQL Queries functions:
-const { newRegion, selectFromTableWhereFieldIsValue, selectAllFromTable, selectProductsJoinCategories, updateTableRegisterWhereIdIsValue, deleteTableRegisterWhereIdIsValue } = require("../sql/queries"); 
+const { newRegion, selectFromTableWhereFieldIsValue, selectAllFromTable, selectRegionsTree, updateTableRegisterWhereIdIsValue, deleteTableRegisterWhereIdIsValue } = require("../sql/queries"); 
 // ***************************************** MIDDLEWARES *********************************************
 // -createNewRegion:
 const createNewRegion = async (req, res, next) => {
@@ -86,6 +86,19 @@ const getAllRegions = async (req, res, next) => {
     return res.status(500).send(internalServerError500);
   };
 };
+// -getRegionsTree:
+const getRegionsTree = async (req, res, next) => {
+  try {
+    const regionsTree = await selectRegionsTree();
+    okReponse200["Message"] = "List of all registered regions related to countries and cities obtained.";
+    okReponse200["Result"] = regionsTree;
+    req.getRegionsTree = okReponse200
+    return next();
+  } catch {
+    internalServerError500["Message"] = "An error has occurred while obtaining all the registered regions.";
+    return res.status(500).send(internalServerError500);
+  };
+};
 // -updateRegionById
 const updateRegionById = async (req, res, next) => {
   try {
@@ -145,6 +158,7 @@ module.exports = {
   getRegionById,
   getRegionByName,
   getAllRegions,
+  getRegionsTree,
   updateRegionById,
   deleteRegionById
 };

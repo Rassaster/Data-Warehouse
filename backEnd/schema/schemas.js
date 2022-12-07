@@ -45,7 +45,7 @@ const countrySchema = {
   properties: {
     acronym: {type: "string"},
     name: {type: "string"},
-    id_region: { type: "number", minimum: 1, maximum: 6}
+    id_region: { type: "number", minimum: 1, maximum: 100}
   }
 };
 const citySchema = {
@@ -54,7 +54,7 @@ const citySchema = {
   properties: {
     acronym: {type: "string"},
     name: {type: "string"},
-    id_country: { type: "number", minimum: 1, maximum: 6}
+    id_country: { type: "number", minimum: 1, maximum: 400}
   }
 };
 const orderSchema = {
