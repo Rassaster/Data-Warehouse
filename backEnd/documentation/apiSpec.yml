@@ -1963,16 +1963,138 @@ components:
           example: false
     #*******************************************************#
     ##  Countries' responses:
-    res.countryCreated:
-    res.getAllCountries:
-    res.getCountry:
-    res.countryNotFound:
+    res.countryCreated:        # 201 Created
+      type: object
+      properties:
+        Status:
+          type: number
+          example: 201
+        Message: 
+          type: string
+          example: "Country stored successfully."
+        Result:
+          type: object
+          properties:
+            country_id:
+              type: integer
+              example: 1
+            acronym:
+              type: string
+              example: "AS"
+            name: 
+              type: string
+              example: "América del Sur"
+    res.getAllCountries:       # 200 OK
+      type: object
+      properties:
+        Status:
+          type: integer
+          example: 200
+        Message:
+          type: integer
+          example: "List of all the stored countries."
+        Result:
+          type: array
+          items:
+            $ref: "#/components/schemas/Country"
+    res.getCountry:            # 200 OK
+      type: object
+        properties:
+          Status:
+            type: integer
+            example: 200
+          Message: 
+            type: string
+            example: "Country found."
+          Result:
+            type: array
+            items:
+              $ref: "#/components/schemas/Country"
+          CountryFound:
+            type: boolean
+            example: true
+    res.countryNotFound:       # 200 OK
+      type: object
+      properties:
+        Status: 
+          type: integer
+          example: 200
+        Message: 
+          type: string
+          example: "Country not found."
+        Result: 
+          type: string
+          example: "The Country doesn't exist in the registers, therefore no update or deletion can be done."
+        CountryFound: 
+          type: boolean
+          example: false
     #*******************************************************#
     ##  Cities' responses:
-    res.cityCreated:
-    res.getAllCities:
-    res.getCity:
-    res.cityNotFound:
+    res.cityCreated:        # 201 Created
+      type: object
+      properties:
+        Status:
+          type: number
+          example: 201
+        Message: 
+          type: string
+          example: "City stored successfully."
+        Result:
+          type: object
+          properties:
+            city_id:
+              type: integer
+              example: 1
+            acronym:
+              type: string
+              example: "AS"
+            name: 
+              type: string
+              example: "América del Sur"
+    res.getAllCities:       # 200 OK
+      type: object
+      properties:
+        Status:
+          type: integer
+          example: 200
+        Message:
+          type: integer
+          example: "List of all the stored cities."
+        Result:
+          type: array
+          items:
+            $ref: "#/components/schemas/City"
+    res.getCity:            # 200 OK
+      type: object
+        properties:
+          Status:
+            type: integer
+            example: 200
+          Message: 
+            type: string
+            example: "City found."
+          Result:
+            type: array
+            items:
+              $ref: "#/components/schemas/City"
+          CityFound:
+            type: boolean
+            example: true
+    res.cityNotFound:       # 200 OK
+      type: object
+      properties:
+        Status: 
+          type: integer
+          example: 200
+        Message: 
+          type: string
+          example: "City not found."
+        Result: 
+          type: string
+          example: "The City doesn't exist in the registers, therefore no update or deletion can be done."
+        CityFound: 
+          type: boolean
+          example: false
     #*******************************************************#
     ##  Clients' responses:
     res.clientCreated:
