@@ -33,27 +33,27 @@ const updateUserSchema = {
 };
 const regionSchema = {
   type: "object",
-  required: ["acronym", "name"],
+  required: ["acronym_region", "name_region"],
   properties: {
-    acronym: {type: "string"},
-    name: {type: "string"},
+    acronym_region: {type: "string"},
+    name_region: {type: "string"},
   }
 };
 const countrySchema = {
   type: "object",
-  required: ["acronym", "name", "id_region"],
+  required: ["acronym_country", "name_country", "id_region"],
   properties: {
-    acronym: {type: "string"},
-    name: {type: "string"},
+    acronym_country: {type: "string"},
+    name_country: {type: "string"},
     id_region: { type: "number", minimum: 1, maximum: 100}
   }
 };
 const citySchema = {
   type: "object",
-  required: ["acronym", "name", "id_country"],
+  required: ["acronym_city", "name_city", "id_country"],
   properties: {
-    acronym: {type: "string"},
-    name: {type: "string"},
+    acronym_city: {type: "string"},
+    name_city: {type: "string"},
     id_country: { type: "number", minimum: 1, maximum: 400}
   }
 };

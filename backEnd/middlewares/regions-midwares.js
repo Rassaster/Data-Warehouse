@@ -6,13 +6,13 @@ const { newRegion, selectFromTableWhereFieldIsValue, selectAllFromTable, selectR
 // -createNewRegion:
 const createNewRegion = async (req, res, next) => {
   try {
-    const { acronym, name } = req.body;
-    const createdRegion = await newRegion(acronym, name); 
+    const { acronym_region, name_region } = req.body;
+    const createdRegion = await newRegion(acronym_region, name_region); 
     createdResponse201["Message"] = "Region created successfully.";
     const newCreatedRegion = {
       id_region: createdRegion[0],
-      acronym: req.body.acronym,
-      name: req.body.name
+      acronym_region: req.body.acronym_region,
+      name_region: req.body.name_region
     };
     createdResponse201["Result"] = newCreatedRegion;
     req.regionCreation = createdResponse201;

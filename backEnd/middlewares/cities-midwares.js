@@ -6,13 +6,13 @@ const { newCity, selectFromTableWhereFieldIsValue, selectAllFromTable, selectPro
 // -createNewCity;
 const createNewCity = async (req, res, next) => {
   try {
-    const { acronym, name, id_country } = req.body;
-    const createdCity = await newCity(acronym, name, id_country); 
+    const { acronym_city, name_city, id_country } = req.body;
+    const createdCity = await newCity(acronym_city, name_city, id_country); 
     createdResponse201["Message"] = "City created successfully.";
     const newCreatedCity = {
       id_city: createdCity[0],
-      acronym: req.body.acronym,
-      name: req.body.name,
+      acronym_city: req.body.acronym_city,
+      name_city: req.body.name_city,
       id_country: req.body.id_country
     };
     createdResponse201["Result"] = newCreatedCity;

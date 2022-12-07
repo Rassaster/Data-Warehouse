@@ -35,9 +35,9 @@ CREATE TABLE Regions (
   id_region integer
     NOT NULL
     AUTO_INCREMENT,
-  acronym varchar(5)
+  acronym_region varchar(5)
     NOT NULL,
-  name varchar(60)
+  name_region varchar(60)
     NOT NULL,
   PRIMARY KEY (id_region)
 );
@@ -47,9 +47,9 @@ CREATE TABLE Countries (
   id_country integer
     NOT NULL
     AUTO_INCREMENT,
-  acronym varchar(5)
+  acronym_country varchar(5)
     NOT NULL,
-  name varchar(60)
+  name_country varchar(60)
     NOT NULL,
   id_region varchar(5)
     NOT NULL,
@@ -61,9 +61,9 @@ CREATE TABLE Cities (
   id_city integer
     NOT NULL
     AUTO_INCREMENT,
-  acronym varchar(5)
+  acronym_city varchar(5)
     NOT NULL,
-  name varchar(60)
+  name_city varchar(60)
     NOT NULL,
   id_country varchar(5)
     NOT NULL,

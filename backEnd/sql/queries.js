@@ -9,23 +9,23 @@ const newUser =  (last_update, name, last_name, email, profile, is_admin, user_p
   });
 };
 // INSERT create new region in Regions:
-const newRegion =  (acronym, name) => {
-  return sequelize.query("INSERT INTO regions(acronym, name) VALUES(?, ?)", {
-    replacements: [acronym, name],
+const newRegion =  (acronym_region, name_region) => {
+  return sequelize.query("INSERT INTO regions(acronym_region, name_region) VALUES(?, ?)", {
+    replacements: [acronym_region, name_region],
     type: sequelize.QueryTypes.INSERT
   });
 };
 // INSERT create new country in Countries:
-const newCountry =  (acronym, name, id_region) => {
-  return sequelize.query("INSERT INTO countries(acronym, name, id_region) VALUES(?, ?, ?)", {
-    replacements: [acronym, name, id_region],
+const newCountry =  (acronym_country, name_country, id_region) => {
+  return sequelize.query("INSERT INTO countries(acronym_country, name_country, id_region) VALUES(?, ?, ?)", {
+    replacements: [acronym_country, name_country, id_region],
     type: sequelize.QueryTypes.INSERT
   });
 };
 // INSERT create new city in Cities:
-const newCity =  (acronym, name, id_country) => {
-  return sequelize.query("INSERT INTO cities(acronym, name, id_country) VALUES(?, ?, ?)", {
-    replacements: [acronym, name, id_country],
+const newCity =  (acronym_city, name_city, id_country) => {
+  return sequelize.query("INSERT INTO cities(acronym_city, name_city, id_country) VALUES(?, ?, ?)", {
+    replacements: [acronym_city, name_city, id_country],
     type: sequelize.QueryTypes.INSERT
   });
 };
@@ -52,7 +52,7 @@ const selectFromTableWhereFieldIsValue = (table, field, value) => {
 };
 // SELECT p.id_product, p.product_name, pc.category_name, p.product_price FROM Products AS p JOIN Products_Categories as pc ON p.id_product_category=pc.id_product_categoryORDER BY p.id_product;
 const selectRegionsTree = () => {
-  return sequelize.query("SELECT r.name, co.name FROM Regions AS r JOIN Countries as co ON r.id_region=co.id_region;", {
+  return sequelize.query("SELECT r.name_region, co.name_country, ci.name_city FROM Regions AS r JOIN Countries as co ON r.id_region=co.id_region JOIN Cities as ci ON co.id_country=ci.id_country;", {
     type: sequelize.QueryTypes.SELECT
   });
 };
