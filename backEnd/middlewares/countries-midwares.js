@@ -95,15 +95,15 @@ const getCountriesByRegionId = async (req, res, next) => {
       okReponse200["Message"] = "Empty response: Either the regionId doesn't exists, or the regionId doesn't have any country related.";
       okReponse200["Result"] = `The region with id ${req.params.regionId} doesn't exist.`;
       okReponse200["ListOfCountries"] = false;
-      req.countryByRegionId = okReponse200;
+      req.countriesByRegionId = okReponse200;
     } 
     else {
-      req.countryFound = listOfCountries;
+      req.regionFound = listOfCountries;
       // delete req.countryFound[0];
-      okReponse200["Message"] = "Country found.";
+      okReponse200["Message"] = "Region with related countries found.";
       okReponse200["Result"] = listOfCountries;
       okReponse200["RegionFound"] = true;
-      req.countryByRegionId = okReponse200;
+      req.countriesByRegionId = okReponse200;
     };
     return next();
   } catch {

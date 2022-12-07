@@ -57,16 +57,17 @@ const selectRegionsTree = () => {
   });
 };
 
-// SELECT name_country FROM Countries WHERE id_region=1;
+// SELECT name_country FROM Countries WHERE id_region=?;
 const selectCountriesFromRegionId = (regionId) => {
-  return sequelize.query("SELECT name_country FROM Countries WHERE id_region=?;", {
-    replacements: [ regionId],
+  return sequelize.query("SELECT name_country FROM Countries WHERE id_region = ?;", {
+    replacements: [ regionId ],
     type: sequelize.QueryTypes.SELECT
   });
 };
-// SELECT name_city FROM Cities WHERE id_country=1;
-const selectCitiesFromCountryId = () => {
-  return sequelize.query("SELECT name_city FROM Cities WHERE id_country=1;", {
+// SELECT name_city FROM Cities WHERE id_country= :id_country;
+const selectCitiesFromCountryId = (countryId) => {
+  return sequelize.query("SELECT name_city FROM Cities WHERE id_country = ?;", {
+    replacements: [ countryId ],
     type: sequelize.QueryTypes.SELECT
   });
 };
@@ -112,6 +113,7 @@ module.exports = {
   selectAllFromTable,
   selectRegionsTree,
   selectCountriesFromRegionId,
+  selectCitiesFromCountryId,
   // selectAllOrdersJoined,
   // selectAllOrdersJoinedByUserId,
   updateTableRegisterWhereIdIsValue,

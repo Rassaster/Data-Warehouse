@@ -9,7 +9,7 @@ const { jwtokenExtraction, jwtokenVerification } = require("../../middlewares/jw
 // Security/Credentials middlewares:
 const { checkUserPermissions, justAdminGate } = require("../../middlewares/users-midwares");
 // CRUD middlewares:
-const { createNewCity, getCityById, getCityByName, getAllCities, updateCityById, deleteCityById } = require("../../middlewares/cities-midwares");
+const { createNewCity, getCityById, getCityByName, getAllCities, getCitiesByCountryId, updateCityById, deleteCityById } = require("../../middlewares/cities-midwares");
 // ******************** ENDPOINTS ******************** //
 // -> /dataWarehouse/cities/create Create new city. Just Admin:
 router.post("/create", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, validateJSONSchema(citySchema), createNewCity, (req, res) => {
@@ -30,6 +30,11 @@ router.get("/cityName::cityName", jwtokenExtraction, jwtokenVerification, checkU
 // -> /dataWarehouse/cities. For both Admins and Users.
 router.get("/listAll", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getAllCities, (req, res) => {
   res.status(200).json(req.getAllCities);
+});
+// -> /dataWarehouse/cities/countryId:{countryId}. Admin and User:
+router.get("/countryId::countryId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getCitiesByCountryId, (req, res) =>{
+  res.status(200).json(req.citiesBycountryId);
+  delete req.citiesBycountryId["CitiesFound"];
 });
 // Update city by Id:
 // -> /dataWarehouse/cities/updateCityId::{cityId}. Admin and User:

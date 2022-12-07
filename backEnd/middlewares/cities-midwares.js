@@ -1,7 +1,7 @@
 // Import Server Responses:
 const {  okReponse200, createdResponse201, conflictResponse409, internalServerError500 } = require("../serverResponses")
 // Import MYSQL Queries functions:
-const { newCity, selectFromTableWhereFieldIsValue, selectAllFromTable, selectProductsJoinCategories, updateTableRegisterWhereIdIsValue, deleteTableRegisterWhereIdIsValue } = require("../sql/queries"); 
+const { newCity, selectFromTableWhereFieldIsValue, selectAllFromTable, selectCitiesFromCountryId, selectProductsJoinCategories, updateTableRegisterWhereIdIsValue, deleteTableRegisterWhereIdIsValue } = require("../sql/queries"); 
 // ***************************************** MIDDLEWARES *********************************************
 // -createNewCity;
 const createNewCity = async (req, res, next) => {
@@ -87,6 +87,30 @@ const getAllCities = async (req, res, next) => {
     return res.status(500).send(internalServerError500);
   };
 };
+// -getCitiesByCountryId:
+const getCitiesByCountryId = async (req, res, next) => {
+  try {
+    const listOfCities = await selectCitiesFromCountryId(req.params.countryId)
+    if (listOfCities.length === 0) {
+      okReponse200["Message"] = "Empty response: Either the countryId doesn't exists, or the countryId doesn't have any city related.";
+      okReponse200["Result"] = `The region with id ${req.params.countryId} doesn't exist.`;
+      okReponse200["ListOfCities"] = false;
+      req.citiesBycountryId = okReponse200;
+    } 
+    else {
+      req.countryFound = listOfCities;
+      // delete req.countryFound[0];
+      okReponse200["Message"] = "Country with related cities found.";
+      okReponse200["Result"] = listOfCities;
+      okReponse200["RegionFound"] = true;
+      req.citiesBycountryId = okReponse200;
+    };
+    return next();
+  } catch {
+    internalServerError500["Message"] = "An error has occurred while searching for the country by ID.";
+    return res.status(500).send(internalServerError500)
+  };
+};
 // -updateCityById
 const updateCityById = async (req, res, next) => {
   try {
@@ -146,6 +170,7 @@ module.exports = {
   getCityById,
   getCityByName,
   getAllCities,
+  getCitiesByCountryId,
   updateCityById,
   deleteCityById
 };
