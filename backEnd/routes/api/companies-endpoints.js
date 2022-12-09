@@ -49,18 +49,16 @@ router.put("/updateCompanyId::companyId", jwtokenExtraction, jwtokenVerification
   delete req.companyById["CompanyFound"];
   delete req.updateCompanyByID["CompanyUpdated"];
 });
-
-
 // -> /dataWarehouse/companies/deleteCompanyId::{companyId}. Admin and User:
-// router.delete("/deleteCompanyId::companyId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, getCompanyById, deleteCompanyById, (req, res) => {
-//   if (!req.companyDeletion["CompanyDeleted"]) {
-//     res.status(200).json(req.companyDeletion);
-//   } else {
-//     res.status(204).send("");
-//   };
-//   delete req.companyById["CompanyFound"];
-//   delete req.companyDeletion["CompanyDeleted"];
-// });
+router.delete("/deleteCompanyId::companyId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, getCompanyById, deleteCompanyById, (req, res) => {
+  if (!req.companyDeletion["CompanyDeleted"]) {
+    res.status(200).json(req.companyDeletion);
+  } else {
+    res.status(204).send("");
+  };
+  delete req.companyById["CompanyFound"];
+  delete req.companyDeletion["CompanyDeleted"];
+});
 
 
 // Exports:

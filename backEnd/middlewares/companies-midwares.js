@@ -102,11 +102,11 @@ const getCompaniesByCityId = async (req, res, next) => {
       req.companiesByCityId = okReponse200;
     } 
     else {
-      req.cityFound = listOfCompanies;
+      req.CompanyFound = listOfCompanies;
       // delete req.countryFound[0];
       okReponse200["Message"] = "City with related companies found.";
       okReponse200["Result"] = listOfCompanies;
-      okReponse200["CityFound"] = true;
+      okReponse200["CompanyFound"] = true;
       req.companiesByCityId = okReponse200;
     };
     return next();
@@ -145,22 +145,22 @@ const updateCompanyById = async (req, res, next) => {
     };
     return next();
   } catch {
-    internalServerError500["Message"] = "An error has occurred while updating the city's information by id.";
+    internalServerError500["Message"] = "An error has occurred while updating the company's information by id.";
     return res.status(500).send(internalServerError500);
   };
 };
-// -deleteCityById
-const deleteCityById = (req, res, next) => {
+// -deleteCompanyById
+const deleteCompanyById = (req, res, next) => {
   try {
-    if (!req.cityById["CityFound"]) {
-      okReponse200["Message"] = "City not found.";
-      okReponse200["Result"] = `The city with id ${req.params.cityId} doesn't exist, therefore no deletion can be done.`;
-      okReponse200["CityDeleted"] = false;
-      req.cityDeletion = okReponse200;
-    } else if (req.cityById["CityFound"]) {
-      const deleteCity = deleteTableRegisterWhereIdIsValue("cities", "id_city", req.params.cityId);
-      okReponse200["CityDeleted"] = true;
-      req.cityDeletion = okReponse200;
+    if (!req.companyById["CompanyFound"]) {
+      okReponse200["Message"] = "Company not found.";
+      okReponse200["Result"] = `The company with id ${req.params.companyId} doesn't exist, therefore no deletion can be done.`;
+      okReponse200["CompanyDeleted"] = false;
+      req.companyDeletion = okReponse200;
+    } else if (req.companyById["CompanyFound"]) {
+      const deleteCompany = deleteTableRegisterWhereIdIsValue("companies", "id_company", req.params.companyId);
+      okReponse200["CompanyDeleted"] = true;
+      req.companyDeletion = okReponse200;
     };
     return next();
   } catch {
@@ -176,5 +176,5 @@ module.exports = {
   getAllCompanies,
   getCompaniesByCityId,
   updateCompanyById,
-  deleteCityById
+  deleteCompanyById
 };
