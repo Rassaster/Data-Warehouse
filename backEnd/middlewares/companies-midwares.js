@@ -115,32 +115,32 @@ const getCompaniesByCityId = async (req, res, next) => {
     return res.status(500).send(internalServerError500)
   };
 };
-// -updateCityById
-const updateCityById = async (req, res, next) => {
+// -updateCompanyById
+const updateCompanyById = async (req, res, next) => {
   try {
-    // If city is NOT found, doesn't exist, the operation is stoped:
-    if (!req.cityById["CityFound"]) {
-      okReponse200["Message"] = "City not found.";
-      okReponse200["Result"] = `The city with id ${req.params.cityId} doesn't exist, therefore,there is no information to be updated. Please proceed to the city creation endopoint.`;
-      okReponse200["CityFound"] = false;
-      req.updateCityByID = okReponse200;
+    // If company is NOT found, doesn't exist, the operation is stoped:
+    if (!req.companyById["CompanyFound"]) {
+      okReponse200["Message"] = "Company not found.";
+      okReponse200["Result"] = `The company with id ${req.params.companyId} doesn't exist, therefore,there is no information to be updated. Please proceed to the city creation endopoint.`;
+      okReponse200["CompanyFound"] = false;
+      req.updateCompanyByID = okReponse200;
     };
-    // If the city IS found, the UPDATE query is executed:
-    if (req.cityById["CityFound"]) {
+    // If the company IS found, the UPDATE query is executed:
+    if (req.companyById["CompanyFound"]) {
       // The UPDATE query returns an array. 
-      const city = await updateTableRegisterWhereIdIsValue("cities", req.body, "id_city", req.params.cityId);
+      const company = await updateTableRegisterWhereIdIsValue("companies", req.body, "id_company", req.params.companyId);
       // // If array[1] === 0 -> No information was updated.
-      if (city[1] === 0) {
+      if (company[1] === 0) {
         conflictResponse409["Message"] = "No information was updated.";
-        conflictResponse409["Result"] = `The information of the city with id ${req.params.cityId} did not suffer any changes. The data that was sent matches exactly with the one already registered.`;
-        conflictResponse409["CityUpdated"] = false;
-        req.updateCityByID = conflictResponse409;
+        conflictResponse409["Result"] = `The information of the company with id ${req.params.companyId} did not suffer any changes. The data that was sent matches exactly with the one already registered.`;
+        conflictResponse409["CompanyUpdated"] = false;
+        req.updateCompanyByID = conflictResponse409;
         // // If array[1] === 1 -> Changes have been received and updated.
-      } else if (city[1] === 1) {
-        okReponse200["Message"] = "Reguib information updated succesfully.";
+      } else if (company[1] === 1) {
+        okReponse200["Message"] = "Company information updated succesfully.";
         okReponse200["Result"] = req.body;
-        okReponse200["CityUpdated"] = true;
-        req.updateCityByID = okReponse200;
+        okReponse200["CompanyUpdated"] = true;
+        req.updateCompanyByID = okReponse200;
       };
     };
     return next();
@@ -175,6 +175,6 @@ module.exports = {
   getCompanyByName,
   getAllCompanies,
   getCompaniesByCityId,
-  updateCityById,
+  updateCompanyById,
   deleteCityById
 };

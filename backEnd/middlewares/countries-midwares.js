@@ -133,7 +133,7 @@ const updateCountryById = async (req, res, next) => {
         req.updateCountryByID = conflictResponse409;
         // // If array[1] === 1 -> Changes have been received and updated.
       } else if (country[1] === 1) {
-        okReponse200["Message"] = "Reguib information updated succesfully.";
+        okReponse200["Message"] = "Country information updated succesfully.";
         okReponse200["Result"] = req.body;
         okReponse200["CountryUpdated"] = true;
         req.updateCountryByID = okReponse200;

@@ -121,7 +121,7 @@ const updateRegionById = async (req, res, next) => {
         req.updateRegionByID = conflictResponse409;
         // // If array[1] === 1 -> Changes have been received and updated.
       } else if (region[1] === 1) {
-        okReponse200["Message"] = "Reguib information updated succesfully.";
+        okReponse200["Message"] = "Region information updated succesfully.";
         okReponse200["Result"] = req.body;
         okReponse200["RegionUpdated"] = true;
         req.updateRegionByID = okReponse200;

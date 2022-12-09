@@ -36,21 +36,19 @@ router.get("/cityId::cityId", jwtokenExtraction, jwtokenVerification, checkUserP
   res.status(200).json(req.companiesByCityId);
   delete req.companiesByCityId["CompaniesFound"];
 });
-
-
 // Update company by Id:
 // -> /dataWarehouse/companies/updateCompanyId::{companyId}. Admin and User:
-// router.put("/updateCompanyId::companyId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, getCompanyById, validateJSONSchema(companySchema), updateCompanyById, (req, res) => {
-//   if (!req.updateCompanyByID["CompanyFound"]) {
-//     res.status(200).json(req.updateCompanyByID);
-//   } else if (!req.updateCompanyByID["CompanyUpdated"]) {
-//     res.status(409).json(req.updateCompanyByID);
-//   } else if (req.updateCompanyByID["CompanyUpdated"]) {
-//     res.status(204).json(req.updateCompanyByID);
-//   };
-//   delete req.companyById["CompanyFound"];
-//   delete req.updateCompanyByID["CompanyUpdated"];
-// });
+router.put("/updateCompanyId::companyId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, getCompanyById, validateJSONSchema(companySchema), updateCompanyById, (req, res) => {
+  if (!req.updateCompanyByID["CompanyFound"]) {
+    res.status(200).json(req.updateCompanyByID);
+  } else if (!req.updateCompanyByID["CompanyUpdated"]) {
+    res.status(409).json(req.updateCompanyByID);
+  } else if (req.updateCompanyByID["CompanyUpdated"]) {
+    res.status(204).json(req.updateCompanyByID);
+  };
+  delete req.companyById["CompanyFound"];
+  delete req.updateCompanyByID["CompanyUpdated"];
+});
 
 
 // -> /dataWarehouse/companies/deleteCompanyId::{companyId}. Admin and User:
