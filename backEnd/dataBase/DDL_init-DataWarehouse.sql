@@ -71,6 +71,24 @@ CREATE TABLE Cities (
 );
 -- *********************************************************
 -- Companies:
+CREATE TABLE Companies (
+  id_copmany integer
+    NOT NULL
+    AUTO_INCREMENT,
+  name_company varchar(50)
+    NOT NULL,
+  address_company varchar(100)
+    NOT NULL,
+  email_company varchar(30)
+    NOT NULL,
+  phone_company varchar(20)
+    NOT NULL,
+  id_city varchar(5)
+    NOT NULL,
+  last_update datetime
+    NOT NULL,
+  PRIMARY KEY (id_copmany)
+);
 -- *********************************************************
 -- Contact:
 -- *********************************************************

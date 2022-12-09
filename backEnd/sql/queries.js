@@ -29,6 +29,13 @@ const newCity =  (acronym_city, name_city, id_country) => {
     type: sequelize.QueryTypes.INSERT
   });
 };
+// INSERT create new company in Companies:
+const newCompany =  (last_update, name_company, address_company, email_company, phone_company, id_city) => {
+  return sequelize.query("INSERT INTO companies(last_update, name_company, address_company, email_company, phone_company, id_city) VALUES(?, ?, ?, ?, ?, ?)", {
+    replacements: [last_update, name_company, address_company, email_company, phone_company, id_city],
+    type: sequelize.QueryTypes.INSERT
+  });
+};
 // INSERT create register in required_products:
 const newRequiredProduct =  (id_order, id_product, product_quantity) => {
   return sequelize.query("INSERT INTO required_products(id_order, id_product, product_quantity) VALUES(?, ?, ?)", {
@@ -108,6 +115,7 @@ module.exports = {
   newRegion,
   newCountry,
   newCity,
+  newCompany,
   // newRequiredProduct,
   selectFromTableWhereFieldIsValue,
   selectAllFromTable,

@@ -1,25 +1,30 @@
+const moment = require("moment");
 // Import Server Responses:
 const {  okReponse200, createdResponse201, conflictResponse409, internalServerError500 } = require("../serverResponses")
 // Import MYSQL Queries functions:
-const { newCity, selectFromTableWhereFieldIsValue, selectAllFromTable, selectCitiesFromCountryId, selectProductsJoinCategories, updateTableRegisterWhereIdIsValue, deleteTableRegisterWhereIdIsValue } = require("../sql/queries"); 
+const { newCompany, selectFromTableWhereFieldIsValue, selectAllFromTable, selectCompaniesFromCityId, selectProductsJoinCategories, updateTableRegisterWhereIdIsValue, deleteTableRegisterWhereIdIsValue } = require("../sql/queries"); 
 // ***************************************** MIDDLEWARES *********************************************
 // -createNewCity;
-const createNewCity = async (req, res, next) => {
+// Register a new user:
+const createNewCompany = async (req,res, next) => {
   try {
-    const { acronym_city, name_city, id_country } = req.body;
-    const createdCity = await newCity(acronym_city, name_city, id_country); 
-    createdResponse201["Message"] = "City created successfully.";
-    const newCreatedCity = {
-      id_city: createdCity[0],
-      acronym_city: req.body.acronym_city,
-      name_city: req.body.name_city,
-      id_country: req.body.id_country
+    let date = moment().format('YYYY-MM-DD HH:mm:ss');
+    const {name_company, address_company, email_company, phone_company, id_city} = req.body;
+    const newRegister = await newCompany(date, name_company, address_company, email_company, phone_company, id_city);
+    const createdCompany = {
+      name_company: req.body.name_company,
+      address_company: req.body.address_company,
+      email_company: req.body.email_company,
+      phone_company: req.body.phone_company,
+      id_city: req.body.id_city,
+      company_id: newRegister[0]
     };
-    createdResponse201["Result"] = newCreatedCity;
-    req.cityCreation = createdResponse201;
+    createdResponse201["Message"] = "Company created successfully.";
+    createdResponse201["Result"] = createdCompany;
+    req.companyCreation = createdResponse201;
     return next();
   } catch (error) {
-    internalServerError500["Message"] = error.parent.sqlMessage;
+    internalServerError500["Message"] = error.sqlMessage;
     internalServerError500["Description"] = "Please review the API Documentation in relation to the JSON format expected.";
     internalServerError500["ReceivedQueryJSON"] = req.body;
     res.status(500).send(internalServerError500);
@@ -166,7 +171,7 @@ const deleteCityById = (req, res, next) => {
 };
 // Exports:
 module.exports = {
-  createNewCity,
+  createNewCompany,
   getCityById,
   getCityByName,
   getAllCities,

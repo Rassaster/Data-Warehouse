@@ -57,12 +57,16 @@ const citySchema = {
     id_country: { type: "number", minimum: 1, maximum: 400}
   }
 };
-const orderSchema = {
+const companySchema = {
   type: "object",
-  required: ["id_paying_method","products"],
+  required: ["name_company", "address_company", "email_company", "phone_company", "id_city"],
   properties: {
-    id_paying_method: {type: "number", minimum: 1, maximum: 4},
-    products: {type: "array"}
+    name_company: {type: "string"},
+    address_company: {type: "string"},
+    email_company: { type: "string", pattern: "^[A-Za-z0-9._-]*@[a-z]*[.]com$"},
+    phone_company: {type: "string"},
+    id_city: {type: "number"},
+    
   }
 };
 const updateOrderStatusSchema = {
@@ -79,6 +83,7 @@ module.exports = {
   updateUserSchema,
   regionSchema,
   countrySchema,
-  citySchema
+  citySchema,
+  companySchema
   // updateOrderStatusSchema
 };

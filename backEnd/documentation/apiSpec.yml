@@ -1262,27 +1262,27 @@ components:
     Company:
       type: "object"
       properties:
-        company_id: 
+        id_company: 
           type: integer
           example: 1
-        name: 
+        name_compnay: 
           type: string
           example: "Dunder & Mifflin Company"
-        address: 
+        address_compnay: 
           type: string
           example: "1725 Slough Avenue in Scranton, PA"
-        email: 
+        email_company: 
           type: string
           example: "jblackburn@dwenterprise.com"
-        phone_number: 
+        phone_company: 
           type: integer
           example: 31243212
-        last_update: 
-          type: string
-          example: "2021-07-08T14:41:50.000Z"
-        city_id:
+        id_city:
           type: integer
           example: 23    
+        lastUpdate_company: 
+          type: string
+          example: "2021-07-08T14:41:50.000Z"
     Contact:
       type: "object"
       properties:

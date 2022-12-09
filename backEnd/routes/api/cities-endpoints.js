@@ -33,8 +33,8 @@ router.get("/listAll", jwtokenExtraction, jwtokenVerification, checkUserPermissi
 });
 // -> /dataWarehouse/cities/countryId:{countryId}. Admin and User:
 router.get("/countryId::countryId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getCitiesByCountryId, (req, res) =>{
-  res.status(200).json(req.citiesBycountryId);
-  delete req.citiesBycountryId["CitiesFound"];
+  res.status(200).json(req.citiesByCountryId);
+  delete req.citiesByCountryId["CitiesFound"];
 });
 // Update city by Id:
 // -> /dataWarehouse/cities/updateCityId::{cityId}. Admin and User:
