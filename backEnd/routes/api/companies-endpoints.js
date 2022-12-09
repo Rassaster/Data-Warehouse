@@ -9,7 +9,7 @@ const { jwtokenExtraction, jwtokenVerification } = require("../../middlewares/jw
 // Security/Credentials middlewares:
 const { checkUserPermissions, justAdminGate } = require("../../middlewares/users-midwares");
 // CRUD middlewares:
-const { createNewCompany, getCompanyById, getCompanyByName, getAllCompanies, getCompaniesByCountryId, updateCompanyById, deleteCompanyById } = require("../../middlewares/companies-midwares");
+const { createNewCompany, getCompanyById, getCompanyByName, getAllCompanies, getCompaniesByCityId, updateCompanyById, deleteCompanyById } = require("../../middlewares/companies-midwares");
 // ******************** ENDPOINTS ******************** //
 // -> /dataWarehouse/companies/create Create new company. Just Admin:
 router.post("/create", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, validateJSONSchema(companySchema), createNewCompany, (req, res) => {
@@ -31,13 +31,11 @@ router.get("/companyName::companyName", jwtokenExtraction, jwtokenVerification, 
 router.get("/listAll", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getAllCompanies, (req, res) => {
   res.status(200).json(req.getAllCompanies);
 });
-
-
 // -> /dataWarehouse/companies/cityId:{cityId}. Admin and User:
-// router.get("/cityId::cityId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getCompaniesByCityId, (req, res) =>{
-//   res.status(200).json(req.companiesByCityId);
-//   delete req.companiesByCityId["CompaniesFound"];
-// });
+router.get("/cityId::cityId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getCompaniesByCityId, (req, res) =>{
+  res.status(200).json(req.companiesByCityId);
+  delete req.companiesByCityId["CompaniesFound"];
+});
 
 
 // Update company by Id:

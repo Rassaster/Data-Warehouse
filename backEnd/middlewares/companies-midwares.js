@@ -91,23 +91,23 @@ const getAllCompanies = async (req, res, next) => {
     return res.status(500).send(internalServerError500);
   };
 };
-// -getCitiesByCountryId:
-const getCitiesByCountryId = async (req, res, next) => {
+// -getCompaniesByCityId:
+const getCompaniesByCityId = async (req, res, next) => {
   try {
-    const listOfCities = await selectCitiesFromCountryId(req.params.countryId)
-    if (listOfCities.length === 0) {
-      okReponse200["Message"] = "Empty response: Either the countryId doesn't exists, or the countryId doesn't have any city related.";
-      okReponse200["Result"] = `The region with id ${req.params.countryId} doesn't exist.`;
-      okReponse200["ListOfCities"] = false;
-      req.citiesByCountryId = okReponse200;
+    const listOfCompanies = await selectCompaniesFromCityId(req.params.cityId)
+    if (listOfCompanies.length === 0) {
+      okReponse200["Message"] = "Empty response: Either the cityId doesn't exist, or the cityId doesn't have any company related.";
+      okReponse200["Result"] = `No companies were found related to the cityId '${req.params.cityId}'.`;
+      okReponse200["ListOfCompanies"] = false;
+      req.companiesByCityId = okReponse200;
     } 
     else {
-      req.countryFound = listOfCities;
+      req.cityFound = listOfCompanies;
       // delete req.countryFound[0];
-      okReponse200["Message"] = "Country with related cities found.";
-      okReponse200["Result"] = listOfCities;
-      okReponse200["RegionFound"] = true;
-      req.citiesByCountryId = okReponse200;
+      okReponse200["Message"] = "City with related companies found.";
+      okReponse200["Result"] = listOfCompanies;
+      okReponse200["CityFound"] = true;
+      req.companiesByCityId = okReponse200;
     };
     return next();
   } catch {
@@ -174,7 +174,7 @@ module.exports = {
   getCompanyById,
   getCompanyByName,
   getAllCompanies,
-  getCitiesByCountryId,
+  getCompaniesByCityId,
   updateCityById,
   deleteCityById
 };

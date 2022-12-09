@@ -64,21 +64,27 @@ const selectRegionsTree = () => {
   });
 };
 
-// SELECT name_country FROM Countries WHERE id_region=?;
+// SELECT name_country FROM Countries WHERE id_region= ?id_region;
 const selectCountriesFromRegionId = (regionId) => {
   return sequelize.query("SELECT name_country FROM Countries WHERE id_region = ?;", {
     replacements: [ regionId ],
     type: sequelize.QueryTypes.SELECT
   });
 };
-// SELECT name_city FROM Cities WHERE id_country= :id_country;
+// SELECT name_city FROM Cities WHERE id_country= ?id_country;
 const selectCitiesFromCountryId = (countryId) => {
   return sequelize.query("SELECT name_city FROM Cities WHERE id_country = ?;", {
     replacements: [ countryId ],
     type: sequelize.QueryTypes.SELECT
   });
 };
-
+// SELECT name_company FROM Companies WHERE id_city= ?id_city;
+const selectCompaniesFromCityId = (cityId) => {
+  return sequelize.query("SELECT name_company FROM Companies WHERE id_city = ?;", {
+    replacements: [ cityId ],
+    type: sequelize.QueryTypes.SELECT
+  });
+};
 
 const selectAllOrdersJoined = () => {
   return sequelize.query("SELECT o.id_order, u.username, o.last_update_date, os.status_description, o.products, pm.method_description, o.total_cost FROM Orders as o JOIN Users as u ON o.id_user = u.id_user JOIN Orders_Status as os ON o.id_order_status = os.id_order_status JOIN Paying_Methods as pm ON o.id_paying_method = pm.id_paying_method ORDER BY o.id_order;", {type: sequelize.QueryTypes.SELECT})
@@ -122,6 +128,7 @@ module.exports = {
   selectRegionsTree,
   selectCountriesFromRegionId,
   selectCitiesFromCountryId,
+  selectCompaniesFromCityId,
   // selectAllOrdersJoined,
   // selectAllOrdersJoinedByUserId,
   updateTableRegisterWhereIdIsValue,
