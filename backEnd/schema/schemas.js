@@ -69,11 +69,16 @@ const companySchema = {
     
   }
 };
-const updateOrderStatusSchema = {
+const Contacts = {
   type: "object",
-  required: ["id_order_status"],
+  required: ["name_contact", "lastName_contact", "email_contact", "email_contact", "address_contact", "channels_contact", "id_company"],
   properties: {
-    id_order_status: { type: "number", minimum: 1, maximum: 6}
+    name_contact: {type: "string"},
+    lastName_contact: {type: "string"},
+    email_contact: { type: "string", pattern: "^[A-Za-z0-9._-]*@[a-z]*[.]com$"},
+    address_contact: {type: "string"},
+    channels_contact: {type: "string"},
+    id_city: {type: "number"},
   }
 };
 // Exports:
