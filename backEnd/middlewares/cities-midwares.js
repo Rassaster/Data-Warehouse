@@ -55,7 +55,7 @@ const getCityById = async (req, res, next) => {
 // -getCityByName:
 const getCityByName = async (req, res, next) => {
   try {
-    const city = await selectFromTableWhereFieldIsValue("cities", "name", req.params.cityName);
+    const city = await selectFromTableWhereFieldIsValue("cities", "name_city", req.params.cityName);
     if (city.length === 0) {
       okReponse200["Message"] = "City not found.";
       okReponse200["Result"] = `The city '${req.params.cityName}' doesn't exist.`;

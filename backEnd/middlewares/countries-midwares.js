@@ -55,7 +55,7 @@ const getCountryById = async (req, res, next) => {
 // -getCountryByName:
 const getCountryByName = async (req, res, next) => {
   try {
-    const country = await selectFromTableWhereFieldIsValue("countries", "name", req.params.countryName);
+    const country = await selectFromTableWhereFieldIsValue("countries", "name_country", req.params.countryName);
     if (country.length === 0) {
       okReponse200["Message"] = "Country not found.";
       okReponse200["Result"] = `The country '${req.params.countryName}' doesn't exist.`;

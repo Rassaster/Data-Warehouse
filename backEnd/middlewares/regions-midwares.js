@@ -54,7 +54,7 @@ const getRegionById = async (req, res, next) => {
 // -getRegionByName:
 const getRegionByName = async (req, res, next) => {
   try {
-    const region = await selectFromTableWhereFieldIsValue("regions", "name", req.params.regionName);
+    const region = await selectFromTableWhereFieldIsValue("regions", "name_region", req.params.regionName);
     if (region.length === 0) {
       okReponse200["Message"] = "Region not found.";
       okReponse200["Result"] = `The region '${req.params.regionName}' doesn't exist.`;
