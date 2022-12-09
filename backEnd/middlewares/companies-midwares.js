@@ -4,7 +4,7 @@ const {  okReponse200, createdResponse201, conflictResponse409, internalServerEr
 // Import MYSQL Queries functions:
 const { newCompany, selectFromTableWhereFieldIsValue, selectAllFromTable, selectCompaniesFromCityId, selectProductsJoinCategories, updateTableRegisterWhereIdIsValue, deleteTableRegisterWhereIdIsValue } = require("../sql/queries"); 
 // ***************************************** MIDDLEWARES *********************************************
-// -createNewCity;
+// -createNewCompany;
 // Register a new user:
 const createNewCompany = async (req,res, next) => {
   try {
@@ -33,23 +33,22 @@ const createNewCompany = async (req,res, next) => {
     return;
   };
 };
-// -getCityById:
-const getCityById = async (req, res, next) => {
+// -getCompanyById:
+const getCompanyById = async (req, res, next) => {
   try {
-    const city = await selectFromTableWhereFieldIsValue("cities", "id_city", req.params.cityId)
-    if (city.length === 0) {
-      okReponse200["Message"] = "City not found.";
-      okReponse200["Result"] = `The city with id ${req.params.cityId} doesn't exist.`;
-      okReponse200["CityFound"] = false;
-      req.cityById = okReponse200;
+    const company = await selectFromTableWhereFieldIsValue("companies", "id_company", req.params.companyId)
+    if (company.length === 0) {
+      okReponse200["Message"] = "Company not found.";
+      okReponse200["Result"] = `The company with id ${req.params.companyId} doesn't exist.`;
+      okReponse200["CompanyFound"] = false;
+      req.companyById = okReponse200;
     } 
     else {
-      req.cityFound = city;
-      // delete req.cityFound[0];
-      okReponse200["Message"] = "City found.";
-      okReponse200["Result"] = city[0];
-      okReponse200["CityFound"] = true;
-      req.cityById = okReponse200;
+      req.companyFound = company;
+      okReponse200["Message"] = "Company found.";
+      okReponse200["Result"] = company[0];
+      okReponse200["CompanyFound"] = true;
+      req.companyById = okReponse200;
     };
     return next();
   } catch {
@@ -172,7 +171,7 @@ const deleteCityById = (req, res, next) => {
 // Exports:
 module.exports = {
   createNewCompany,
-  getCityById,
+  getCompanyById,
   getCityByName,
   getAllCities,
   getCitiesByCountryId,

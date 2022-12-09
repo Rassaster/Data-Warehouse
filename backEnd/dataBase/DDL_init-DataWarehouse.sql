@@ -72,7 +72,7 @@ CREATE TABLE Cities (
 -- *********************************************************
 -- Companies:
 CREATE TABLE Companies (
-  id_copmany integer
+  id_company integer
     NOT NULL
     AUTO_INCREMENT,
   name_company varchar(50)
@@ -87,7 +87,7 @@ CREATE TABLE Companies (
     NOT NULL,
   last_update datetime
     NOT NULL,
-  PRIMARY KEY (id_copmany)
+  PRIMARY KEY (id_company)
 );
 -- *********************************************************
 -- Contact:

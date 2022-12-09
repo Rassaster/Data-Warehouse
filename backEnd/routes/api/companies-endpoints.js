@@ -20,10 +20,10 @@ router.post("/create", jwtokenExtraction, jwtokenVerification, checkUserPermissi
 
 
 // -> /dataWarehouse/companies/companyId:{companyId}. Admin and User:
-// router.get("/companyId::companyId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getCompanyById, (req, res) =>{
-//   res.status(200).json(req.companyById);
-//   delete req.companyById["CompanyFound"];
-// });
+router.get("/companyId::companyId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getCompanyById, (req, res) =>{
+  res.status(200).json(req.companyById);
+  delete req.companyById["CompanyFound"];
+});
 
 
 // -> /dataWarehouse/companies/companyName:{companyName}. Admin and User:
