@@ -91,8 +91,24 @@ CREATE TABLE Companies (
 );
 -- *********************************************************
 -- Contact:
--- *********************************************************
--- Contacts_contacts:
--- *********************************************************
--- Contacs_channels:
+CREATE TABLE Contacts (
+  id_contact integer
+    NOT NULL
+    AUTO_INCREMENT,
+  name_contact varchar(30)
+    NOT NULL,
+  lastName_contact varchar(60)
+    NOT NULL,
+  profile varchar(30)
+    NOT NULL,
+  email_contact varchar(60)
+    NOT NULL,
+  address_contact varchar(60)
+    NOT NULL,
+  channels_contact enum("phone", "facebook", "whatsapp", "instagram", "linkedin")
+    NOT NULL,
+  last_update datetime
+    NOT NULL,
+  PRIMARY KEY (id_contact)
+);
 -- *********************************************************
