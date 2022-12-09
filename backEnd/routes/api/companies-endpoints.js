@@ -17,8 +17,6 @@ router.post("/create", jwtokenExtraction, jwtokenVerification, checkUserPermissi
     res.status(201).json(req.companyCreation)
   };
 });
-
-
 // -> /dataWarehouse/companies/companyId:{companyId}. Admin and User:
 router.get("/companyId::companyId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getCompanyById, (req, res) =>{
   res.status(200).json(req.companyById);
@@ -27,10 +25,10 @@ router.get("/companyId::companyId", jwtokenExtraction, jwtokenVerification, chec
 
 
 // -> /dataWarehouse/companies/companyName:{companyName}. Admin and User:
-// router.get("/companyName::companyName", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getCompanyByName, (req, res) => {
-//   res.status(200).json(req.companyByName);
-//   delete req.companyByName["CompanyFound"];
-// });
+router.get("/companyName::companyName", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getCompanyByName, (req, res) => {
+  res.status(200).json(req.companyByName);
+  delete req.companyByName["CompanyFound"];
+});
 
 
 // -> /dataWarehouse/companies. For both Admins and Users.

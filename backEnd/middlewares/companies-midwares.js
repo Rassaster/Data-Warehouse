@@ -56,21 +56,21 @@ const getCompanyById = async (req, res, next) => {
     return res.status(500).send(internalServerError500)
   };
 };
-// -getCityByName:
-const getCityByName = async (req, res, next) => {
+// -getCompanyByName:
+const getCompanyByName = async (req, res, next) => {
   try {
-    const city = await selectFromTableWhereFieldIsValue("cities", "name", req.params.cityName);
-    if (city.length === 0) {
-      okReponse200["Message"] = "City not found.";
-      okReponse200["Result"] = `The city '${req.params.cityName}' doesn't exist.`;
-      okReponse200["CityFound"] = false;
-      req.cityByName = okReponse200;
+    const company = await selectFromTableWhereFieldIsValue("companies", "name_company", req.params.companyName);
+    if (company.length === 0) {
+      okReponse200["Message"] = "Company not found.";
+      okReponse200["Result"] = `The company '${req.params.companyName}' doesn't exist.`;
+      okReponse200["CompanyFound"] = false;
+      req.companyByName = okReponse200;
     } else {
-      req.cityFound = city;
-      okReponse200["Message"] = "City found.";
-      okReponse200["Result"] = req.cityFound;
-      okReponse200["CityFound"] = true;
-      req.cityByName = okReponse200;
+      req.companyFound = company;
+      okReponse200["Message"] = "Company found.";
+      okReponse200["Result"] = req.companyFound;
+      okReponse200["CompanyFound"] = true;
+      req.companyByName = okReponse200;
     };
     return next();
   } catch {
@@ -172,7 +172,7 @@ const deleteCityById = (req, res, next) => {
 module.exports = {
   createNewCompany,
   getCompanyById,
-  getCityByName,
+  getCompanyByName,
   getAllCities,
   getCitiesByCountryId,
   updateCityById,
