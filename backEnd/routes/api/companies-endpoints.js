@@ -22,19 +22,15 @@ router.get("/companyId::companyId", jwtokenExtraction, jwtokenVerification, chec
   res.status(200).json(req.companyById);
   delete req.companyById["CompanyFound"];
 });
-
-
 // -> /dataWarehouse/companies/companyName:{companyName}. Admin and User:
 router.get("/companyName::companyName", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getCompanyByName, (req, res) => {
   res.status(200).json(req.companyByName);
   delete req.companyByName["CompanyFound"];
 });
-
-
 // -> /dataWarehouse/companies. For both Admins and Users.
-// router.get("/listAll", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getAllCompanies, (req, res) => {
-//   res.status(200).json(req.getAllCompanies);
-// });
+router.get("/listAll", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getAllCompanies, (req, res) => {
+  res.status(200).json(req.getAllCompanies);
+});
 
 
 // -> /dataWarehouse/companies/cityId:{cityId}. Admin and User:

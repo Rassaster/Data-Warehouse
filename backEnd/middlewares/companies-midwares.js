@@ -78,13 +78,13 @@ const getCompanyByName = async (req, res, next) => {
     return res.status(500).send(internalServerError500)
   };
 };
-// -getAllCities:
-const getAllCities = async (req, res, next) => {
+// -getAllCompanies:
+const getAllCompanies = async (req, res, next) => {
   try {
-    const citiesList = await selectAllFromTable("cities");
-    okReponse200["Message"] = "List of all registered cities obtained.";
-    okReponse200["Result"] = citiesList;
-    req.getAllCities = okReponse200
+    const companiesList = await selectAllFromTable("companies");
+    okReponse200["Message"] = "List of all registered companies obtained.";
+    okReponse200["Result"] = companiesList;
+    req.getAllCompanies = okReponse200
     return next();
   } catch {
     internalServerError500["Message"] = "An error has occurred while obtaining all the registered cities.";
@@ -173,7 +173,7 @@ module.exports = {
   createNewCompany,
   getCompanyById,
   getCompanyByName,
-  getAllCities,
+  getAllCompanies,
   getCitiesByCountryId,
   updateCityById,
   deleteCityById
