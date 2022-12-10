@@ -2,29 +2,35 @@ const moment = require("moment");
 // Import Server Responses:
 const {  okReponse200, createdResponse201, conflictResponse409, internalServerError500 } = require("../serverResponses")
 // Import MYSQL Queries functions:
-const { newCompany, selectFromTableWhereFieldIsValue, selectAllFromTable, selectCompaniesFromCityId, selectProductsJoinCategories, updateTableRegisterWhereIdIsValue, deleteTableRegisterWhereIdIsValue } = require("../sql/queries"); 
+const { newContact, selectFromTableWhereFieldIsValue, selectAllFromTable, selectContactsFromCompanyId, selectProductsJoinCategories, updateTableRegisterWhereIdIsValue, deleteTableRegisterWhereIdIsValue } = require("../sql/queries"); 
 // ***************************************** MIDDLEWARES *********************************************
-// -createNewCompany;
-// Register a new company:
-const createNewCompany = async (req,res, next) => {
+// -createNewContact;
+// Register a new contact:
+const createNewContact = async (req,res, next) => {
   try {
+    console.log(1)
     let date = moment().format('YYYY-MM-DD HH:mm:ss');
-    const {name_company, address_company, email_company, phone_company, id_city} = req.body;
-    const newRegister = await newCompany(date, name_company, address_company, email_company, phone_company, id_city);
-    const createdCompany = {
-      name_company: req.body.name_company,
-      address_company: req.body.address_company,
-      email_company: req.body.email_company,
-      phone_company: req.body.phone_company,
-      id_city: req.body.id_city,
-      company_id: newRegister[0]
+    const {name_contact, lastName_contact, email_contact, address_contact, channels_contact, id_company} = req.body;
+    console.log(2)
+    const newRegister = await newContact(date, name_contact, lastName_contact, email_contact, address_contact, channels_contact, id_company);
+    console.log(3)
+    const createdContact = {
+      name_contact: req.body.name_contact,
+      lastName_contact: req.body.lastName_contact,
+      email_contact: req.body.email_contact,
+      address_contact: req.body.address_contact,
+      channels_contact: req.body.channels_contact,
+      id_company: req.body.id_company,
+      contact_id: newRegister[0]
     };
-    createdResponse201["Message"] = "Company created successfully.";
-    createdResponse201["Result"] = createdCompany;
-    req.companyCreation = createdResponse201;
+    console.log(4)
+    createdResponse201["Message"] = "Contact created successfully.";
+    createdResponse201["Result"] = createdContact;
+    req.contactCreation = createdResponse201;
+    console.log(5)
     return next();
   } catch (error) {
-    internalServerError500["Message"] = error.sqlMessage;
+    internalServerError500["Message"] = error.parent.sqlMessage;
     internalServerError500["Description"] = "Please review the API Documentation in relation to the JSON format expected.";
     internalServerError500["ReceivedQueryJSON"] = req.body;
     res.status(500).send(internalServerError500);
@@ -170,7 +176,7 @@ const deleteCompanyById = (req, res, next) => {
 };
 // Exports:
 module.exports = {
-  createNewCompany,
+  createNewContact,
   getCompanyById,
   getCompanyByName,
   getAllCompanies,

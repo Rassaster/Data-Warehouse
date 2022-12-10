@@ -36,6 +36,12 @@ const newCompany =  (last_update, name_company, address_company, email_company, 
     type: sequelize.QueryTypes.INSERT
   });
 };
+const newContact =  (last_update, name_contact, lastName_contact, email_contact, address_contact, channels_contact, id_company) => {
+  return sequelize.query("INSERT INTO contacts(last_update, name_contact, lastName_contact, email_contact, address_contact, channels_contact, id_company) VALUES(?, ?, ?, ?, ?, ?, ?)", {
+    replacements: [last_update, name_contact, lastName_contact, email_contact, address_contact, channels_contact, id_company],
+    type: sequelize.QueryTypes.INSERT
+  });
+};
 // INSERT create register in required_products:
 const newRequiredProduct =  (id_order, id_product, product_quantity) => {
   return sequelize.query("INSERT INTO required_products(id_order, id_product, product_quantity) VALUES(?, ?, ?)", {
@@ -122,6 +128,7 @@ module.exports = {
   newCountry,
   newCity,
   newCompany,
+  newContact,
   // newRequiredProduct,
   selectFromTableWhereFieldIsValue,
   selectAllFromTable,

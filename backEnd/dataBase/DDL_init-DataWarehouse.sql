@@ -90,7 +90,7 @@ CREATE TABLE Companies (
   PRIMARY KEY (id_company)
 );
 -- *********************************************************
--- Contact:
+-- Contacts:
 CREATE TABLE Contacts (
   id_contact integer
     NOT NULL
@@ -99,13 +99,13 @@ CREATE TABLE Contacts (
     NOT NULL,
   lastName_contact varchar(60)
     NOT NULL,
-  profile varchar(30)
-    NOT NULL,
   email_contact varchar(60)
     NOT NULL,
   address_contact varchar(60)
     NOT NULL,
-  channels_contact enum("phone", "facebook", "whatsapp", "instagram", "linkedin")
+  channels_contact SET("phone", "facebook", "whatsapp", "instagram", "linkedin")
+    NOT NULL,
+  id_company varchar(5)
     NOT NULL,
   last_update datetime
     NOT NULL,

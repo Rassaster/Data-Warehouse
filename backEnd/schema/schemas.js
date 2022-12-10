@@ -69,9 +69,9 @@ const companySchema = {
     
   }
 };
-const Contacts = {
+const contactSchema = {
   type: "object",
-  required: ["name_contact", "lastName_contact", "email_contact", "email_contact", "address_contact", "channels_contact", "id_company"],
+  required: ["name_contact", "lastName_contact", "email_contact", "address_contact", "channels_contact", "id_company"],
   properties: {
     name_contact: {type: "string"},
     lastName_contact: {type: "string"},
@@ -89,6 +89,7 @@ module.exports = {
   regionSchema,
   countrySchema,
   citySchema,
-  companySchema
+  companySchema,
+  contactSchema
   // updateOrderStatusSchema
 };
