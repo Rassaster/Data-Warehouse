@@ -2,6 +2,7 @@
 const express = require("express");
 const app = express();
 const helmet = require("helmet");
+const cors = require('cors');
 const rateLimit = require("express-rate-limit");
 
 // Requiring Data Base connection's module from dbConnect.js:
@@ -19,6 +20,7 @@ const requestLimit = rateLimit({
 });
 
 // Global Middlewares:
+app.use(cors()); //Enable CORS Origin *
 app.use(helmet());
 app.use(requestLimit);
 app.use(express.json());
