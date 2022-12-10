@@ -92,6 +92,14 @@ const selectCompaniesFromCityId = (cityId) => {
   });
 };
 
+// SELECT name_contact, lastName_contact FROM Companies WHERE id_company= ?id_company;
+const selectContactsFromCompanyId = (companyId) => {
+  return sequelize.query("SELECT * FROM Contacts WHERE id_company= ?", {
+    replacements: [ companyId ],
+    type: sequelize.QueryTypes.SELECT
+  });
+};
+
 const selectAllOrdersJoined = () => {
   return sequelize.query("SELECT o.id_order, u.username, o.last_update_date, os.status_description, o.products, pm.method_description, o.total_cost FROM Orders as o JOIN Users as u ON o.id_user = u.id_user JOIN Orders_Status as os ON o.id_order_status = os.id_order_status JOIN Paying_Methods as pm ON o.id_paying_method = pm.id_paying_method ORDER BY o.id_order;", {type: sequelize.QueryTypes.SELECT})
 };
@@ -136,6 +144,7 @@ module.exports = {
   selectCountriesFromRegionId,
   selectCitiesFromCountryId,
   selectCompaniesFromCityId,
+  selectContactsFromCompanyId,
   // selectAllOrdersJoined,
   // selectAllOrdersJoinedByUserId,
   updateTableRegisterWhereIdIsValue,

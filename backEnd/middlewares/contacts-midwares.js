@@ -39,22 +39,22 @@ const createNewContact = async (req,res, next) => {
     return;
   };
 };
-// -getCompanyById:
-const getCompanyById = async (req, res, next) => {
+// -getContactById:
+const getContactById = async (req, res, next) => {
   try {
-    const company = await selectFromTableWhereFieldIsValue("companies", "id_company", req.params.companyId)
-    if (company.length === 0) {
-      okReponse200["Message"] = "Company not found.";
-      okReponse200["Result"] = `The company with id ${req.params.companyId} doesn't exist.`;
-      okReponse200["CompanyFound"] = false;
-      req.companyById = okReponse200;
+    const contact = await selectFromTableWhereFieldIsValue("contacts", "id_contact", req.params.contactId)
+    if (contact.length === 0) {
+      okReponse200["Message"] = "Contact not found.";
+      okReponse200["Result"] = `The Contact with id ${req.params.contactId} doesn't exist.`;
+      okReponse200["ContactFound"] = false;
+      req.contactById = okReponse200;
     } 
     else {
-      req.companyFound = company;
-      okReponse200["Message"] = "Company found.";
-      okReponse200["Result"] = company[0];
-      okReponse200["CompanyFound"] = true;
-      req.companyById = okReponse200;
+      req.contactFound = contact;
+      okReponse200["Message"] = "Contact found.";
+      okReponse200["Result"] = contact[0];
+      okReponse200["ContactFound"] = true;
+      req.contactById = okReponse200;
     };
     return next();
   } catch {
@@ -62,21 +62,21 @@ const getCompanyById = async (req, res, next) => {
     return res.status(500).send(internalServerError500)
   };
 };
-// -getCompanyByName:
-const getCompanyByName = async (req, res, next) => {
+// -getContactByName:
+const getContactByName = async (req, res, next) => {
   try {
-    const company = await selectFromTableWhereFieldIsValue("companies", "name_company", req.params.companyName);
-    if (company.length === 0) {
-      okReponse200["Message"] = "Company not found.";
-      okReponse200["Result"] = `The company '${req.params.companyName}' doesn't exist.`;
-      okReponse200["CompanyFound"] = false;
-      req.companyByName = okReponse200;
+    const contact = await selectFromTableWhereFieldIsValue("contacts", "name_contact", req.params.contactName);
+    if (contact.length === 0) {
+      okReponse200["Message"] = "Contact not found.";
+      okReponse200["Result"] = `The contact '${req.params.contactName}' doesn't exist.`;
+      okReponse200["ContactFound"] = false;
+      req.contactByName = okReponse200;
     } else {
-      req.companyFound = company;
-      okReponse200["Message"] = "Company found.";
-      okReponse200["Result"] = req.companyFound;
-      okReponse200["CompanyFound"] = true;
-      req.companyByName = okReponse200;
+      req.contactFound = contact;
+      okReponse200["Message"] = "Contact found.";
+      okReponse200["Result"] = req.contactFound;
+      okReponse200["ContactFound"] = true;
+      req.contactByName = okReponse200;
     };
     return next();
   } catch {
@@ -84,36 +84,36 @@ const getCompanyByName = async (req, res, next) => {
     return res.status(500).send(internalServerError500)
   };
 };
-// -getAllCompanies:
-const getAllCompanies = async (req, res, next) => {
+// -getAllContacts:
+const getAllContacts = async (req, res, next) => {
   try {
-    const companiesList = await selectAllFromTable("companies");
-    okReponse200["Message"] = "List of all registered companies obtained.";
-    okReponse200["Result"] = companiesList;
-    req.getAllCompanies = okReponse200
+    const contactsList = await selectAllFromTable("contacts");
+    okReponse200["Message"] = "List of all registered contacts obtained.";
+    okReponse200["Result"] = contactsList;
+    req.getAllContacts = okReponse200
     return next();
   } catch {
     internalServerError500["Message"] = "An error has occurred while obtaining all the registered cities.";
     return res.status(500).send(internalServerError500);
   };
 };
-// -getCompaniesByCityId:
-const getCompaniesByCityId = async (req, res, next) => {
+// -getContactsByCompanyId:
+const getContactsByCompanyId = async (req, res, next) => {
   try {
-    const listOfCompanies = await selectCompaniesFromCityId(req.params.cityId)
-    if (listOfCompanies.length === 0) {
-      okReponse200["Message"] = "Empty response: Either the cityId doesn't exist, or the cityId doesn't have any company related.";
-      okReponse200["Result"] = `No companies were found related to the cityId '${req.params.cityId}'.`;
-      okReponse200["ListOfCompanies"] = false;
-      req.companiesByCityId = okReponse200;
+    const listOfContacts = await selectContactsFromCompanyId(req.params.companyId)
+    if (listOfContacts.length === 0) {
+      okReponse200["Message"] = "Empty response: Either the companyId doesn't exist, or the companyId doesn't have any contact related.";
+      okReponse200["Result"] = `No contacts were found related to the companyId '${req.params.companyId}'.`;
+      okReponse200["ListOfContacts"] = false;
+      req.contactsByCompanyId = okReponse200;
     } 
     else {
-      req.CompanyFound = listOfCompanies;
+      req.CompanyFound = listOfContacts;
       // delete req.countryFound[0];
-      okReponse200["Message"] = "City with related companies found.";
-      okReponse200["Result"] = listOfCompanies;
+      okReponse200["Message"] = "City with related contacts found.";
+      okReponse200["Result"] = listOfContacts;
       okReponse200["CompanyFound"] = true;
-      req.companiesByCityId = okReponse200;
+      req.contactsByCompanyId = okReponse200;
     };
     return next();
   } catch {
@@ -121,52 +121,52 @@ const getCompaniesByCityId = async (req, res, next) => {
     return res.status(500).send(internalServerError500)
   };
 };
-// -updateCompanyById
-const updateCompanyById = async (req, res, next) => {
+// -updateContactById
+const updateContactById = async (req, res, next) => {
   try {
-    // If company is NOT found, doesn't exist, the operation is stoped:
-    if (!req.companyById["CompanyFound"]) {
-      okReponse200["Message"] = "Company not found.";
-      okReponse200["Result"] = `The company with id ${req.params.companyId} doesn't exist, therefore,there is no information to be updated. Please proceed to the city creation endopoint.`;
-      okReponse200["CompanyFound"] = false;
-      req.updateCompanyByID = okReponse200;
+    // If contact is NOT found, doesn't exist, the operation is stoped:
+    if (!req.contactById["ContactFound"]) {
+      okReponse200["Message"] = "Contact not found.";
+      okReponse200["Result"] = `The contact with id ${req.params.contactId} doesn't exist, therefore,there is no information to be updated. Please proceed to the city creation endopoint.`;
+      okReponse200["ContactFound"] = false;
+      req.updateContactByID = okReponse200;
     };
-    // If the company IS found, the UPDATE query is executed:
-    if (req.companyById["CompanyFound"]) {
+    // If the contact IS found, the UPDATE query is executed:
+    if (req.contactById["ContactFound"]) {
       // The UPDATE query returns an array. 
-      const company = await updateTableRegisterWhereIdIsValue("companies", req.body, "id_company", req.params.companyId);
+      const contact = await updateTableRegisterWhereIdIsValue("contacts", req.body, "id_contact", req.params.contactId);
       // // If array[1] === 0 -> No information was updated.
-      if (company[1] === 0) {
+      if (contact[1] === 0) {
         conflictResponse409["Message"] = "No information was updated.";
-        conflictResponse409["Result"] = `The information of the company with id ${req.params.companyId} did not suffer any changes. The data that was sent matches exactly with the one already registered.`;
-        conflictResponse409["CompanyUpdated"] = false;
-        req.updateCompanyByID = conflictResponse409;
+        conflictResponse409["Result"] = `The information of the contact with id ${req.params.contactId} did not suffer any changes. The data that was sent matches exactly with the one already registered.`;
+        conflictResponse409["ContactUpdated"] = false;
+        req.updateContactByID = conflictResponse409;
         // // If array[1] === 1 -> Changes have been received and updated.
-      } else if (company[1] === 1) {
-        okReponse200["Message"] = "Company information updated succesfully.";
+      } else if (contact[1] === 1) {
+        okReponse200["Message"] = "contact information updated succesfully.";
         okReponse200["Result"] = req.body;
-        okReponse200["CompanyUpdated"] = true;
-        req.updateCompanyByID = okReponse200;
+        okReponse200["ContactUpdated"] = true;
+        req.updateContactByID = okReponse200;
       };
     };
     return next();
   } catch {
-    internalServerError500["Message"] = "An error has occurred while updating the company's information by id.";
+    internalServerError500["Message"] = "An error has occurred while updating the contact's information by id.";
     return res.status(500).send(internalServerError500);
   };
 };
-// -deleteCompanyById
-const deleteCompanyById = (req, res, next) => {
+// -deleteContactById
+const deleteContactById = (req, res, next) => {
   try {
-    if (!req.companyById["CompanyFound"]) {
-      okReponse200["Message"] = "Company not found.";
-      okReponse200["Result"] = `The company with id ${req.params.companyId} doesn't exist, therefore no deletion can be done.`;
-      okReponse200["CompanyDeleted"] = false;
-      req.companyDeletion = okReponse200;
-    } else if (req.companyById["CompanyFound"]) {
-      const deleteCompany = deleteTableRegisterWhereIdIsValue("companies", "id_company", req.params.companyId);
-      okReponse200["CompanyDeleted"] = true;
-      req.companyDeletion = okReponse200;
+    if (!req.contactById["ContactFound"]) {
+      okReponse200["Message"] = "Contact not found.";
+      okReponse200["Result"] = `The contact with id ${req.params.contactId} doesn't exist, therefore no deletion can be done.`;
+      okReponse200["ContactDeleted"] = false;
+      req.contactDeletion = okReponse200;
+    } else if (req.contactById["ContactFound"]) {
+      const deleteContact = deleteTableRegisterWhereIdIsValue("contacts", "id_contact", req.params.contactId);
+      okReponse200["ContactDeleted"] = true;
+      req.contactDeletion = okReponse200;
     };
     return next();
   } catch {
@@ -177,10 +177,10 @@ const deleteCompanyById = (req, res, next) => {
 // Exports:
 module.exports = {
   createNewContact,
-  getCompanyById,
-  getCompanyByName,
-  getAllCompanies,
-  getCompaniesByCityId,
-  updateCompanyById,
-  deleteCompanyById
+  getContactById,
+  getContactByName,
+  getAllContacts,
+  getContactsByCompanyId,
+  updateContactById,
+  deleteContactById
 };

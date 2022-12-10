@@ -17,62 +17,48 @@ router.post("/create", jwtokenExtraction, jwtokenVerification, checkUserPermissi
     res.status(201).json(req.contactCreation)
   };
 });
-
-
-// -> /dataWarehouse/contacts/companyId:{companyId}. Admin and User:
-// router.get("/companyId::companyId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getContactById, (req, res) =>{
-//   res.status(200).json(req.companyById);
-//   delete req.companyById["CompanyFound"];
-// });
-
-
-// -> /dataWarehouse/contacts/companyName:{companyName}. Admin and User:
-// router.get("/companyName::companyName", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getContactByName, (req, res) => {
-//   res.status(200).json(req.companyByName);
-//   delete req.companyByName["CompanyFound"];
-// });
-
-
+// -> /dataWarehouse/contacts/contactId:{contactId}. Admin and User:
+router.get("/contactId::contactId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getContactById, (req, res) =>{
+  res.status(200).json(req.contactById);
+  delete req.contactById["ContactFound"];
+});
+// -> /dataWarehouse/contacts/contactName:{contactName}. Admin and User:
+router.get("/contactName::contactName", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getContactByName, (req, res) => {
+  res.status(200).json(req.contactByName);
+  delete req.contactByName["ContactFound"];
+});
 // -> /dataWarehouse/contacts. For both Admins and Users.
-// router.get("/listAll", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getAllContacts, (req, res) => {
-//   res.status(200).json(req.getAllContacts);
-// });
-
-
-
-// // -> /dataWarehouse/companies/cityId:{cityId}. Admin and User:
-// router.get("/cityId::cityId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getContactsByCompanyId, (req, res) =>{
-//   res.status(200).json(req.companiesByCityId);
-//   delete req.companiesByCityId["CompaniesFound"];
-// });
-
-
-
-// Update company by Id:
-// -> /dataWarehouse/companies/updateCompanyId::{companyId}. Admin and User:
-// router.put("/updateCompanyId::companyId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, getContactById, validateJSONSchema(companySchema), updateContactById, (req, res) => {
-//   if (!req.updateContactByID["CompanyFound"]) {
-//     res.status(200).json(req.updateContactByID);
-//   } else if (!req.updateContactByID["CompanyUpdated"]) {
-//     res.status(409).json(req.updateContactByID);
-//   } else if (req.updateContactByID["CompanyUpdated"]) {
-//     res.status(204).json(req.updateContactByID);
-//   };
-//   delete req.companyById["CompanyFound"];
-//   delete req.updateContactByID["CompanyUpdated"];
-// });
-
-
-// -> /dataWarehouse/contacts/deleteCompanyId::{companyId}. Admin and User:
-// router.delete("/deleteCompanyId::companyId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, getContactById, deleteContactById, (req, res) => {
-//   if (!req.companyDeletion["CompanyDeleted"]) {
-//     res.status(200).json(req.companyDeletion);
-//   } else {
-//     res.status(204).send("");
-//   };
-//   delete req.companyById["CompanyFound"];
-//   delete req.companyDeletion["CompanyDeleted"];
-// });
+router.get("/listAll", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getAllContacts, (req, res) => {
+  res.status(200).json(req.getAllContacts);
+});
+// // -> /dataWarehouse/contacts/companyId:{companyId}. Admin and User:
+router.get("/companyId::companyId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getContactsByCompanyId, (req, res) =>{
+  res.status(200).json(req.contactsByCompanyId);
+  delete req.contactsByCompanyId["ContactsFound"];
+});
+// Update contact by Id:
+// -> /dataWarehouse/contacts/updateContactId::{contactId}. Admin and User:
+router.put("/updateContactId::contactId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, getContactById, validateJSONSchema(contactSchema), updateContactById, (req, res) => {
+  if (!req.updateContactByID["ContactFound"]) {
+    res.status(200).json(req.updateContactByID);
+  } else if (!req.updateContactByID["ContactUpdated"]) {
+    res.status(409).json(req.updateContactByID);
+  } else if (req.updateContactByID["ContactUpdated"]) {
+    res.status(204).json(req.updateContactByID);
+  };
+  delete req.contactById["ContactFound"];
+  delete req.updateContactByID["ContactUpdated"];
+});
+// -> /dataWarehouse/contacts/deleteContactyId::{contactId}. Admin and User:
+router.delete("/deleteContactId::contactId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, getContactById, deleteContactById, (req, res) => {
+  if (!req.contactDeletion["ContactDeleted"]) {
+    res.status(200).json(req.contactDeletion);
+  } else {
+    res.status(204).send("");
+  };
+  delete req.contactById["ContactFound"];
+  delete req.contactDeletion["ContactDeleted"];
+});
 
 
 // Exports:
