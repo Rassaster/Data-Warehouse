@@ -21,7 +21,6 @@ router.post("/register", validateJSONSchema(registerSchema), checkEmailRegistrat
 });
 // -> /delilahResto/users/login (either as User or Admin):
 router.post("/login", validateJSONSchema(loginSchema), userExistanceCheckByEmailLogin, verifyPassword, jwtokenGenerator, (req, res) => {
-  console.log(req.userInfo[0].is_admin)
   if (req.userAuthentication["Status"] === 200) {
     req.userAuthentication["IsAdmin"] = req.userInfo[0].is_admin;
     req.userAuthentication["Token"] = req.jwtoken;
