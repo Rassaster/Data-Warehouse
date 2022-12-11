@@ -1,0 +1,24 @@
+.logo_link {
+  width: fit-content;
+  height: fit-content;
+  cursor: pointer;
+}
+.nav_element {
+  color: #fff;
+}
+.nav_element::after {
+  content: "";
+  display: block;
+  border-bottom: 2px solid #fff;
+  width: 0;
+  height: 2px;
+  transition: all 0.3s ease-in-out;
+}
+.nav_element:hover::after {
+  width: 100%;
+}
+.nav_container {
+  width: 40%;
+  display: flex;
+  justify-content: space-evenly;
+}
