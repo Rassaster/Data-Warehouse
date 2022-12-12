@@ -5,18 +5,18 @@ import './styles.css'
 
 // Global Constants for API Request:
 const BASE_URL = "http://localhost:3000/dataWarehouse";
-const GET_ALL_CONTACT = "/contacts/listAll";
-const CREATE_CONTACT = "/contacts/create";
-const UPDATE_CONTACT = "/contacts/updateContactId:";
-const DELETE_CONTACT = "/contacts/deleteContactId:";
+const GET_ALL_COMPANIES = "/companies/listAll";
+const CREATE_COMPANY = "/companies/create";
+const UPDATE_COMPANY = "/companies/updateCompanyId:";
+const DELETE_COMPANY = "/companies/deleteCompanyId:";
 
-function Contacts() {
+function Companies() {
   // Declaration of Global Auth Context
   const { authState, setAuthState } = useContext(UserAuthContext);
 
   return (
-    <h1>Contacts</h1>
+    <h1>Companies</h1>
   )
 }
 
-export default Contacts;
+export default Companies;

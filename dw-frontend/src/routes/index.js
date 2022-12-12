@@ -4,6 +4,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import UserAuthContext from '../context/auth';
 
 import Home from '../pages/Home';
+import Contacts from '../pages/Contacts';
+import Companies from '../pages/Companies';
 import Users from '../pages/Users';
 import Login from '../pages/Login';
 
@@ -13,6 +15,8 @@ function Routing() {
   return (
     <Routes>
       <Route path="/" element={authState.isLoggedIn ? <Home /> : <Navigate replace to="/login" /> } />
+      <Route path="/contacts" element={authState.isLoggedIn ? <Contacts /> : <Navigate replace to="/login" /> } />
+      <Route path="/companies" element={authState.isLoggedIn ? <Companies /> : <Navigate replace to="/login" /> } />
       <Route 
         path="/users" 
         element= {authState.isLoggedIn && authState.isAdmin === "T" ? <Users /> : <Navigate replace to="/login" /> }/>
