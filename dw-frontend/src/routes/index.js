@@ -15,7 +15,7 @@ function Routing() {
       <Route path="/" element={authState.isLoggedIn ? <Home /> : <Navigate replace to="/login" /> } />
       <Route 
         path="/users" 
-        element= {authState.isLoggedIn ? <Users /> : <Navigate replace to="/login" /> }/>
+        element= {authState.isLoggedIn && authState.isAdmin === "T" ? <Users /> : <Navigate replace to="/login" /> }/>
       <Route path="/login" element={authState.isLoggedIn ? <Navigate replace to="/" />  : <Login /> } />
     </Routes>
   );
