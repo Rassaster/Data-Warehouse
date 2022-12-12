@@ -3,17 +3,17 @@ import { BrowserRouter } from 'react-router-dom';
 import Routing from './routes';
 import GlobalStyle from './styles/global';
 import Header from './components/Header';
-import { CartContextProvider } from './context/cart';
+import { UserAuth_ContextProvider } from './context/auth';
 
 function App() {
   return (
-    <CartContextProvider>
+    <UserAuth_ContextProvider>
       <BrowserRouter>
         <Header />
         <Routing />
       </BrowserRouter>
       <GlobalStyle />
-    </CartContextProvider>
+    </UserAuth_ContextProvider>
   );
 }
 

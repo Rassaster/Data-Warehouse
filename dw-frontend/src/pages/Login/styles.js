@@ -42,6 +42,7 @@ export const LoginContainer = styled.div`
     width: 65%;
     height: 30px;
     margin: 5px 0 20px;
+    padding: 0 5px;
     border-radius: 5px;
     border: none;
   }

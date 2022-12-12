@@ -53,7 +53,7 @@ function Login() {
         <h2>Welcome!</h2>
         <h5>Please provide your email and password.</h5>
         <h6>If you don't have a user, please contact the Administrator.</h6>
-        <label htmlFor="email">Email:</label>
+        <label htmlFor="email">Email</label>
         <input 
           id="email" 
           name="email"
@@ -63,7 +63,7 @@ function Login() {
             setEmailValue(refInputEmail.current.value)
           }} 
           />
-        <label htmlFor="password">Password:</label >
+        <label htmlFor="password">Password</label >
         <input 
           id="password" 
           name="password"
