@@ -1,16 +1,26 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import { FaSun } from 'react-icons/fa'
+
 import { Container, LoginContainer, LoadingAnimationContainer, IconContainer } from "./styles";
 import api from '../../services/api';
-import { FaSun } from 'react-icons/fa'
+import UserAuthContext from '../../context/auth';
+
+import './styles.css'
 
 // Global Constants for API Request:
 const BASE_URL = "http://localhost:3000/dataWarehouse";
 const LOGIN_URL = "/users/login";
 
 function Login() {
+  // Declaration of Global Auth Context
+  const { authState, setAuthState } = useContext(UserAuthContext);
+
   // Declaration of States:
   const [emailValue, setEmailValue] = useState("")
   const [passwordValue, setPasswordValue] = useState("")
+  const [renderLoginOverlay, setRenderLoginOverlay] = useState(false)
+  const [fetchStatus, setFetchStatus] = useState(false);
+  const [loginError, setLoginError] = useState(false);
 
   // Declaration of References:
   const refInputEmail = useRef();
@@ -39,11 +49,22 @@ function Login() {
     * @returns {promise}
  */
   const triggerLogin = () => {
+    setRenderLoginOverlay(true)
+    setTimeout(() => {
+      setFetchStatus(true)
+    }, 0);
+    setTimeout(()=>{
     const loginResponse = api(`${BASE_URL}${LOGIN_URL}`, loginRequestInfo);
       loginResponse.then(response => {
-        localStorage.setItem("Token", response.Token)
-        localStorage.setItem("IsAdmin", response.IsAdmin)
+        if(response.Status === 200) {
+          setAuthState({
+            isLoggedIn: true,
+            token: response.Token,
+            isAdmin: response.IsAdmin,
+          })
+        }
       })
+    }, 1000)
   }
   
 
@@ -75,12 +96,26 @@ function Login() {
         />
         <button onClick={triggerLogin}>Login</button >
       </LoginContainer>
-      <LoadingAnimationContainer>
-        <h4>Redirecting...</h4>
-        <IconContainer>
-          <FaSun size={20} color="#fcec5d"/>
-        </IconContainer>
-      </LoadingAnimationContainer>
+      {
+        renderLoginOverlay 
+        ? 
+        <LoadingAnimationContainer className={fetchStatus ? "log_appear" : "log_dissappear"}>
+          
+          {loginError 
+            ? 
+            <h4>Error</h4> 
+            : 
+            <>
+              <h4>Redirecting...</h4>
+              <IconContainer>
+                <FaSun size={36} color="#fcec5d"/>
+              </IconContainer>
+            </>  
+          }
+        </LoadingAnimationContainer> 
+        : 
+        <></>
+      }
     </Container>
   )
 }

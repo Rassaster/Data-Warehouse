@@ -7,7 +7,7 @@ function Home() {
 
   return (
     <Container>
-      
+      <h1>Home again</h1>
     </Container>
   );
 }

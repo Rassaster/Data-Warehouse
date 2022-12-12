@@ -4,7 +4,7 @@ export const Container = styled.main`
   width: 100%;
   padding: 25px 0;
   height: 100vh;
-  max-height: calc(100vh - 110px);
+  max-height: calc(90vh - 110px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -45,6 +45,10 @@ export const LoginContainer = styled.div`
     padding: 0 5px;
     border-radius: 5px;
     border: none;
+    transition: all .3s ease-in-out;
+  }
+  input:focus {
+    border: 2px solid #78866b;
   }
 
   button {
@@ -59,23 +63,28 @@ export const LoginContainer = styled.div`
     transition: all 0.3s ease-in-out;
     font: normal normal 700 normal 14px/120% sans-serif;
   }
-  button:hover {
+  button:hover,
+  button:focus {
     background: #000;
     color: #fff;
   }
 `;
 
 export const LoadingAnimationContainer = styled.div `
-  width: 100vw;
-  height: 100vh;
+  width: 0;
+  height: 0;
   position: fixed;
-  top: 0;
+  top: 50%;
+  left: 50%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   background: rgba(120, 134, 107, 0.8);
-  display: none;
+  transition: all .3s ease-in-out;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  z-index: 100;
 `
 export const IconContainer = styled.div `
   animation: sunRotation 2s linear infinite;

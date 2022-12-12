@@ -8,13 +8,13 @@ import Home from '../pages/Home';
 import Login from '../pages/Login';
 
 function Routing() {
-  const { authState, setAuthState } = useContext(UserAuthContext);
-  console.log(authState)
+  const { authState } = useContext(UserAuthContext);
+  console.log("ROUTER:", authState)
   return (
     <Routes>
-      <Route path="/" element={authState.isLogged ? <Home /> : <Navigate replace to="/login" />} />
+      <Route path="/" element={authState.isLoggedIn ? <Home /> : <Navigate replace to="/login" /> } />
       <Route path="/cart" element={<Cart />} />
-      <Route path="/login" element={<Login />} />
+      <Route path="/login" element={authState.isLoggedIn ? <Navigate replace to="/" />  : <Login /> } />
     </Routes>
   );
 }
