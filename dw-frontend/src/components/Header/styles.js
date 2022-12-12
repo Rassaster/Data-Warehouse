@@ -2,7 +2,8 @@ import styled from "styled-components";
 
 export const Container = styled.header`
   background-color: #78866b;
-  padding: 30px 10px 0px;
+  padding: 0px 10px 0px;
+  max-height: 110px
   display: flex;
   justify-content: center;
 `;

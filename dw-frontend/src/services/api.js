@@ -1,3 +1,10 @@
+/**
+ * @method api
+ * @description Function to handle fetch accross the app.
+ * @param {*} URL 
+ * @param {*} requestInfo 
+ * @returns Fetch Response {object-JSON}
+ */
 const api = async (URL, requestInfo) => {
   return new Promise((resolve, reject) => {
     fetch(URL, requestInfo)
@@ -5,9 +12,7 @@ const api = async (URL, requestInfo) => {
             if (response.ok) {
                 resolve(response.json());
             } else {
-                response.text().then(text => {
-                    const error = JSON.parse(text);
-                    swal(`Error! ${error.code}`, error.error, "error");
+                response.json().then(text => {
                     console.error(text);
                 });
             };
