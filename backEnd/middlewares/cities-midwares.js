@@ -102,7 +102,7 @@ const getCitiesByCountryId = async (req, res, next) => {
       // delete req.countryFound[0];
       okReponse200["Message"] = "Country with related cities found.";
       okReponse200["Result"] = listOfCities;
-      okReponse200["RegionFound"] = true;
+      okReponse200["CountryFound"] = true;
       req.citiesByCountryId = okReponse200;
     };
     return next();
