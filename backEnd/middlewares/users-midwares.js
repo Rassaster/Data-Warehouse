@@ -314,45 +314,26 @@ const updateUserById = async (req, res, next) => {
     // If user is NOT found, doesn't exist, the operation is stoped:
     if (!req.userById["UserFound"]) {
       okReponse200["Message"] = "User not found.";
-      okReponse200["Result"] = `The user with id ${req.params.userId} doesn't exist, therefore,there   is no information to be updated. Please proceed to the register endopoint.`;
-      okReponse200["UserUpdated"] = false;
-      req.updateUserById = okReponse200;
+      okReponse200["Result"] = `The user with id ${req.params.userId} doesn't exist, therefore,there is no information to be updated. Please proceed to the city creation endopoint.`;
+      okReponse200["UserFound"] = false;
+      req.updateUserByID = okReponse200;
     };
     // If the user IS found, the UPDATE query is executed:
     if (req.userById["UserFound"]) {
-      // If the user wants to updated their own information, "i" must be entered as userId.
-      // If not, only Admin can access other users's ids.
-      let userId;
-      if ((!req.adminCredentials || req.adminCredentials) && (req.params.userId === "i")) {
-        userId = req.jwtokenDecoded["id_user"];
-        // Just Admin can change the users' credentials.
-        if (!req.adminCredentials) {
-          delete req.body["is_admin"];
-        };
-        // If password is changed, it is hashed and salted. Salt is also included:
-        if (req.derivedKey) {
-          req.body.user_password = req.derivedKey.hashedPasswordHex,
-          req.body.salt = req.derivedKey.uuidSalt
-        };
-      // Admin can't change other users' passwords. 
-      } else if (req.adminCredentials) {
-        userId = req.params.userId;
-        delete req.body["user_password"];
-      };
       // The UPDATE query returns an array. 
-      const user = await updateTableRegisterWhereIdIsValue("users", req.body, "id_user", userId);
+      const user = await updateTableRegisterWhereIdIsValue("users", req.body, "id_user", req.params.userId);
       // // If array[1] === 0 -> No information was updated.
       if (user[1] === 0) {
         conflictResponse409["Message"] = "No information was updated.";
-        conflictResponse409["Result"] = `The information of the user with id ${userId} did not suffer any changes. The data that was sent matches exactly with the one already registered.`;
+        conflictResponse409["Result"] = `The information of the user with id ${req.params.userId} did not suffer any changes. The data that was sent matches exactly with the one already registered.`;
         conflictResponse409["UserUpdated"] = false;
-        req.updateUserById = conflictResponse409;
+        req.updateUserByID = conflictResponse409;
         // // If array[1] === 1 -> Changes have been received and updated.
       } else if (user[1] === 1) {
-        okReponse200["Message"] = "User information updated with success.";
+        okReponse200["Message"] = "user information updated succesfully.";
         okReponse200["Result"] = req.body;
         okReponse200["UserUpdated"] = true;
-        req.updateUserById = okReponse200;
+        req.updateUserByID = okReponse200;
       };
     };
     return next();

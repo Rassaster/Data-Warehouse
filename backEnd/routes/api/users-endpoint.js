@@ -13,13 +13,13 @@ const { jwtokenGenerator, jwtokenExtraction, jwtokenVerification } = require("..
 // CRUD middlewares:
 const { createNewUser, getUserById, getAllUsers, getUserByUsername, getUserByEmail, updateUserById, deleteUserById } = require("../../middlewares/users-midwares");
 // ******************** ENDPOINTS ******************** //
-// -> /delilahResto/users/register (either as User or Admin):
+// -> /dataWarehouse/users/register (either as User or Admin):
 router.post("/register", validateJSONSchema(registerSchema), checkEmailRegistration, hashPassword, createNewUser, (req, res) => {
   if (req.userCreation["Status"] === 201) {
     res.status(201).json(req.userCreation);
   };
 });
-// -> /delilahResto/users/login (either as User or Admin):
+// -> /dataWarehouse/users/login (either as User or Admin):
 router.post("/login", validateJSONSchema(loginSchema), userExistanceCheckByEmailLogin, verifyPassword, jwtokenGenerator, (req, res) => {
   if (req.userAuthentication["Status"] === 200) {
     req.userAuthentication["IsAdmin"] = req.userInfo[0].is_admin;
@@ -28,7 +28,7 @@ router.post("/login", validateJSONSchema(loginSchema), userExistanceCheckByEmail
     delete req.userAuthentication["Token"];
   };
 });
-// -> /delilahResto/users/allRegistered -> Just Admin: Get the list of all of the registered users:
+// -> /dataWarehouse/users/allRegistered -> Just Admin: Get the list of all of the registered users:
 router.get("/allRegistered", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getAllUsers, (req, res) => {
   if (req.getAllUsers["Status"] === 401) {
     res.status(401).json(req.getAllUsers);
@@ -37,8 +37,33 @@ router.get("/allRegistered", jwtokenExtraction, jwtokenVerification, checkUserPe
   };
 });
 
-
-
-
+// -> /dataWarehouse/users/userId:{userId}. Admin and User:
+router.get("/userId::userId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getUserById, (req, res) =>{
+  res.status(200).json(req.userById);
+  delete req.userById["UserFound"];
+});
+// Update user by Id:
+// -> /dataWarehouse/users/updateUserId::{userId}. Admin and User:
+router.put("/updateUserId::userId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, getUserById, validateJSONSchema(updateUserSchema), updateUserById, (req, res) => {
+  if (!req.updateUserByID["UserFound"]) {
+    res.status(200).json(req.updateUserByID);
+  } else if (!req.updateUserByID["UserUpdated"]) {
+    res.status(409).json(req.updateUserByID);
+  } else if (req.updateUserByID["UserUpdated"]) {
+    res.status(204).json(req.updateUserByID);
+  };
+  delete req.userById["UserFound"];
+  delete req.updateUserByID["UserUpdated"];
+});
+// -> /dataWarehouse/users/deleteUserId::{userId}. Admin and User:
+router.delete("/deleteUserId::userId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, getUserById, deleteUserById, (req, res) => {
+  if (!req.userDeletion["UserDeleted"]) {
+    res.status(200).json(req.userDeletion);
+  } else {
+    res.status(204).send("");
+  };
+  delete req.userById["UserFound"];
+  delete req.userDeletion["UserDeleted"];
+});
 // Exports:
 module.exports = router;
