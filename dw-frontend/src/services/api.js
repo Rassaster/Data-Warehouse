@@ -6,18 +6,17 @@
  * @returns Fetch Response {object-JSON}
  */
 const api = async (URL, requestInfo) => {
-  return new Promise((resolve, reject) => {
-    fetch(URL, requestInfo)
-        .then(response => {
-            if (response.ok) {
-                resolve(response.json());
-            } else {
-                response.json().then(text => {
-                    console.error(text);
-                });
-            };
+    return new Promise((resolve, reject) => {
+        fetch(URL, requestInfo)
+            .then(response => {
+                console.log(response)
+                if (response.status === 204) {
+                    return resolve(response)
+                } else {
+                    return resolve(response.json());
+                }
         })
-        .catch(error => { reject(error) })
+        .catch(error => { return error })
 });
 };
 

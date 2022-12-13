@@ -23,7 +23,7 @@ function NewUser() {
   const [isAdminValue, setIsAdminValue] = useState(false)
   const [userCreated, setUserCreated] = useState()
   const [createOtherUserBtn, setCreateOtherUserBtn] = useState(false)
-  console.log("IS adm", isAdminValue)
+
   // Declaration of References:
   const refInputName = useRef();
   const refInputLastName = useRef();
@@ -51,6 +51,17 @@ function NewUser() {
     redirect: 'follow'
   }
 
+  const triggerUserCreation = () => {
+    const userCreationResponse = api(`${BASE_URL}${CREATE_USER}`, createNewUserRequestInfo);
+    userCreationResponse.then(response => {
+
+      if(response.Status === 201) {
+        setUserCreated(true)
+        setCreateOtherUserBtn(true)
+      }
+    })
+  }
+  
   const cleanInputs = () => {
     refInputName.current.value = ""
     refInputLastName.current.value = ""
@@ -67,17 +78,6 @@ function NewUser() {
     setUserCreated(null)
   }
 
-  const triggerUserCreation = () => {
-    const userCreationResponse = api(`${BASE_URL}${CREATE_USER}`, createNewUserRequestInfo);
-    userCreationResponse.then(response => {
-        console.log(response)
-        if(response.Status === 201) {
-          setUserCreated(true)
-          setCreateOtherUserBtn(true)
-        }
-      })
-    }
-    
 
   return (
     <Container>
