@@ -31,6 +31,7 @@ export const Head = styled.main`
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
+  gap: 20px;
 `;
 export const FormContainer = styled.div`
   border: 2px solid #78866b;
