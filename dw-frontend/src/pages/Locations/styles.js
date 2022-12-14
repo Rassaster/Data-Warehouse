@@ -170,7 +170,7 @@ export const OverlayForm = styled.div`
   z-index: 100;
 `;
 
-export const RegionForm = styled.div`
+export const LocationFormContainer = styled.div`
   position: relative;
   border: 3px solid green;
   margin: 30px auto 0;

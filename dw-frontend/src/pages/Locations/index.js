@@ -13,7 +13,7 @@ import {
   CityItem, 
   ActionBtnsContainer,
   OverlayForm,
-  RegionForm,
+  LocationFormContainer,
   InputLabelContainer
 } from "./styles";
 import './styles.css'
@@ -22,20 +22,30 @@ const loggedOff = {isLoggedIn: false, token: '', isAdmin: ''}
 
 // Global Constants for API Request:
 const BASE_URL = "http://localhost:3008/dataWarehouse";
+
 const ALL_REGIONS = "/regions/listAll";
 const CREATE_REGION = "/regions/create";
 const UPDATE_REGION = "/regions/updateRegionId:";
 const DELETE_REGION = "/regions/deleteRegionId:";
+
 const ALL_COUNTRIES = "/countries/listAll";
 const CREATE_COUNTRY = "/countries/create";
+const UPDATE_COUNTRY = "/countries/updateCountryId:";
 const DELETE_COUNTRY = "/countries/deleteCountryId:";
+
 const ALL_CITIES = "/cities/listAll";
+const CREATE_CITY = "/cities/create";
+const UPDATE_CITY = "/cities/updateCityId:";
+const DELETE_CITY = "/cities/deleteCityId:";
 
 
 function Locations() {
   // Declaration of Global Auth Context
   const { authState, setAuthState } = useContext(UserAuthContext);
 
+  /* ********************************************** */
+  /* ********************************************** */
+  /* ********************************************** */
   // Declaration of States:
   const [regionsList, setRegionsList] = useState([])
   const [countriesList, setCountriesList] = useState([])
@@ -57,7 +67,17 @@ function Locations() {
   const [countryIdToUpdate, setCountryIdToUpdate] = useState()
   const [editCountryForm, setEditCountryForm] = useState(false)
 
+  const [createCityForm, setCreateCityForm] = useState(false)
+  const [cityAcronymValue, setCityAcronymValue] = useState("")
+  const [cityNameValue, setCityNameValue] = useState("")
+  const [city_CountryIdValue, setCity_CountryIdValue] = useState()
+  const [city_CountryIdToCreate, setCity_CountryIdToCreate] = useState()
+  const [cityIdToUpdate, setCityIdToUpdate] = useState()
+  const [editCityForm, setEditCityForm] = useState(false)
 
+  /* ********************************************** */
+  /* ********************************************** */
+  /* ********************************************** */
   // Declaration of References:
   const refInputRegionAcronym = useRef()
   const refInputRegionName = useRef()
@@ -66,7 +86,13 @@ function Locations() {
   const refInputCountryName = useRef()
   const refInputCountry_RegionId = useRef()
   
+  const refInputCityAcronym = useRef()
+  const refInputCityName = useRef()
+  const refInputCity_CountryId = useRef()
 
+  /* ********************************************** */
+  /* ********************************************** */
+  /* ********************************************** */
   // Declaration of Request Options: GET All Regions
   const viewAllRegionsRequestHeaders = {
     "Content-Type": "application/json",
@@ -171,6 +197,7 @@ function Locations() {
       })
   }
 
+  /* ********************************************** */
   // Declaration of Request Options: GET All Countries
   const viewAllCountriesRequestHeaders = {
     "Content-Type": "application/json",
@@ -218,9 +245,40 @@ function Locations() {
         setAuthState(loggedOff)
       }
       if (response.Status === 201) {
-        // triggerViewAllRegions()
-        triggerViewAllCountries()
         setCreateCountryForm(false)
+        triggerViewAllRegions()
+        triggerViewAllCountries()
+        setPopupOpen(false)
+      }
+    })
+  }
+  // Declaration of Request Options: UPDATE Country
+  const updateCountryRequestHeaders = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authState.token}`
+  };
+  const updateCountryRequestData = JSON.stringify({
+    "acronym_country" : countryAcronymValue,
+    "name_country" : countryNameValue,
+    "id_region" : Number(country_regionIdValue)
+  });
+  const updateCountryRequestInfo = {
+    method: 'PUT',
+    headers: updateCountryRequestHeaders,
+    body: updateCountryRequestData,
+    redirect: 'follow'
+  }
+  const triggerUpdateCountry = (countryId) => {
+    const updateCountryResponse = api(`${BASE_URL}${UPDATE_COUNTRY}${countryId}`,updateCountryRequestInfo);
+    updateCountryResponse.then(response => {
+      console.log(response)
+      if (response.Status === 403) {
+        setAuthState(loggedOff)
+      }
+      if (response.status === 204 || response.Status === 409) {
+        triggerViewAllRegions()
+        triggerViewAllCountries()
+        setEditCountryForm(false)
         setPopupOpen(false)
       }
     })
@@ -249,8 +307,7 @@ function Locations() {
       })
   }
 
-
-  
+  /* ********************************************** */ 
   // Declaration of Request Options: GET All Cities
   const viewAllCitiesRequestHeaders = {
     "Content-Type": "application/json",
@@ -273,6 +330,94 @@ function Locations() {
         // console.log("CITIES LIST", citiesList)
       }
     })
+  }
+  // Declaration of Request Options: POST Create City
+  const createCityRequestHeaders = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authState.token}`
+  };
+  const createCityRequestData = JSON.stringify({
+    "acronym_city" : cityAcronymValue,
+    "name_city" : cityNameValue,
+    "id_country" : city_CountryIdToCreate
+  });
+  const createCityRequestInfo = {
+    method: 'POST',
+    headers: createCityRequestHeaders,
+    body: createCityRequestData,
+    redirect: 'follow'
+  }
+  const triggerCreateCity = () => {
+    const createCityResponse = api(`${BASE_URL}${CREATE_CITY}`, createCityRequestInfo);
+    createCityResponse.then(response => {
+      console.log(response)
+      if (response.Status === 403) {
+        setAuthState(loggedOff)
+      }
+      if (response.Status === 201) {
+        setCreateCityForm(false)
+        triggerViewAllRegions()
+        triggerViewAllCountries()
+        triggerViewAllCities()
+        setPopupOpen(false)
+      }
+    })
+  }
+  // Declaration of Request Options: UPDATE City
+  const updateCityRequestHeaders = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authState.token}`
+  };
+  const updateCityRequestData = JSON.stringify({
+    "acronym_city" : cityAcronymValue,
+    "name_city" : cityNameValue,
+    "id_country" : Number(city_CountryIdValue)
+  });
+  const updateCityRequestInfo = {
+    method: 'PUT',
+    headers: updateCityRequestHeaders,
+    body: updateCityRequestData,
+    redirect: 'follow'
+  }
+  const triggerUpdateCity = (cityId) => {
+    const updateCityResponse = api(`${BASE_URL}${UPDATE_CITY}${cityId}`, updateCityRequestInfo);
+    updateCityResponse.then(response => {
+      console.log(response)
+      if (response.Status === 403) {
+        setAuthState(loggedOff)
+      }
+      if (response.status === 204 || response.Status === 409) {
+        triggerViewAllRegions()
+        triggerViewAllCountries()
+        triggerViewAllCities()
+        setEditCityForm(false)
+        setPopupOpen(false)
+      }
+    })
+  }
+  // Declaration of Request Options: DELETE City
+  const deleteCityRequestHeaders = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authState.token}`
+  };
+  const deleteCityRequestInfo = {
+      method: 'DELETE',
+      headers: deleteCityRequestHeaders,
+      redirect: 'follow'
+  }
+  const triggerDeleteCity = (cityId) => {
+      const deleteCityResponse = api(`${BASE_URL}${DELETE_CITY}${cityId}`, deleteCityRequestInfo);
+      deleteCityResponse.then(response => {
+        console.log("DELETE", response)
+        if (response.status === 403 || response.Status === 403) {
+          setAuthState(loggedOff)
+        }
+        if (response.status === 204 || response.Status === 204) {
+          triggerViewAllRegions()
+          triggerViewAllCountries()
+          triggerViewAllCities()
+        }
+      })
   }
 
 
@@ -352,10 +497,22 @@ function Locations() {
                                     >
                                       <FaTrashAlt size={16} title="Delete Country" />  
                                     </button>
-                                    <button className="country-Edit">
+                                    <button 
+                                      onClick={()=>{
+                                        setPopupOpen(true)
+                                        setEditCountryForm(true)
+                                        setCountryIdToUpdate(country.id_country)
+                                      }}
+                                      className="country-Edit">
                                       <FaEdit size={16} title="Edit Country" />  
                                     </button>
-                                    <button className="country-Add-City">
+                                    <button 
+                                      onClick={()=>{
+                                        setPopupOpen(true)
+                                        setCreateCityForm(true)
+                                        setCity_CountryIdToCreate(country.id_country)
+                                      }}
+                                      className="country-Add-City">
                                       <FaPlus size={16} title="Add City" />  
                                     </button>
                                   </ActionBtnsContainer>
@@ -369,10 +526,20 @@ function Locations() {
                                             <h5>
                                               {city.name_city} (City Id: {city.id_city})
                                               <ActionBtnsContainer className="cityBtns">
-                                                <button className="city-Delete">
+                                                <button 
+                                                  onClick={()=>{
+                                                    triggerDeleteCity(city.id_city)
+                                                  }}
+                                                  className="city-Delete">
                                                   <FaTrashAlt size={16} title="Delete City" />  
                                                 </button>
-                                                <button className="city-Edit">
+                                                <button 
+                                                  onClick={()=>{
+                                                    setPopupOpen(true)
+                                                    setEditCityForm(true)
+                                                    setCityIdToUpdate(city.id_city)
+                                                  }}
+                                                  className="city-Edit">
                                                   <FaEdit size={16} title="Edit City" />  
                                                 </button>
                                               </ActionBtnsContainer>
@@ -408,9 +575,17 @@ function Locations() {
           
           {/* CREATE REGION POPUP */}
           {createRegionForm ? 
-            <RegionForm>
+            <LocationFormContainer>
               <h2>Create New Region</h2>
-              <button className="closeEdit" onClick={()=>{setPopupOpen(false)}}>
+              <button className="closeEdit" onClick={()=>{
+                setPopupOpen(false)
+                setCreateRegionForm(false)
+                setEditRegionForm(false)
+                setCreateCountryForm(false)
+                setEditCountryForm(false)
+                setCreateCityForm(false)
+                setEditCityForm(false)
+                }}>
                 <FaTimes size={18} />
               </button>
             
@@ -445,18 +620,25 @@ function Locations() {
                     triggerCreateRegion()
                   }}> Create New Region </button >
               </InputLabelContainer>
-            </RegionForm>
+            </LocationFormContainer>
             : 
             <></>
           }
           {/* UPDATE REGION POPUP */}
           {editRegionForm ? 
-            <RegionForm>
+            <LocationFormContainer>
               <h2>Edit Region</h2>
-              <button className="closeEdit" onClick={()=>{setPopupOpen(false)}}>
+              <button className="closeEdit" onClick={()=>{
+                setPopupOpen(false)
+                setCreateRegionForm(false)
+                setEditRegionForm(false)
+                setCreateCountryForm(false)
+                setEditCountryForm(false)
+                setCreateCityForm(false)
+                setEditCityForm(false)
+                }}>
                 <FaTimes size={18} />
               </button>
-            
               <InputLabelContainer>
                 <label htmlFor="regionAcronymEdit">Edit Region Acronym</label>
                 <input 
@@ -488,19 +670,26 @@ function Locations() {
                     triggerUpdateRegion(regionIdToUpdate)
                   }}> Edit Region </button >
               </InputLabelContainer>
-            </RegionForm>
+            </LocationFormContainer>
             : 
             <></>
           }
 
-          {/* UPDATE COUNTRY POPUP */}
+          {/* CREATE COUNTRY POPUP */}
           {createCountryForm ? 
-            <RegionForm>
+            <LocationFormContainer>
               <h2>Create New Country</h2>
-              <button className="closeEdit" onClick={()=>{setPopupOpen(false)}}>
+              <button className="closeEdit" onClick={()=>{
+                setPopupOpen(false)
+                setCreateRegionForm(false)
+                setEditRegionForm(false)
+                setCreateCountryForm(false)
+                setEditCountryForm(false)
+                setCreateCityForm(false)
+                setEditCityForm(false)
+                }}>
                 <FaTimes size={18} />
               </button>
-            
               <InputLabelContainer>
                 <label htmlFor="countryAcronym">Country Acronym</label>
                 <input 
@@ -532,12 +721,188 @@ function Locations() {
                     triggerCreateCountry()
                   }}> Create Country </button >
               </InputLabelContainer>
-            </RegionForm>
+            </LocationFormContainer>
+            : 
+            <></>
+          }
+          {/* UPDATE COUNTRY POPUP */}
+          {editCountryForm ? 
+            <LocationFormContainer>
+              <h2>Edit Country</h2>
+              <button className="closeEdit" onClick={()=>{
+                setPopupOpen(false)
+                setCreateRegionForm(false)
+                setEditRegionForm(false)
+                setCreateCountryForm(false)
+                setEditCountryForm(false)
+                setCreateCityForm(false)
+                setEditCityForm(false)
+                }}>
+                <FaTimes size={18} />
+              </button>
+              <InputLabelContainer>
+                <label htmlFor="countryAcronymEdit">Edit Country Acronym</label>
+                <input 
+                  id="countryAcronymEdit" 
+                  name="countryAcronymEdit"
+                  type="text"
+                  ref={refInputCountryAcronym}
+                  onChange={()=>{
+                    setCountryAcronymValue(refInputCountryAcronym.current.value)
+                  }} 
+                />
+              </InputLabelContainer>
+                
+              <InputLabelContainer>
+                <label htmlFor="countryNameEdit">Edit Country Name</label>
+                <input 
+                  id="countryNameEdit" 
+                  name="countryNameEdit"
+                  type="text"
+                  ref={refInputCountryName}
+                  onChange={()=>{
+                    setCountryNameValue(refInputCountryName.current.value)
+                  }} 
+                />
+              </InputLabelContainer>
+
+              <InputLabelContainer>
+                <label htmlFor="countryRegionIdEdit">Change Region Id</label>
+                <input 
+                  id="countryRegionIdEdit" 
+                  name="countryRegionIdEdit"
+                  type="text"
+                  ref={refInputCountry_RegionId}
+                  onChange={()=>{
+                    setCountry_regionIdValue(refInputCountry_RegionId.current.value)
+                  }} 
+                />
+              </InputLabelContainer>
+                
+              <InputLabelContainer>
+                  <button onClick={()=>{
+                    triggerUpdateCountry(countryIdToUpdate)
+                  }}> Edit Country </button >
+              </InputLabelContainer>
+            </LocationFormContainer>
             : 
             <></>
           }
 
-          
+          {/* CREATE CITY POPUP */}
+          {createCityForm ? 
+            <LocationFormContainer>
+              <h2>Create New City</h2>
+              <button className="closeEdit" onClick={()=>{
+                setPopupOpen(false)
+                setCreateRegionForm(false)
+                setEditRegionForm(false)
+                setCreateCountryForm(false)
+                setEditCountryForm(false)
+                setCreateCityForm(false)
+                setEditCityForm(false)
+                }}>
+                <FaTimes size={18} />
+              </button>
+              <InputLabelContainer>
+                <label htmlFor="cityAcronym">City Acronym</label>
+                <input 
+                  id="cityAcronym" 
+                  name="cityAcronym"
+                  type="text"
+                  ref={refInputCityAcronym}
+                  onChange={()=>{
+                    setCityAcronymValue(refInputCityAcronym.current.value)
+                  }} 
+                />
+              </InputLabelContainer>
+                
+              <InputLabelContainer>
+                <label htmlFor="cityName">Ciy Name</label>
+                <input 
+                  id="cityName" 
+                  name="cityName"
+                  type="text"
+                  ref={refInputCityName}
+                  onChange={()=>{
+                    setCityNameValue(refInputCityName.current.value)
+                  }} 
+                />
+              </InputLabelContainer>
+                
+              <InputLabelContainer>
+                  <button onClick={()=>{
+                    triggerCreateCity()
+                  }}> Create City </button >
+              </InputLabelContainer>
+            </LocationFormContainer>
+            : 
+            <></>
+          }
+          {/* UPDATE CITY POPUP */}
+          {editCityForm ? 
+            <LocationFormContainer>
+              <h2>Edit City</h2>
+              <button className="closeEdit" onClick={()=>{
+                setPopupOpen(false)
+                setCreateRegionForm(false)
+                setEditRegionForm(false)
+                setCreateCountryForm(false)
+                setEditCountryForm(false)
+                setCreateCityForm(false)
+                setEditCityForm(false)
+                }}>
+                <FaTimes size={18} />
+              </button>
+              <InputLabelContainer>
+                <label htmlFor="cityAcronymEdit">Edit City Acronym</label>
+                <input 
+                  id="cityAcronymEdit" 
+                  name="cityAcronymEdit"
+                  type="text"
+                  ref={refInputCityAcronym}
+                  onChange={()=>{
+                    setCityAcronymValue(refInputCityAcronym.current.value)
+                  }} 
+                />
+              </InputLabelContainer>
+                
+              <InputLabelContainer>
+                <label htmlFor="cityNameEdit">Edit City Name</label>
+                <input 
+                  id="cityNameEdit" 
+                  name="cityNameEdit"
+                  type="text"
+                  ref={refInputCityName}
+                  onChange={()=>{
+                    setCityNameValue(refInputCityName.current.value)
+                  }} 
+                />
+              </InputLabelContainer>
+
+              <InputLabelContainer>
+                <label htmlFor="cityCountryIdEdit">Change Country Id</label>
+                <input 
+                  id="cityCountryIdEdit" 
+                  name="cityCountryIdEdit"
+                  type="text"
+                  ref={refInputCity_CountryId}
+                  onChange={()=>{
+                    setCity_CountryIdValue(refInputCity_CountryId.current.value)
+                  }} 
+                />
+              </InputLabelContainer>
+                
+              <InputLabelContainer>
+                  <button onClick={()=>{
+                    triggerUpdateCity(cityIdToUpdate)
+                  }}> Edit City </button >
+              </InputLabelContainer>
+            </LocationFormContainer>
+            : 
+            <></>
+          }
+
         </OverlayForm> 
         : 
         <></>
