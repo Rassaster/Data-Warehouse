@@ -23,13 +23,13 @@ const loggedOff = {isLoggedIn: false, token: '', isAdmin: ''}
 // Global Constants for API Request:
 const BASE_URL = "http://localhost:3008/dataWarehouse";
 const ALL_REGIONS = "/regions/listAll";
-const ALL_COUNTRIES = "/countries/listAll";
-const ALL_CITIES = "/cities/listAll";
-const COUNTRIES_IN_REGION = "/countries/regionId:";
-const CITIES_IN_COUNTRY = "/cities/countryId:";
 const CREATE_REGION = "/regions/create";
 const UPDATE_REGION = "/regions/updateRegionId:";
 const DELETE_REGION = "/regions/deleteRegionId:";
+const ALL_COUNTRIES = "/countries/listAll";
+const CREATE_COUNTRY = "/countries/create";
+const DELETE_COUNTRY = "/countries/deleteCountryId:";
+const ALL_CITIES = "/cities/listAll";
 
 
 function Locations() {
@@ -46,13 +46,26 @@ function Locations() {
   const [createRegionForm, setCreateRegionForm] = useState(false)
   const [regionAcronymValue, setRegionAcronymValue] = useState("")
   const [regionNameValue, setRegionNameValue] = useState("")
-  const [editRegionForm, setEditRegionForm] = useState(false)
   const [regionIdToUpdate, setRegionIdToUpdate] = useState()
+  const [editRegionForm, setEditRegionForm] = useState(false)
+
+  const [createCountryForm, setCreateCountryForm] = useState(false)
+  const [countryAcronymValue, setCountryAcronymValue] = useState("")
+  const [countryNameValue, setCountryNameValue] = useState("")
+  const [country_regionIdValue, setCountry_regionIdValue] = useState()
+  const [country_RegionIdToCreate, setCountry_RegionIdToCreate] = useState()
+  const [countryIdToUpdate, setCountryIdToUpdate] = useState()
+  const [editCountryForm, setEditCountryForm] = useState(false)
+
 
   // Declaration of References:
   const refInputRegionAcronym = useRef()
   const refInputRegionName = useRef()
-
+  
+  const refInputCountryAcronym = useRef()
+  const refInputCountryName = useRef()
+  const refInputCountry_RegionId = useRef()
+  
 
   // Declaration of Request Options: GET All Regions
   const viewAllRegionsRequestHeaders = {
@@ -149,15 +162,14 @@ function Locations() {
       const deleteRegionResponse = api(`${BASE_URL}${DELETE_REGION}${regionId}`, deleteRegionRequestInfo);
       deleteRegionResponse.then(response => {
         console.log("DELETE", response)
-        if (response.status === 403) {
+        if (response.status === 403 || response.Status === 403) {
           setAuthState(loggedOff)
         }
-        if (response.status === 204) {
+        if (response.status === 204 || response.Status === 204) {
           triggerViewAllRegions()
         }
       })
   }
-
 
   // Declaration of Request Options: GET All Countries
   const viewAllCountriesRequestHeaders = {
@@ -182,6 +194,63 @@ function Locations() {
       }
     })
   }
+  // Declaration of Request Options: POST Create Country
+  const createCountryRequestHeaders = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authState.token}`
+  };
+  const createCountryRequestData = JSON.stringify({
+    "acronym_country" : countryAcronymValue,
+    "name_country" : countryNameValue,
+    "id_region" : country_RegionIdToCreate
+  });
+  const createCountryRequestInfo = {
+    method: 'POST',
+    headers: createCountryRequestHeaders,
+    body: createCountryRequestData,
+    redirect: 'follow'
+  }
+  const triggerCreateCountry = () => {
+    const createCountryResponse = api(`${BASE_URL}${CREATE_COUNTRY}`, createCountryRequestInfo);
+    createCountryResponse.then(response => {
+      console.log(response)
+      if (response.Status === 403) {
+        setAuthState(loggedOff)
+      }
+      if (response.Status === 201) {
+        // triggerViewAllRegions()
+        triggerViewAllCountries()
+        setCreateCountryForm(false)
+        setPopupOpen(false)
+      }
+    })
+  }
+  // Declaration of Request Options: DELETE Country
+  const deleteCountryRequestHeaders = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authState.token}`
+  };
+  const deleteCountryRequestInfo = {
+      method: 'DELETE',
+      headers: deleteCountryRequestHeaders,
+      redirect: 'follow'
+  }
+  const triggerDeleteCountry = (countryId) => {
+      const deleteCountryResponse = api(`${BASE_URL}${DELETE_COUNTRY}${countryId}`, deleteCountryRequestInfo);
+      deleteCountryResponse.then(response => {
+        console.log("DELETE", response)
+        if (response.status === 403 || response.Status === 403) {
+          setAuthState(loggedOff)
+        }
+        if (response.status === 204 || response.Status === 204) {
+          triggerViewAllRegions()
+          triggerViewAllCountries()
+        }
+      })
+  }
+
+
+  
   // Declaration of Request Options: GET All Cities
   const viewAllCitiesRequestHeaders = {
     "Content-Type": "application/json",
@@ -254,7 +323,14 @@ function Locations() {
                         >
                           <FaEdit size={16} title="Edit Region" />  
                         </button>
-                        <button className="region-Add-Country">
+                        <button 
+                          onClick={()=>{
+                            setPopupOpen(true)
+                            setCreateCountryForm(true)
+                            setCountry_RegionIdToCreate(region.id_region)
+                          }}
+                          className="region-Add-Country"
+                        >
                           <FaPlus size={16} title="Add Country" />  
                         </button>
                       </ActionBtnsContainer>
@@ -268,7 +344,12 @@ function Locations() {
                                 <h4>
                                   {country.name_country} (Country Id: {country.id_country})
                                   <ActionBtnsContainer>
-                                    <button className="country-Delete">
+                                    <button 
+                                      onClick={()=>{
+                                        triggerDeleteCountry(country.id_country)
+                                      }}
+                                      className="country-Delete"
+                                    >
                                       <FaTrashAlt size={16} title="Delete Country" />  
                                     </button>
                                     <button className="country-Edit">
@@ -368,7 +449,6 @@ function Locations() {
             : 
             <></>
           }
-
           {/* UPDATE REGION POPUP */}
           {editRegionForm ? 
             <RegionForm>
@@ -413,7 +493,49 @@ function Locations() {
             <></>
           }
 
-
+          {/* UPDATE COUNTRY POPUP */}
+          {createCountryForm ? 
+            <RegionForm>
+              <h2>Create New Country</h2>
+              <button className="closeEdit" onClick={()=>{setPopupOpen(false)}}>
+                <FaTimes size={18} />
+              </button>
+            
+              <InputLabelContainer>
+                <label htmlFor="countryAcronym">Country Acronym</label>
+                <input 
+                  id="countryAcronym" 
+                  name="countryAcronym"
+                  type="text"
+                  ref={refInputCountryAcronym}
+                  onChange={()=>{
+                    setCountryAcronymValue(refInputCountryAcronym.current.value)
+                  }} 
+                />
+              </InputLabelContainer>
+                
+              <InputLabelContainer>
+                <label htmlFor="countryName">Country Name</label>
+                <input 
+                  id="countryName" 
+                  name="countryName"
+                  type="text"
+                  ref={refInputCountryName}
+                  onChange={()=>{
+                    setCountryNameValue(refInputCountryName.current.value)
+                  }} 
+                />
+              </InputLabelContainer>
+                
+              <InputLabelContainer>
+                  <button onClick={()=>{
+                    triggerCreateCountry()
+                  }}> Create Country </button >
+              </InputLabelContainer>
+            </RegionForm>
+            : 
+            <></>
+          }
 
           
         </OverlayForm> 
