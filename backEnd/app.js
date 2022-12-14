@@ -16,7 +16,7 @@ const apiRouter = require("./routes/apiRoutes");
 // Defining the requests limit per IP:
 const requestLimit = rateLimit({
   windowMs: 20 * 60 * 1000, // 20 mins
-  max: 100
+  max: 10000
 });
 
 // Global Middlewares:
