@@ -109,6 +109,16 @@ const selectAllOrdersJoinedByUserId = (userId) => {
     type: sequelize.QueryTypes.SELECT
   })
 };
+
+
+// SELECT comp.*, ci.name_city FROM Companies AS comp JOIN Cities as ci ON comp.id_city = ci.id_city;
+const selectAllCompaniesWithCity = () => {
+  return sequelize.query("SELECT comp.*, ci.name_city FROM Companies AS comp JOIN Cities as ci ON comp.id_city = ci.id_city;", {
+    type: sequelize.QueryTypes.SELECT
+  })
+};
+
+
 // ***** SQL UPDATE QUERIES ***** 
 const updateTableRegisterWhereIdIsValue = (table, updatedJsonData, field, value) => {
   let obj = updatedJsonData;
@@ -143,6 +153,7 @@ module.exports = {
   selectRegionsTree,
   selectCountriesFromRegionId,
   selectCitiesFromCountryId,
+  selectAllCompaniesWithCity,
   selectCompaniesFromCityId,
   selectContactsFromCompanyId,
   // selectAllOrdersJoined,
