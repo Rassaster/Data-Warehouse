@@ -149,3 +149,104 @@ export const ActionBtnsContainer = styled.div`
     background-color: royalblue;
   }
 `
+
+
+
+// CREATE REGION POPUP
+export const OverlayForm = styled.div`
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(120, 134, 107, 0.5);
+  transition: all .3s ease-in-out;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  z-index: 100;
+`;
+
+export const RegionForm = styled.div`
+  position: relative;
+  border: 3px solid green;
+  margin: 30px auto 0;
+  border-radius: 5px;
+  width: fit-content;
+  height: fit-content;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(120, 134, 107, 1);
+
+  .isAdminInput {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .closeEdit {
+    position: absolute;
+    top: 5px;
+    left: unset;
+    right: 5px;
+    width: fit-content;
+    height: fit-content;
+  }
+`;
+
+
+
+export const InputLabelContainer = styled.div`
+  width: 45%;
+
+  label {
+    font: normal normal 700 normal 14px/120% sans-serif;
+  }
+
+  input {
+    margin-top: 8px;
+    border: 2px solid transparent;
+    height: 30px;
+    padding: 2px 5px;
+    border-radius: 5px;
+
+    transition: all .3s ease-in-out;
+  }
+  input:focus {
+    border: 2px solid #78866b;
+  }
+  label[for="isAdmin"],
+  input[type="checkbox"] {
+    cursor: pointer;
+  }
+
+
+  button {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 130%;
+    height: 30px;
+    border-radius: 5px;
+    border: none;
+    background: #fff;
+    border: 2px solid #000;
+    color: #000;
+    transition: all 0.3s ease-in-out;
+    font: normal normal 700 normal 14px/120% sans-serif;
+  }
+  button:hover,
+  button:focus {
+    background: #000;
+    color: #fff;
+  }
+
+`;
