@@ -3,7 +3,8 @@ import { Link, Navigate } from "react-router-dom";
 import api from '../../services/api';
 import UserAuthContext from '../../context/auth';
 
-import { Container, Head, RegionsList, RegionItem } from "./styles";
+import { FaTrashAlt, FaEdit, FaTimes, FaPlus} from 'react-icons/fa'
+import { Container, Head, RegionsList, RegionItem, CountryItem, CityItem, ActionBtnsContainer} from "./styles";
 import './styles.css'
 
 const loggedOff = {isLoggedIn: false, token: '', isAdmin: ''}
@@ -11,6 +12,8 @@ const loggedOff = {isLoggedIn: false, token: '', isAdmin: ''}
 // Global Constants for API Request:
 const BASE_URL = "http://localhost:3008/dataWarehouse";
 const ALL_REGIONS = "/regions/listAll";
+const ALL_COUNTRIES = "/countries/listAll";
+const ALL_CITIES = "/cities/listAll";
 const COUNTRIES_IN_REGION = "/countries/regionId:";
 const CITIES_IN_COUNTRY = "/cities/countryId:";
 const CREATE_ = "/";
@@ -25,7 +28,11 @@ function Locations() {
   // Declaration of States:
   const [regionsList, setRegionsList] = useState([])
   const [regionId, setRegionId] = useState([])
+
+  const [countriesList, setCountriesList] = useState([])
   const [countryId, setCountryId] = useState([])
+
+  const [citiesList, setCitiesList] = useState([])
 
   // Declaration of Request Options: GET All Regions
   const viewAllRegionsRequestHeaders = {
@@ -40,68 +47,70 @@ function Locations() {
   const triggerViewAllRegions = () => {
     const viewAllRegionsResponse = api(`${BASE_URL}${ALL_REGIONS}`, viewAllRegionsRequestInfo);
     viewAllRegionsResponse.then(response => {
-      console.log("REGIONS", response)
+      console.log("REGIONS RESPONSE", response)
       if (response.Status === 403) {
         setAuthState(loggedOff)
       }
       if (response.Status === 200) {
-        setRegionsList(response.Result)
+        setRegionsList(response?.Result)
+        console.log("REGIONS LIST", regionsList)
       }
     })
   }
-
-   // Declaration of Request Options: GET Countries in a RegionId
-  const viewAllCountriesInRegionRequestHeaders = {
+  // Declaration of Request Options: GET All Countries
+  const viewAllCountriesRequestHeaders = {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${authState.token}`
   };
-  const viewAllCountriesInRegionRequestInfo = {
+  const viewAllCountriesRequestInfo = {
     method: 'GET',
-    headers: viewAllCountriesInRegionRequestHeaders,
+    headers: viewAllCountriesRequestHeaders,
     redirect: 'follow'
   }
-  const triggerCountriesInRegion = (regionId) => {
-    const viewAllCountriesInRegionResponse = api(`${BASE_URL}${COUNTRIES_IN_REGION}${regionId}`, viewAllCountriesInRegionRequestInfo);
-    viewAllCountriesInRegionResponse.then(response => {
-      console.log("COUNTRIES:", response)
+  const triggerViewAllCountries = () => {
+    const viewAllCountriesResponse = api(`${BASE_URL}${ALL_COUNTRIES}`, viewAllCountriesRequestInfo);
+    viewAllCountriesResponse.then(response => {
+      console.log("COUNTRIES RESPONSE", response)
       if (response.Status === 403) {
         setAuthState(loggedOff)
       }
       if (response.Status === 200) {
-        return response.Result
+        setCountriesList(response?.Result)
+        console.log("COUNTRIES LIST", countriesList)
       }
     })
   }
-
-  // Declaration of Request Options: GET Cities in a CountryId
-  const viewAllCitiesInCountryRequestHeaders = {
+  // Declaration of Request Options: GET All Cities
+  const viewAllCitiesRequestHeaders = {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${authState.token}`
   };
-  const viewAllCitiesInCountryRequestInfo = {
+  const viewAllCitiesRequestInfo = {
     method: 'GET',
-    headers: viewAllCitiesInCountryRequestHeaders,
+    headers: viewAllCitiesRequestHeaders,
     redirect: 'follow'
   }
-  const triggerCitiesInCountry = (countryId) => {
-    const viewAllCitiesInCountryResponse = api(`${BASE_URL}${CITIES_IN_COUNTRY}${countryId}`, viewAllCitiesInCountryRequestInfo);
-    viewAllCitiesInCountryResponse.then(response => {
-      console.log("CITIES:", response)
+  const triggerViewAllCities = () => {
+    const viewAllCitiesResponse = api(`${BASE_URL}${ALL_CITIES}`, viewAllCitiesRequestInfo);
+    viewAllCitiesResponse.then(response => {
+      console.log("CITIES RESPONSE", response)
       if (response.Status === 403) {
         setAuthState(loggedOff)
       }
       if (response.Status === 200) {
-        return response.Result
+        setCitiesList(response.Result)
+        console.log("CITIES LIST", citiesList)
       }
     })
   }
-
 
 
   useEffect(()=> {
     triggerViewAllRegions()
-    triggerCountriesInRegion(1)
-    triggerCitiesInCountry(1)
+    triggerViewAllCountries()
+    triggerViewAllCities()
+    // triggerCountriesInRegion(1)
+    // triggerCitiesInCountry(1)
   }, [])
 
   return (
@@ -112,10 +121,82 @@ function Locations() {
       </Head>
       <RegionsList>
         {regionsList.length > 0 ? 
-            <>
+            <> 
+              <ActionBtnsContainer>
+                <button className="region-Add-Region">
+                  Add Region<FaPlus size={16} title="Add Country" />  
+                </button>
+              </ActionBtnsContainer>
               {regionsList.map((region, index) => {
-                return (                  <RegionItem key={`${region.region_name}${index}`}>
-                    <h4>{region.name_region}</h4>
+                return (
+                  <RegionItem key={`${region.region_name}${index}`}>
+                    <h3>
+                      {region.name_region} (Region Id: {region.id_region})
+                      <ActionBtnsContainer>
+                        <button className="region-Delete">
+                          <FaTrashAlt size={16} title="Delete Region" />  
+                        </button>
+                        <button className="region-Edit">
+                          <FaEdit size={16} title="Edit Region" />  
+                        </button>
+                        <button className="region-Add-Country">
+                          <FaPlus size={16} title="Add Country" />  
+                        </button>
+                      </ActionBtnsContainer>
+                    </h3>
+                    {countriesList.length > 0 ? 
+                      <>
+                        {countriesList.map((country, index) => {
+                          if (Number(country.id_region) === region.id_region) {
+                            return (
+                              <CountryItem key={`${country.name_country}${index}`}>
+                                <h4>
+                                  {country.name_country} (Country Id: {country.id_country})
+                                  <ActionBtnsContainer>
+                                    <button className="country-Delete">
+                                      <FaTrashAlt size={16} title="Delete Country" />  
+                                    </button>
+                                    <button className="country-Edit">
+                                      <FaEdit size={16} title="Edit Country" />  
+                                    </button>
+                                    <button className="country-Add-City">
+                                      <FaPlus size={16} title="Add City" />  
+                                    </button>
+                                  </ActionBtnsContainer>
+                                </h4>
+                                {citiesList.length > 0 ? 
+                                  <>
+                                    {citiesList.map((city, index) => {
+                                      if (Number(city.id_country) === country.id_country) {
+                                        return (
+                                          <CityItem key={`${city.name_city}${index}`}>
+                                            <h5>
+                                              {city.name_city} (City Id: {city.id_city})
+                                              <ActionBtnsContainer className="cityBtns">
+                                                <button className="city-Delete">
+                                                  <FaTrashAlt size={16} title="Delete City" />  
+                                                </button>
+                                                <button className="city-Edit">
+                                                  <FaEdit size={16} title="Edit City" />  
+                                                </button>
+                                              </ActionBtnsContainer>
+                                            </h5>
+                                          </CityItem> 
+                                        )
+                                      }
+                                    })}
+                                  </>
+                                  : 
+                                  <p>No Cities Registered</p>
+                                }
+                              </CountryItem> 
+                            )
+                          }
+                        })}
+                      </>
+                      : 
+                      <p>No Cities Registered</p>
+                    }
                   </RegionItem> 
                 )
               })}
@@ -123,6 +204,7 @@ function Locations() {
           : 
           <p>No Regions Registered</p>
         }
+
       </RegionsList>
     </Container>
   )

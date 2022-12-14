@@ -164,7 +164,7 @@ function AllUsers() {
                       setEditActive(true)
                     }}
                   >
-                    <FaEdit size={18} title="Update" />  
+                    <FaEdit size={18} title="Edit" />  
                   </button>
                 </div>
               </TableUserRow>
