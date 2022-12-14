@@ -103,6 +103,7 @@ const getCountriesByRegionId = async (req, res, next) => {
       okReponse200["Message"] = "Region with related countries found.";
       okReponse200["Result"] = listOfCountries;
       okReponse200["RegionFound"] = true;
+      okReponse200["RegionId"] = req.params.regionId;
       req.countriesByRegionId = okReponse200;
     };
     return next();
