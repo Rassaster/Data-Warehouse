@@ -20,7 +20,7 @@ function Routing() {
   return (
     <Routes>
 
-      <Route path="/" element={authState.isLoggedIn ? <Home /> : <Navigate replace to="/login" /> } />
+      <Route path="/" element={authState.isLoggedIn ? <Contacts /> : <Navigate replace to="/login" /> } />
       <Route path="/login" element={authState.isLoggedIn ? <Navigate replace to="/" />  : <Login /> } />
       <Route path="/contacts" element={authState.isLoggedIn ? <Contacts /> : <Navigate replace to="/login" /> } />
       <Route path="/companies" element={authState.isLoggedIn ? <Companies /> : <Navigate replace to="/login" /> } />
