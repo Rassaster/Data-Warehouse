@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import api from '../../services/api';
 import UserAuthContext from '../../context/auth';
 
@@ -33,9 +33,6 @@ function Companies() {
   
   // Declaration of States:
   const [companiesList, setCompaniesList] = useState([])
-  
-  const [companyCreated, setCompanyCreated] = useState(false)
-  const [createOtherCompanyBtn, setCreateOtherCompanyBtn] = useState(false)
 
   const [popupOpen, setPopupOpen] = useState(false)
   const [createActive, setCreateActive] = useState(false)
@@ -165,8 +162,8 @@ function Companies() {
     body: updateCompanyRequestData,
     redirect: 'follow'
   }
-  const triggerUpdateCompany = (copmanyId) => {
-    const updateCompanyResponse = api(`${BASE_URL}${UPDATE_COMPANIES}${copmanyId}`, updateCompanyRequestInfo);
+  const triggerUpdateCompany = (companyId) => {
+    const updateCompanyResponse = api(`${BASE_URL}${UPDATE_COMPANIES}${companyId}`, updateCompanyRequestInfo);
     updateCompanyResponse.then(response => {
       console.log("PUT", response)
       if (response.status === 403 || response.status === 403) {
