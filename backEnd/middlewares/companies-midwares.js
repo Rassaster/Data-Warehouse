@@ -2,7 +2,7 @@ const moment = require("moment");
 // Import Server Responses:
 const {  okReponse200, createdResponse201, conflictResponse409, internalServerError500 } = require("../serverResponses")
 // Import MYSQL Queries functions:
-const { newCompany, selectFromTableWhereFieldIsValue, selectAllFromTable, selectAllCompaniesWithCity, selectCompaniesFromCityId, selectProductsJoinCategories, updateTableRegisterWhereIdIsValue, deleteTableRegisterWhereIdIsValue } = require("../sql/queries"); 
+const { newCompany, selectFromTableWhereFieldIsValue, selectAllFromTable, selectAllCompaniesWithCity, selectCompaniesFromCityId, updateTableRegisterWhereIdIsValue, deleteTableRegisterWhereIdIsValue } = require("../sql/queries"); 
 // ***************************************** MIDDLEWARES *********************************************
 // -createNewCompany;
 // Register a new company:

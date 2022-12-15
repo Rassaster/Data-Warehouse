@@ -9,7 +9,7 @@ const { jwtokenExtraction, jwtokenVerification } = require("../../middlewares/jw
 // Security/Credentials middlewares:
 const { checkUserPermissions, justAdminGate } = require("../../middlewares/users-midwares");
 // CRUD middlewares:
-const { createNewContact, getContactById, getContactByName, getAllContacts, getContactsByCompanyId, updateContactById, deleteContactById } = require("../../middlewares/contacts-midwares");
+const { createNewContact, getContactById, getContactByName, getAllContacts, getAllContactsChannels,getContactsByCompanyId, updateContactById, deleteContactById } = require("../../middlewares/contacts-midwares");
 // ******************** ENDPOINTS ******************** //
 // -> /dataWarehouse/contacts/create Create new company. Just Admin:
 router.post("/create", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, validateJSONSchema(contactSchema), createNewContact, (req, res) => {
@@ -30,6 +30,10 @@ router.get("/contactName::contactName", jwtokenExtraction, jwtokenVerification, 
 // -> /dataWarehouse/contacts. For both Admins and Users.
 router.get("/listAll", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getAllContacts, (req, res) => {
   res.status(200).json(req.getAllContacts);
+});
+// -> /dataWarehouse/contacts. For both Admins and Users.
+router.get("/listAllChannels", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getAllContactsChannels, (req, res) => {
+  res.status(200).json(req.getAllContactsChannels);
 });
 // // -> /dataWarehouse/contacts/companyId:{companyId}. Admin and User:
 router.get("/companyId::companyId", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getContactsByCompanyId, (req, res) =>{

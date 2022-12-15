@@ -36,9 +36,15 @@ const newCompany =  (last_update, name_company, address_company, email_company, 
     type: sequelize.QueryTypes.INSERT
   });
 };
-const newContact =  (last_update, name_contact, lastName_contact, email_contact, address_contact, channels_contact, id_company) => {
-  return sequelize.query("INSERT INTO contacts(last_update, name_contact, lastName_contact, email_contact, address_contact, channels_contact, id_company) VALUES(?, ?, ?, ?, ?, ?, ?)", {
-    replacements: [last_update, name_contact, lastName_contact, email_contact, address_contact, channels_contact, id_company],
+const newContact =  (last_update, name_contact, lastName_contact, profile_contact, email_contact, id_company) => {
+  return sequelize.query("INSERT INTO contacts(last_update, name_contact, lastName_contact, profile_contact, email_contact, id_company) VALUES(?, ?, ?, ?, ?, ?)", {
+    replacements: [last_update, name_contact, lastName_contact, profile_contact, email_contact, id_company],
+    type: sequelize.QueryTypes.INSERT
+  });
+};
+const newChannel =  (type_channel, account_channel, preference_channel, id_contact) => {
+  return sequelize.query("INSERT INTO channels(type_channel, account_channel, preference_channel, id_contact) VALUES(?, ?, ?, ?)", {
+    replacements: [type_channel, account_channel, preference_channel, id_contact],
     type: sequelize.QueryTypes.INSERT
   });
 };
@@ -108,6 +114,26 @@ const selectAllCompaniesWithCity = () => {
 };
 
 
+// SELECT contacts.*, companies.name_company, cities.name_city, countries.name_country, regions.name_region FROM Contacts as contacts JOIN Companies as companies ON contacts.id_company=companies.id_company JOIN Cities as cities ON companies.id_city=cities.id_city JOIN Countries as countries ON cities.id_country=countries.id_country JOIN Regions as regions ON countries.id_region=regions.id_region;
+const selectAllContactsJoinedCompanyLocations = () => {
+  return sequelize.query("SELECT contacts.*, companies.name_company, cities.name_city, countries.name_country, regions.name_region FROM Contacts as contacts JOIN Companies as companies ON contacts.id_company=companies.id_company JOIN Cities as cities ON companies.id_city=cities.id_city JOIN Countries as countries ON cities.id_country=countries.id_country JOIN Regions as regions ON countries.id_region=regions.id_region;", {
+    type: sequelize.QueryTypes.SELECT
+  })
+}
+// SELECT contacts.id_contact, contacts.name_contact, contacts.lastName_contact, channels.type_channel, channels.account_channel, channels.preference_channel FROM Contacts as contacts JOIN Channels as channels ON contacts.id_contact=channels.id_contact;
+const selectContactJoinedChannels = () => {
+  return sequelize.query("SELECT contacts.id_contact, contacts.name_contact, contacts.lastName_contact, channels.type_channel, channels.account_channel, channels.preference_channel FROM Contacts as contacts JOIN Channels as channels ON contacts.id_contact=channels.id_contact;", {
+    type: sequelize.QueryTypes.SELECT
+  })
+};
+// SELECT ch.*, con.name_contact, con.lastName_contact, con.id_contact FROM Channels AS ch JOIN Contacts as con ON ch.id_contact = con.id_contact;
+const selectChannelsFromContactId = () => {
+  return sequelize.query("SELECT ch.*, con.name_contact, con.lastName_contact, con.id_contact FROM Channels AS ch JOIN Contacts as con ON ch.id_contact = con.id_contact;", {
+    type: sequelize.QueryTypes.SELECT
+  })
+};
+
+
 // ***** SQL UPDATE QUERIES ***** 
 const updateTableRegisterWhereIdIsValue = (table, updatedJsonData, field, value) => {
   let obj = updatedJsonData;
@@ -136,7 +162,8 @@ module.exports = {
   newCity,
   newCompany,
   newContact,
-  // newRequiredProduct,
+  newChannel,
+  // 
   selectFromTableWhereFieldIsValue,
   selectAllFromTable,
   selectRegionsTree,
@@ -145,8 +172,10 @@ module.exports = {
   selectAllCompaniesWithCity,
   selectCompaniesFromCityId,
   selectContactsFromCompanyId,
-  // selectAllOrdersJoined,
-  // selectAllOrdersJoinedByUserId,
+  selectChannelsFromContactId,
+  selectAllContactsJoinedCompanyLocations,
+  selectContactJoinedChannels,
+  // 
   updateTableRegisterWhereIdIsValue,
   deleteTableRegisterWhereIdIsValue
 }

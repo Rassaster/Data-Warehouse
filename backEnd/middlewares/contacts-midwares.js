@@ -2,7 +2,7 @@ const moment = require("moment");
 // Import Server Responses:
 const {  okReponse200, createdResponse201, conflictResponse409, internalServerError500 } = require("../serverResponses")
 // Import MYSQL Queries functions:
-const { newContact, selectFromTableWhereFieldIsValue, selectAllFromTable, selectContactsFromCompanyId, selectProductsJoinCategories, updateTableRegisterWhereIdIsValue, deleteTableRegisterWhereIdIsValue } = require("../sql/queries"); 
+const { newContact, selectFromTableWhereFieldIsValue, selectAllFromTable, selectAllContactsJoinedCompanyLocations, selectContactJoinedChannels, selectContactsFromCompanyId, updateTableRegisterWhereIdIsValue, deleteTableRegisterWhereIdIsValue } = require("../sql/queries"); 
 // ***************************************** MIDDLEWARES *********************************************
 // -createNewContact;
 // Register a new contact:
@@ -10,16 +10,15 @@ const createNewContact = async (req,res, next) => {
   try {
     console.log(1)
     let date = moment().format('YYYY-MM-DD HH:mm:ss');
-    const {name_contact, lastName_contact, email_contact, address_contact, channels_contact, id_company} = req.body;
+    const {name_contact, lastName_contact, profile_contact, email_contact, id_company} = req.body;
     console.log(2)
-    const newRegister = await newContact(date, name_contact, lastName_contact, email_contact, address_contact, channels_contact, id_company);
+    const newRegister = await newContact(date, name_contact, lastName_contact, profile_contact, email_contact, id_company);
     console.log(3)
     const createdContact = {
       name_contact: req.body.name_contact,
       lastName_contact: req.body.lastName_contact,
+      profile_contact: req.body.profile_contact,
       email_contact: req.body.email_contact,
-      address_contact: req.body.address_contact,
-      channels_contact: req.body.channels_contact,
       id_company: req.body.id_company,
       contact_id: newRegister[0]
     };
@@ -87,10 +86,23 @@ const getContactByName = async (req, res, next) => {
 // -getAllContacts:
 const getAllContacts = async (req, res, next) => {
   try {
-    const contactsList = await selectAllFromTable("contacts");
+    const contactsList = await selectAllContactsJoinedCompanyLocations();
     okReponse200["Message"] = "List of all registered contacts obtained.";
     okReponse200["Result"] = contactsList;
     req.getAllContacts = okReponse200
+    return next();
+  } catch {
+    internalServerError500["Message"] = "An error has occurred while obtaining all the registered cities.";
+    return res.status(500).send(internalServerError500);
+  };
+};
+// -getAllContactsChannels:
+const getAllContactsChannels = async (req, res, next) => {
+  try {
+    const contactsChannelsList = await selectContactJoinedChannels();
+    okReponse200["Message"] = "List of all registered contacts with its channels obtained.";
+    okReponse200["Result"] = contactsChannelsList;
+    req.getAllContactsChannels = okReponse200
     return next();
   } catch {
     internalServerError500["Message"] = "An error has occurred while obtaining all the registered cities.";
@@ -180,6 +192,7 @@ module.exports = {
   getContactById,
   getContactByName,
   getAllContacts,
+  getAllContactsChannels,
   getContactsByCompanyId,
   updateContactById,
   deleteContactById

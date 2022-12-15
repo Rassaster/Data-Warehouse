@@ -6,7 +6,8 @@ const apiCountries = require("./api/countries-endpoints");
 const apiCities = require("./api/cities-endpoints");
 const apiCompanies = require("./api/companies-endpoints");
 const apiContacts = require("./api/contacts-endpoints");
-// const apiOrders = require("./api/orders-endpoint");
+const apiChannels = require("./api/channels-endpoints");
+
 
 router.use("/users", apiUsers);
 router.use("/regions", apiRegions);
@@ -14,7 +15,8 @@ router.use("/countries", apiCountries);
 router.use("/cities", apiCities);
 router.use("/companies", apiCompanies);
 router.use("/contacts", apiContacts);
-// router.use("/orders", apiOrders);
+router.use("/channels", apiChannels);
+
 
 // Exports:
 module.exports = router;

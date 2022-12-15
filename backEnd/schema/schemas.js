@@ -70,14 +70,23 @@ const companySchema = {
 };
 const contactSchema = {
   type: "object",
-  required: ["name_contact", "lastName_contact", "email_contact", "address_contact", "channels_contact", "id_company"],
+  required: ["name_contact", "lastName_contact", "profile_contact", "email_contact", "id_company"],
   properties: {
     name_contact: {type: "string"},
     lastName_contact: {type: "string"},
+    profile_contact: {type: "string"},
     email_contact: { type: "string", pattern: "^[A-Za-z0-9._-]*@[a-z]*[.]com$"},
-    address_contact: {type: "string"},
-    channels_contact: {type: "string"},
-    id_city: {type: "number"},
+    id_company: {type: "number"}
+  }
+};
+const channelSchema = {
+  type: "object",
+  required: ["type_channel", "account_channel", "preference_channel", "id_contact"],
+  properties: {
+    type_channel: {type: "string"},
+    account_channel: {type: "string"},
+    preference_channel: {type: "string"},
+    id_contact: {type: "number"}
   }
 };
 // Exports:
@@ -89,6 +98,7 @@ module.exports = {
   countrySchema,
   citySchema,
   companySchema,
-  contactSchema
+  contactSchema,
+  channelSchema
   // updateOrderStatusSchema
 };

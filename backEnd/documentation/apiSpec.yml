@@ -342,306 +342,6 @@ paths:
         204:
           description: "No Content: The deletion was successful."
   #+++++++++++++++++++++++++++++++++++++++++++++++++#
-  # CONTACTS ENDPOINTS:
-  /contacts:                         # (Admins + Users)>C+R.
-    post: #Create new contact.
-      summary: "Registration of new contact."
-      operationId: "registerContact"
-      description: "Creates a new contact registration with all the required schema information. Please refer to the 'req.registerSchema' in the Schemas section to understand how to grant or deny Admins permissions."
-      tags:
-        - admins
-        - users
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/req.registerContactSchema"
-      responses:
-        400:
-          description: "Bad Request: Something in the request body is missing or does not match the schema."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.unmatchedSchema"
-        409:
-          description: "Conflict: One of the received values must be unique in the data base and has been found registered in other user's information."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.registerConflict"
-        201:
-          description: "Created: User created successfully."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.userCreated"
-    get:  #Get all registered contacts. 
-      summary: "Obtain the accessible info of all users."
-      operationId: "getAllContacts"
-      description: "The server delivers all of the registered contacts' information."
-      tags:
-        - admins
-        - users
-      responses:
-        403:
-          description: "Forbidden: Not valid credentials."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.forbiddenAccess"
-        401:
-          description: "Unauthorized: The user does not have the permissions to execute the request."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.unauthorizedAccess"
-        200:
-          description: "OK: The list of all the registered users was obtained."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.getAllUsers"
-  /contacts/id:{contactID}:           # (Admins + Users)>R+U+D.
-    get:  # Get all registered contacts by ID. 
-      summary: "Obtain the contact's information by their ID."
-      operationId: "getContactById"
-      tags:
-        - admins
-        - users
-      parameters:
-        - name: contactID
-          in: path
-          description: ID of the contact.
-          required: true
-          schema:
-            type: string
-      responses:
-        403:
-          description: "Forbidden: Not valid credentials."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.forbiddenAccess"
-        401:
-          description: "Unauthorized: The user does not have the permissions to execute the request."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.unauthorizedAccess"
-        200:
-          description: "OK: If found, the user's information is delivered, otherwise, it is indicated that the user doesn't exists."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.getUser"
-    put:  # Update contact's information by their ID.
-      tags:
-      - admins
-      - users
-      summary: "Update the contact's info by their email."
-      operationId: "updateContactByID"
-      description: "Admins and Users can update any of the contact information."
-      parameters:
-        - name: contactID
-          in: path
-          description: ID of the contact.
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/req.updateContactSchema"
-      responses:
-        403:
-          description: "Forbidden: Not valid credentials."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.forbiddenAccess"
-        401:
-          description: "Unauthorized: The user does not have the permissions to execute the request."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.unauthorizedAccess"
-        400:
-          description: "Bad Request: Something in the request body is missing or does not match the schema."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.unmatchedSchema"
-        409:
-          description: "Conflict: One of the received values must be unique in the data base and has been found registered in other user's information."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.registerConflict"
-        200:
-          description: "OK: The request was received and processed, but no user was found."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.userNotFound"
-        204:
-          description: "No Content: The update was successful."
-    delete: # Delete a contact by their ID.
-      tags:
-        - admins
-        - users
-      summary: "Delete any contact by their ID."
-      operationId: "deleteContactByID"
-      description: "Admins and Users can delete any contact from the system's database."
-      parameters:
-      - name: contactID
-        in: path 
-        required: true
-        description: ID of the contact.
-        schema:
-          type: string
-      responses:
-        403:
-          description: "Forbidden: Not valid credentials."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.forbiddenAccess"
-        401:
-          description: "Unauthorized: The user does not have the permissions to execute the request."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.unauthorizedAccess"
-        200:
-          description: "OK: The request was received and processed, but no user was found."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.userNotFound"
-        204:
-          description: "No Content: The deletion was successful."  
-  /contacts/email:{contactEmail}:     # (Admins + Users)>R+U+D.
-    get:  # Get all registered contacts by Email. 
-      summary: "Obtain the contact's information by their Email."
-      operationId: "getContactByEmail"
-      tags:
-        - admins
-        - users
-      parameters:
-        - name: contactEmail
-          in: path
-          description: Email of the contact.
-          required: true
-          schema:
-            type: string
-      responses:
-        403:
-          description: "Forbidden: Not valid credentials."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.forbiddenAccess"
-        401:
-          description: "Unauthorized: The user does not have the permissions to execute the request."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.unauthorizedAccess"
-        200:
-          description: "OK: If found, the user's information is delivered, otherwise, it is indicated that the user doesn't exists."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.getUser"
-    put:  # Update contact's information by their Email.
-      tags:
-        - admins
-        - users
-      summary: "Update the contact's info by their Email."
-      operationId: "updateContactByEmail"
-      description: "Admins and Users can update any of the contact information."
-      parameters:
-        - name: contactEmail
-          in: path
-          description: Email of the contact.
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/req.updateContactSchema"
-      responses:
-        403:
-          description: "Forbidden: Not valid credentials."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.forbiddenAccess"
-        401:
-          description: "Unauthorized: The user does not have the permissions to execute the request."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.unauthorizedAccess"
-        400:
-          description: "Bad Request: Something in the request body is missing or does not match the schema."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.unmatchedSchema"
-        409:
-          description: "Conflict: One of the received values must be unique in the data base and has been found registered in other user's information."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.registerConflict"
-        200:
-          description: "OK: The request was received and processed, but no user was found."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.userNotFound"
-        204:
-          description: "No Content: The update was successful."
-    delete: # Delete a contact by their Email.
-      tags:
-        - admins
-        - users
-      summary: "Delete any contact by their Email."
-      operationId: "deleteContactByEmail"
-      description: "Admins and Users can delete any contact from the system's database."
-      parameters:
-      - name: contactEmail
-        in: path 
-        required: true
-        description: Email of the contact.
-        schema:
-          type: string
-      responses:
-        403:
-          description: "Forbidden: Not valid credentials."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.forbiddenAccess"
-        401:
-          description: "Unauthorized: The user does not have the permissions to execute the request."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.unauthorizedAccess"
-        200:
-          description: "OK: The request was received and processed, but no user was found."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/res.userNotFound"
-        204:
-          description: "No Content: The deletion was successful."
-  #+++++++++++++++++++++++++++++++++++++++++++++++++#
   # COMPANIES ENDPOINTS:
   /companies:                       # (Admins + Users)>C+R+U+D.
     post: #Create new company.
@@ -1203,6 +903,306 @@ paths:
   /cities/id:{cityID}:              # (Admins + Users)>R+U+D.
   /cities/name:{cityName}:          # (Admins + Users)>R+U+D.
   #+++++++++++++++++++++++++++++++++++++++++++++++++#
+    # CONTACTS ENDPOINTS:
+  /contacts:                         # (Admins + Users)>C+R.
+    post: #Create new contact.
+      summary: "Registration of new contact."
+      operationId: "registerContact"
+      description: "Creates a new contact registration with all the required schema information. Please refer to the 'req.registerSchema' in the Schemas section to understand how to grant or deny Admins permissions."
+      tags:
+        - admins
+        - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/req.registerContactSchema"
+      responses:
+        400:
+          description: "Bad Request: Something in the request body is missing or does not match the schema."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unmatchedSchema"
+        409:
+          description: "Conflict: One of the received values must be unique in the data base and has been found registered in other user's information."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.registerConflict"
+        201:
+          description: "Created: User created successfully."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.userCreated"
+    get:  #Get all registered contacts. 
+      summary: "Obtain the accessible info of all users."
+      operationId: "getAllContacts"
+      description: "The server delivers all of the registered contacts' information."
+      tags:
+        - admins
+        - users
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: The list of all the registered users was obtained."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.getAllUsers"
+  /contacts/id:{contactID}:           # (Admins + Users)>R+U+D.
+    get:  # Get all registered contacts by ID. 
+      summary: "Obtain the contact's information by their ID."
+      operationId: "getContactById"
+      tags:
+        - admins
+        - users
+      parameters:
+        - name: contactID
+          in: path
+          description: ID of the contact.
+          required: true
+          schema:
+            type: string
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: If found, the user's information is delivered, otherwise, it is indicated that the user doesn't exists."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.getUser"
+    put:  # Update contact's information by their ID.
+      tags:
+      - admins
+      - users
+      summary: "Update the contact's info by their email."
+      operationId: "updateContactByID"
+      description: "Admins and Users can update any of the contact information."
+      parameters:
+        - name: contactID
+          in: path
+          description: ID of the contact.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/req.updateContactSchema"
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        400:
+          description: "Bad Request: Something in the request body is missing or does not match the schema."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unmatchedSchema"
+        409:
+          description: "Conflict: One of the received values must be unique in the data base and has been found registered in other user's information."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.registerConflict"
+        200:
+          description: "OK: The request was received and processed, but no user was found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.userNotFound"
+        204:
+          description: "No Content: The update was successful."
+    delete: # Delete a contact by their ID.
+      tags:
+        - admins
+        - users
+      summary: "Delete any contact by their ID."
+      operationId: "deleteContactByID"
+      description: "Admins and Users can delete any contact from the system's database."
+      parameters:
+      - name: contactID
+        in: path 
+        required: true
+        description: ID of the contact.
+        schema:
+          type: string
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: The request was received and processed, but no user was found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.userNotFound"
+        204:
+          description: "No Content: The deletion was successful."  
+  /contacts/email:{contactEmail}:     # (Admins + Users)>R+U+D.
+    get:  # Get all registered contacts by Email. 
+      summary: "Obtain the contact's information by their Email."
+      operationId: "getContactByEmail"
+      tags:
+        - admins
+        - users
+      parameters:
+        - name: contactEmail
+          in: path
+          description: Email of the contact.
+          required: true
+          schema:
+            type: string
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: If found, the user's information is delivered, otherwise, it is indicated that the user doesn't exists."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.getUser"
+    put:  # Update contact's information by their Email.
+      tags:
+        - admins
+        - users
+      summary: "Update the contact's info by their Email."
+      operationId: "updateContactByEmail"
+      description: "Admins and Users can update any of the contact information."
+      parameters:
+        - name: contactEmail
+          in: path
+          description: Email of the contact.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/req.updateContactSchema"
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        400:
+          description: "Bad Request: Something in the request body is missing or does not match the schema."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unmatchedSchema"
+        409:
+          description: "Conflict: One of the received values must be unique in the data base and has been found registered in other user's information."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.registerConflict"
+        200:
+          description: "OK: The request was received and processed, but no user was found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.userNotFound"
+        204:
+          description: "No Content: The update was successful."
+    delete: # Delete a contact by their Email.
+      tags:
+        - admins
+        - users
+      summary: "Delete any contact by their Email."
+      operationId: "deleteContactByEmail"
+      description: "Admins and Users can delete any contact from the system's database."
+      parameters:
+      - name: contactEmail
+        in: path 
+        required: true
+        description: Email of the contact.
+        schema:
+          type: string
+      responses:
+        403:
+          description: "Forbidden: Not valid credentials."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.forbiddenAccess"
+        401:
+          description: "Unauthorized: The user does not have the permissions to execute the request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.unauthorizedAccess"
+        200:
+          description: "OK: The request was received and processed, but no user was found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/res.userNotFound"
+        204:
+          description: "No Content: The deletion was successful."
+#+++++++++++++++++++++++++++++++++++++++++++++++++#
 components:
   schemas:
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++#
@@ -1259,63 +1259,6 @@ components:
         last_update: 
           type: string
           example: "2021-07-08T14:41:50.000Z"
-    Company:
-      type: "object"
-      properties:
-        id_company: 
-          type: integer
-          example: 1
-        name_compnay: 
-          type: string
-          example: "Dunder & Mifflin Company"
-        address_compnay: 
-          type: string
-          example: "1725 Slough Avenue in Scranton, PA"
-        email_company: 
-          type: string
-          example: "jblackburn@dwenterprise.com"
-        phone_company: 
-          type: integer
-          example: 31243212
-        id_city:
-          type: integer
-          example: 23    
-        lastUpdate_company: 
-          type: string
-          example: "2021-07-08T14:41:50.000Z"
-    Contact:
-      type: "object"
-      properties:
-        contact_id: 
-          type: integer
-          example: 1
-        name: 
-          type: string
-          example: "Kelly"
-        last_name: 
-          type: string
-          example: "Kapour"
-        email: 
-          type: string
-          example: "jblackburn@dwenterprise.com"
-        company_id: 
-          type: integer
-          example: 3
-        city_id: 
-          type: integer
-          example: 5
-        address: 
-          type: string
-          example: "Harmington St. Nº 899-23"
-        last_update: 
-          type: string
-          example: "2021-07-08T14:41:50.000Z"
-        contact_channel:
-          type: string
-          example: "LinkedIn"
-        contact_info: 
-          type: string
-          example: "https://www.linkedin.com/in/rassaster/"
     Region:
       type: "object"
       properties:
@@ -1358,6 +1301,54 @@ components:
       id_region:
         type: number
         example: 1
+    Company:
+      type: "object"
+      properties:
+        id_company: 
+          type: integer
+          example: 1
+        name_compnay: 
+          type: string
+          example: "Dunder & Mifflin Company"
+        address_compnay: 
+          type: string
+          example: "1725 Slough Avenue in Scranton, PA"
+        email_company: 
+          type: string
+          example: "jblackburn@dwenterprise.com"
+        phone_company: 
+          type: integer
+          example: 31243212
+        id_city:
+          type: integer
+          example: 23    
+        lastUpdate_company: 
+          type: string
+          example: "2021-07-08T14:41:50.000Z"
+    Contact:
+      type: "object"
+      properties:
+        contact_id: 
+          type: integer
+          example: 1
+        name_contact: 
+          type: string
+          example: "Kelly"
+        lastName_contact: 
+          type: string
+          example: "Kapour"
+        email_contact: 
+          type: string
+          example: "jblackburn@dwenterprise.com"
+        profile_contact: 
+          type: string
+          example: "UX/UI"
+        id_company: 
+          type: integer
+          example: 3
+        last_update: 
+          type: string
+          example: "2021-07-08T14:41:50.000Z"
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++#
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++#
     #   REQUESTS  REQUESTS  REQUESTS  REQUESTS  REQUESTS   #
@@ -2099,6 +2090,11 @@ components:
     res.contactNotFound:
     #+++++++++++++++++++++++++++++++++++++++++++++++++++++++#
     #+++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+    ##  Channels' responses:
+    res.channelCreated:
+    res.getAllChannels:
+    res.getChannel:
+    res.channeltNotFound:
   securitySchemes:
     bearerAuth:
       type: http

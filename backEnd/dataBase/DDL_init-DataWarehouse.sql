@@ -99,11 +99,9 @@ CREATE TABLE Contacts (
     NOT NULL,
   lastName_contact varchar(60)
     NOT NULL,
+  profile_contact varchar(60)
+    NOT NULL,
   email_contact varchar(60)
-    NOT NULL,
-  address_contact varchar(60)
-    NOT NULL,
-  channels_contact SET("phone", "facebook", "whatsapp", "instagram", "linkedin")
     NOT NULL,
   id_company varchar(5)
     NOT NULL,
@@ -112,3 +110,18 @@ CREATE TABLE Contacts (
   PRIMARY KEY (id_contact)
 );
 -- *********************************************************
+-- Channels:
+CREATE TABLE Channels (
+  id_channel integer
+    NOT NULL
+    AUTO_INCREMENT,
+  type_channel varchar(60)
+    NOT NULL,
+  account_channel varchar(60)
+    NOT NULL,
+  preference_channel varchar(60)
+    NOT NULL,
+  id_contact varchar(5)
+    NOT NULL,
+  PRIMARY KEY (id_channel)
+);
