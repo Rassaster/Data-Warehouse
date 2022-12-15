@@ -7,6 +7,7 @@ import { FaTrashAlt, FaEdit, FaTimes, FaPlus, FaSort} from 'react-icons/fa'
 import { 
   Container, 
   Head, 
+  SelectedContactsActions,
   ActionBtnsContainer,
   ContactsTable, 
   TableHeadRow, 
@@ -240,10 +241,19 @@ function Contacts() {
     })
   }
 
+  const massiveDelete = () => {
+    selectedContacts.forEach(contact => triggerDeleteContact(contact))
+    setSelectedContacts([])
+  }
+
   useEffect(()=> {
     triggerViewAllContacts()
   }, [])
 
+  useEffect(()=> {
+    setSelectedContacts(selectedContacts)
+  }, [selectedContacts])
+  
   return (
 
     <Container>
@@ -257,14 +267,33 @@ function Contacts() {
               setCreateActive(true)
               triggerViewAllCompanies()
             }}
-            className="region-Add-Region"
+            className="add-contact"
           >
             Add Contact<FaPlus size={16} title="Add Country" />  
           </button>
         </ActionBtnsContainer>
+        <SelectedContactsActions>
+          <p className="contactsCounter">Selected contacts: {selectedContacts.length}</p>
+          <button className="contacts-Delete"
+            onClick={() => {
+              massiveDelete()
+            }}
+          >
+            Delete contacts
+            <FaTrashAlt size={18} title="Delete" />  
+          </button>
+        </SelectedContactsActions>
       <ContactsTable>
         <TableHeadRow>
-          <input type="checkbox" />
+          <input 
+            className="addRemoveContact" 
+            type="checkbox" 
+            checked={selectedContacts.length > 0 ? true : undefined}
+            onClick={()=>{
+              selectedContacts.length > 0 ? setSelectedContacts([]) : 
+              contactsList.forEach(contact => setSelectedContacts(prev => [...prev, contact.id_contact]))
+            }}
+          />
           <h5
             onClick={()=>{
               setActiveSort(true)
@@ -339,16 +368,25 @@ function Contacts() {
           {contactsList.map((contact, index) => {
             return (
               <TableContactRow  
-
+                className={
+                  !selectedContacts.includes(contact.id_contact) ? "not-selected" : "selected" 
+                }
                 key={`contact${index}`} 
                 contactId={contact.id_contact}
               >
                 <input 
+                  type="checkbox" 
+                  className="addRemoveContact"
+                  checked={selectedContacts.includes(contact.id_contact) ? true : false}
                   onClick={() => {
-                    alert("suerte :)") 
+                    if (!selectedContacts.includes(contact.id_contact)) {
+                      setSelectedContacts(prev => [...prev, contact.id_contact])
+                    } else {
+                      setSelectedContacts(prev => prev.filter(idContact => idContact !== contact.id_contact))
+                    }
                     console.log(selectedContacts)
                   }}
-                  type="checkbox" />
+                />
                 <div>
                   <p>{contact.name_contact} {contact.lastName_contact}</p>
                   <p className="emailChart">{contact.email_contact}</p>

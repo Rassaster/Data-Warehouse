@@ -34,6 +34,39 @@ export const Head = styled.div`
   align-items: flex-start;
   gap: 20px;
 `;
+export const SelectedContactsActions = styled.div`
+  width: 30%;
+  margin: 0; 
+  padding: 10px;
+  border-radius: 5px;
+  border: 2px solid #9f0000;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .contactsCounter {
+    font-weight: 700;
+  }
+  
+  button {
+    width: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 2px solid #000;
+    border-radius: 5px;
+    padding: 8px;
+    background: unset;
+    transition: all .3s ease-in-out;
+  }
+  .contacts-Delete:hover {
+    font-weight: 700;
+    color: #fff;
+    border-color: red;
+    background: red;
+  }
+`;
 export const ActionBtnsContainer = styled.div`
 width: 12%;
 
@@ -45,7 +78,7 @@ width: 12%;
     align-items: center;
     border: 2px solid #000;
     border-radius: 5px;
-    padding: 2px;
+    padding: 10px;
     background: unset;
     transition: all .3s ease-in-out;
   }
@@ -74,9 +107,11 @@ display: grid;
 grid-template-columns: 0.2fr 0.7fr 0.8fr 0.6fr 0.4fr 0.5fr 0.4fr;
 background: #78866b;
 padding: 20px 20px;
-// border: 1px solid black;
 justify-content: center;
 
+.addRemoveContact {
+  cursor: pointer;
+}
 
 h5 {
   display: flex;
@@ -96,9 +131,11 @@ export const TableContactRow = styled.div`
 :nth-child(2n):hover {
   background: pink;
 }
-.selected {
-  background: #00800099;
+
+:nth-child(2n) {
+  background: unset;
 }
+
 display: grid;
 grid-template-columns: 0.2fr 0.7fr 0.8fr 0.6fr 0.4fr 0.5fr 0.4fr;
 border-top: 1px solid #000;
@@ -108,10 +145,9 @@ align-items: center;
 background: #9aab8a;
 transition: all .3s ease-in-out;
 
-:nth-child(2n) {
-  background: unset;
+.addRemoveContact {
+  cursor: pointer;
 }
-
 .emailChart {
   font-size: 12px;
   opacity: 0.8;
