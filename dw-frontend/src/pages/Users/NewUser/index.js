@@ -32,7 +32,7 @@ function NewUser() {
   const refInputIsAdmin = useRef();
   const refInputPassword = useRef();
 
-  // Declaration of Request Options:
+  // Declaration of Request Options: POST New user
   const createNewUserRequestHeaders = {
     "Content-Type": "application/json"
   };
@@ -50,7 +50,6 @@ function NewUser() {
     body: createNewUserRequestData,
     redirect: 'follow'
   }
-
   const triggerUserCreation = () => {
     const userCreationResponse = api(`${BASE_URL}${CREATE_USER}`, createNewUserRequestInfo);
     userCreationResponse.then(response => {

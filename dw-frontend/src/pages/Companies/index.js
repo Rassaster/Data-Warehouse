@@ -3,8 +3,17 @@ import { Link, Navigate } from "react-router-dom";
 import api from '../../services/api';
 import UserAuthContext from '../../context/auth';
 
-import { FaTrashAlt, FaEdit, FaTimes} from 'react-icons/fa'
-import { Container, Head, UsersTable, TableHeadRow, TableUserRow, OverlayUpdate, FormContainer, InputLabelContainer } from "./styles";
+import { FaTrashAlt, FaEdit, FaTimes, FaPlus} from 'react-icons/fa'
+import { 
+  Container, 
+  Head, 
+  ActionBtnsContainer,
+  CompaniesTable, 
+  TableHeadRow, 
+  TableCompanyRow, 
+  OverlayUpdate, 
+  FormContainer, 
+  InputLabelContainer } from "./styles";
 import './styles.css'
 
 const loggedOff = {isLoggedIn: false, token: '', isAdmin: ''}
@@ -12,14 +21,9 @@ const loggedOff = {isLoggedIn: false, token: '', isAdmin: ''}
 // Global Constants for API Request:
 const BASE_URL = "http://localhost:3008/dataWarehouse";
 
-
-const ALL_USERS = "/users/allRegistered";
-const UPDATE_USER = "/users/updateUserId:";
-const DELETE_USER = "/users/deleteUserId:";
-
 const ALL_COMPANIES = "/companies/listAll";
-const GET_COMPANY_BYID = "/companies/companyId:";
 const CREATE_COMPANIES = "/companies/create";
+const GET_COMPANY_BYID = "/companies/companyId:";
 const UPDATE_COMPANIES = "/companies/updateCompanyId:";
 const DELETE_COMPANIES = "/companies/deleteCompanyId:";
 
@@ -29,8 +33,14 @@ function Companies() {
   
   // Declaration of States:
   const [companiesList, setCompaniesList] = useState([])
-  const [editActive, setEditActive] = useState(false)
   
+  const [companyCreated, setCompanyCreated] = useState(false)
+  const [createOtherCompanyBtn, setCreateOtherCompanyBtn] = useState(false)
+
+  const [popupOpen, setPopupOpen] = useState(false)
+  const [createActive, setCreateActive] = useState(false)
+  const [editActive, setEditActive] = useState(false)
+
   const [companyNameValue, setCompanyNameValue] = useState("")
   const [companyAddressValue, setCompanyAddressValue] = useState("")
   const [companyEmailValue, setCompanyEmailValue] = useState("")
@@ -39,6 +49,12 @@ function Companies() {
   const [companyIdToUpdate, setCompanyIdToUpdate] = useState()
   
   // Declaration of References:
+  const refInputCompanyNameNew = useRef();
+  const refInputCompanyAddressNew = useRef();
+  const refInputCompanyEmailNew = useRef();
+  const refInputCompanyPhoneNew = useRef();
+  const refInputCompany_CityIdNew = useRef();
+
   const refInputCompanyName = useRef();
   const refInputCompanyAddress = useRef();
   const refInputCompanyEmail = useRef();
@@ -64,6 +80,36 @@ function Companies() {
       }
       if (response.Status === 200) {
         setCompaniesList(response.Result)
+      }
+    })
+  }
+
+  // Declaration of Request Options: POST New Company
+  const createNewCompanyRequestHeaders = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authState.token}`
+  };
+  const createNewCompanyRequestData = JSON.stringify({
+    "name_company" : companyNameValue,
+    "address_company" : companyAddressValue,
+    "email_company" : companyEmailValue,
+    "phone_company" : companyPhoneValue,
+    "id_city" : Number(company_CityId)
+  });
+  const createNewCompanyRequestInfo = {
+    method: 'POST',
+    headers: createNewCompanyRequestHeaders,
+    body: createNewCompanyRequestData,
+    redirect: 'follow'
+  }
+  const triggerCompanyCreation = () => {
+    const companyCreationResponse = api(`${BASE_URL}${CREATE_COMPANIES}`, createNewCompanyRequestInfo);
+    companyCreationResponse.then(response => {
+      console.log("RES", response)
+      if(response.Status === 201) {
+        triggerViewAllCompanies()
+        setPopupOpen(false)
+        setCreateActive(false)
       }
     })
   }
@@ -101,10 +147,7 @@ function Companies() {
       }
     })
   }
-
-
-
-  // Declaration of Request Options: PUT User
+  // Declaration of Request Options: PUT Company
   const updateCompanyRequestHeaders = {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${authState.token}`
@@ -131,12 +174,12 @@ function Companies() {
       }
       if (response.status === 204) {
         triggerViewAllCompanies()
+        setPopupOpen(false)
         setEditActive(false)
       }
     })
   }
-
-  // Declaration of Request Options: DELETE User
+  // Declaration of Request Options: DELETE Company
   const deleteCompanyRequestHeaders = {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${authState.token}`
@@ -170,7 +213,18 @@ function Companies() {
       <Head>
         <h1>COMPANIES</h1>
       </Head>
-      <UsersTable>
+        <ActionBtnsContainer>
+          <button
+            onClick={()=>{
+              setPopupOpen(true)
+              setCreateActive(true)
+            }}
+            className="region-Add-Region"
+          >
+            Add Company<FaPlus size={16} title="Add Country" />  
+          </button>
+        </ActionBtnsContainer>
+      <CompaniesTable>
         <TableHeadRow>
           <h5>Name</h5>
           <h5>City, Country</h5>
@@ -183,7 +237,7 @@ function Companies() {
         <>
           {companiesList.map((company, index) => {
             return (
-              <TableUserRow key={`company${index}`} companyId={company.id_company}>
+              <TableCompanyRow key={`company${index}`} companyId={company.id_company}>
                 <div>{company.name_company}</div>
                 <div>{company.name_city}, {company.name_country}</div>
                 <div>{company.address_company}</div>
@@ -202,95 +256,202 @@ function Companies() {
                     className="companies-Update"
                     onClick={() => {
                       triggerGetCompanyById(company.id_company)
+                      setPopupOpen(true)
                       setEditActive(true)
                     }}
                   >
                     <FaEdit size={18} title="Edit" />  
                   </button>
                 </div>
-              </TableUserRow>
+              </TableCompanyRow>
             )
           })}
         </>
         : 
-        <div>No Users</div>
+        <div>No Companies</div>
       }
-      </UsersTable>
-      {editActive ? 
+      </CompaniesTable>
+      {popupOpen ? 
         <OverlayUpdate>
-          <FormContainer>
-            <h2>Edit Company</h2>
-            <button className="closeEdit" onClick={()=>{setEditActive(false)}}>
-              <FaTimes size={18} />
-            </button>
-            <InputLabelContainer>
-              <label htmlFor="companyName">Company Name</label>
-              <input 
-                id="companyName" 
-                name="companyName"
-                type="text"
-                ref={refInputCompanyName}
-                onChange={()=>{
-                  setCompanyNameValue(refInputCompanyName.current.value)
-                }} 
-              />
-            </InputLabelContainer>
-            <InputLabelContainer>
-              <label htmlFor="Address">Address</label>
-              <input 
-                id="Address" 
-                name="Address"
-                type="text"
-                ref={refInputCompanyAddress}
-                onChange={()=>{
-                  setCompanyAddressValue(refInputCompanyAddress.current.value)
-                }} 
-              />
-            </InputLabelContainer>
-            <InputLabelContainer>
-              <label htmlFor="email">Email</label>
-              <input 
-                id="email" 
-                name="email"
-                type="email"
-                ref={refInputCompanyEmail}
-                onChange={()=>{
-                  setCompanyEmailValue(refInputCompanyEmail.current.value)
-                }} 
-              />
-            </InputLabelContainer>
 
-            <InputLabelContainer>
-              <label htmlFor="phone">Phone</label>
-              <input 
-                id="phone" 
-                name="phone"
-                type="text"
-                ref={refInputCompanyPhone}
-                onChange={()=>{
-                  setCompanyPhoneValue(refInputCompanyPhone.current.value)
-                }} 
-              />
-            </InputLabelContainer>
-            <InputLabelContainer>
-              <label htmlFor="cityId">City Id</label>
-              <input 
-                id="cityId" 
-                name="cityId"
-                type="text"
-                ref={refInputCompany_CityId}
-                onChange={()=>{
-                  setCompany_CityId(refInputCompany_CityId.current.value)
-                }} 
+          {/* CREATE COMPANY POPUP */}
+          {createActive ? 
+            <FormContainer>
+              <h2>Create Company</h2>
+              <button 
+                onClick={()=>{
+                  setPopupOpen(false)
+                  setCreateActive(false)
+                }}
+                className="closeEdit"
+              >
+                <FaTimes size={18} />
+              </button>
+
+              <InputLabelContainer>
+                <label htmlFor="companyNameNew">Company Name</label>
+                <input 
+                  id="companyName" 
+                  name="companyName"
+                  type="text"
+                  ref={refInputCompanyNameNew}
+                  onChange={()=>{
+                    setCompanyNameValue(refInputCompanyNameNew.current.value)
+                  }} 
                 />
-            </InputLabelContainer>
-      
-            <InputLabelContainer>
-                <button onClick={()=>{
-                  triggerUpdateCompany(companyIdToUpdate)
-                }}> Update Company </button >
-            </InputLabelContainer>
-          </FormContainer>
+              </InputLabelContainer>
+
+              <InputLabelContainer>
+                <label htmlFor="AddressNew">Address</label>
+                <input 
+                  id="AddressNew" 
+                  name="AddressNew"
+                  type="text"
+                  ref={refInputCompanyAddressNew}
+                  onChange={()=>{
+                    setCompanyAddressValue(refInputCompanyAddressNew.current.value)
+                  }} 
+                />
+              </InputLabelContainer>
+
+              <InputLabelContainer>
+                <label htmlFor="emailNew">Email</label>
+                <input 
+                  id="emailNew" 
+                  name="emailNew"
+                  type="email"
+                  ref={refInputCompanyEmailNew}
+                  onChange={()=>{
+                    setCompanyEmailValue(refInputCompanyEmailNew.current.value)
+                  }} 
+                />
+              </InputLabelContainer>
+  
+              <InputLabelContainer>
+                <label htmlFor="phoneNew">Phone</label>
+                <input 
+                  id="phoneNew" 
+                  name="phoneNew"
+                  type="text"
+                  ref={refInputCompanyPhoneNew}
+                  onChange={()=>{
+                    setCompanyPhoneValue(refInputCompanyPhoneNew.current.value)
+                  }} 
+                />
+              </InputLabelContainer>
+
+              <InputLabelContainer>
+                <label htmlFor="cityIdNew">City Id</label>
+                <input 
+                  id="cityIdNew" 
+                  name="cityIdNew"
+                  type="text"
+                  ref={refInputCompany_CityIdNew}
+                  onChange={()=>{
+                    setCompany_CityId(refInputCompany_CityIdNew.current.value)
+                  }} 
+                  />
+              </InputLabelContainer>
+
+              <InputLabelContainer>
+                  <button onClick={()=>{
+                    triggerCompanyCreation()
+                  }}> Create Company </button >
+              </InputLabelContainer>
+            </FormContainer>      
+            : 
+            <></>
+          }
+
+          {/* UPDATE COMPANY POPUP */}
+          {editActive ? 
+            <FormContainer>
+              <h2>Edit Company</h2>
+              <button 
+                onClick={()=>{
+                  setPopupOpen(false)
+                  setEditActive(false)
+                }}
+                className="closeEdit"
+              >
+                <FaTimes size={18} />
+              </button>
+              
+              <InputLabelContainer>
+                <label htmlFor="companyName">Company Name</label>
+                <input 
+                  id="companyName" 
+                  name="companyName"
+                  type="text"
+                  ref={refInputCompanyName}
+                  onChange={()=>{
+                    setCompanyNameValue(refInputCompanyName.current.value)
+                  }} 
+                />
+              </InputLabelContainer>
+
+              <InputLabelContainer>
+                <label htmlFor="Address">Address</label>
+                <input 
+                  id="Address" 
+                  name="Address"
+                  type="text"
+                  ref={refInputCompanyAddress}
+                  onChange={()=>{
+                    setCompanyAddressValue(refInputCompanyAddress.current.value)
+                  }} 
+                />
+              </InputLabelContainer>
+
+              <InputLabelContainer>
+                <label htmlFor="email">Email</label>
+                <input 
+                  id="email" 
+                  name="email"
+                  type="email"
+                  ref={refInputCompanyEmail}
+                  onChange={()=>{
+                    setCompanyEmailValue(refInputCompanyEmail.current.value)
+                  }} 
+                />
+              </InputLabelContainer>
+  
+              <InputLabelContainer>
+                <label htmlFor="phone">Phone</label>
+                <input 
+                  id="phone" 
+                  name="phone"
+                  type="text"
+                  ref={refInputCompanyPhone}
+                  onChange={()=>{
+                    setCompanyPhoneValue(refInputCompanyPhone.current.value)
+                  }} 
+                />
+              </InputLabelContainer>
+
+              <InputLabelContainer>
+                <label htmlFor="cityId">City Id</label>
+                <input 
+                  id="cityId" 
+                  name="cityId"
+                  type="text"
+                  ref={refInputCompany_CityId}
+                  onChange={()=>{
+                    setCompany_CityId(refInputCompany_CityId.current.value)
+                  }} 
+                  />
+              </InputLabelContainer>
+
+              <InputLabelContainer>
+                  <button onClick={()=>{
+                    triggerUpdateCompany(companyIdToUpdate)
+                  }}> Update Company </button >
+              </InputLabelContainer>
+            </FormContainer>      
+            : 
+            <></>
+          }
+
         </OverlayUpdate> 
         : 
         <></>

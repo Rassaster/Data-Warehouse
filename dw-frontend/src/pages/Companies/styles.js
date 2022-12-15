@@ -34,9 +34,29 @@ export const Head = styled.div`
   align-items: flex-start;
   gap: 20px;
 `;
+export const ActionBtnsContainer = styled.div`
+width: 12%;
 
+  button {
+    width: 100%;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border: 2px solid #000;
+    border-radius: 5px;
+    padding: 2px;
+    background: unset;
+    transition: all .3s ease-in-out;
+  }
+  button:hover {
+    border-color: royalblue;
+    background: royalblue;
+    color: white;
+  }
+`;
 
-export const UsersTable = styled.div`
+export const CompaniesTable = styled.div`
 position: relative;
 border: 2px solid #78866b;
 border-radius: 5px;
@@ -62,7 +82,7 @@ h5 {
   color: #fff;
 }
 `;
-export const TableUserRow = styled.div`
+export const TableCompanyRow = styled.div`
 display: grid;
 grid-template-columns: 0.5fr 0.8fr 1fr 0.7fr 0.5fr 0.5fr;
 border-top: 1px solid #000;
