@@ -53,7 +53,7 @@ function AllUsers() {
     const viewAllUsersResponse = api(`${BASE_URL}${ALL_USERS}`, viewAllUsersRequestInfo);
     viewAllUsersResponse.then(response => {
       console.log(response)
-      if (response.Status === 403) {
+      if (response.Status === 403 || response.status === 403) {
         setAuthState(loggedOff)
       }
       if (response.Status === 200) {
@@ -85,7 +85,7 @@ function AllUsers() {
     const updateUserResponse = api(`${BASE_URL}${UPDATE_USER}${userId}`, updateUserRequestInfo);
     updateUserResponse.then(response => {
       console.log("PUT", response)
-      if (response.status === 403) {
+      if (response.status === 403 || response.status === 403) {
         setAuthState(loggedOff)
       }
       if (response.status === 204) {
@@ -109,7 +109,7 @@ function AllUsers() {
     const deleteUserResponse = api(`${BASE_URL}${DELETE_USER}${userId}`, deleteUserRequestInfo);
     deleteUserResponse.then(response => {
       console.log("DELETE", response)
-      if (response.status === 403) {
+      if (response.status === 403 || response.status === 403) {
         setAuthState(loggedOff)
       }
       if (response.status === 204) {

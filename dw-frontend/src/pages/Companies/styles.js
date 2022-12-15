@@ -50,7 +50,7 @@ export const TableHeadRow = styled.div`
 position: sticky;
 top: 0;
 display: grid;
-grid-template-columns: 1fr 1fr 1fr 0.5fr 0.5fr;
+grid-template-columns: 0.5fr 0.8fr 1fr 0.7fr 0.5fr 0.5fr;
 background: #78866b;
 padding: 20px 20px;
 // border: 1px solid black;
@@ -61,11 +61,10 @@ h5 {
   font: normal normal 700 normal 16px/120% sans-serif;
   color: #fff;
 }
-}
 `;
 export const TableUserRow = styled.div`
 display: grid;
-grid-template-columns: 1fr 1fr 1fr 0.5fr 0.5fr;
+grid-template-columns: 0.5fr 0.8fr 1fr 0.7fr 0.5fr 0.5fr;
 border-top: 1px solid #000;
 height: 35px;
 padding: 0 20px;
@@ -129,12 +128,10 @@ export const FormContainer = styled.div`
   gap: 10px 0;
   grid-template-columns: 1fr 1fr;
   background: rgba(120, 134, 107, 1);
+  align-items: center;
 
-  .isAdminInput {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    cursor: pointer;
+  h2 {
+    grid-column: 1 / -1;
   }
 
   .closeEdit {
