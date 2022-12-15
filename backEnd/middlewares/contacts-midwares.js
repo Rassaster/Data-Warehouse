@@ -8,25 +8,21 @@ const { newContact, selectFromTableWhereFieldIsValue, selectAllFromTable, select
 // Register a new contact:
 const createNewContact = async (req,res, next) => {
   try {
-    console.log(1)
     let date = moment().format('YYYY-MM-DD HH:mm:ss');
-    const {name_contact, lastName_contact, profile_contact, email_contact, id_company} = req.body;
-    console.log(2)
-    const newRegister = await newContact(date, name_contact, lastName_contact, profile_contact, email_contact, id_company);
-    console.log(3)
+    const {name_contact, lastName_contact, profile_contact, email_contact, id_company, interest_contact} = req.body;
+    const newRegister = await newContact(date, name_contact, lastName_contact, profile_contact, email_contact, id_company, interest_contact);
     const createdContact = {
       name_contact: req.body.name_contact,
       lastName_contact: req.body.lastName_contact,
       profile_contact: req.body.profile_contact,
       email_contact: req.body.email_contact,
       id_company: req.body.id_company,
+      interest_contact: req.body.interest_contact,
       contact_id: newRegister[0]
     };
-    console.log(4)
     createdResponse201["Message"] = "Contact created successfully.";
     createdResponse201["Result"] = createdContact;
     req.contactCreation = createdResponse201;
-    console.log(5)
     return next();
   } catch (error) {
     internalServerError500["Message"] = error.parent.sqlMessage;

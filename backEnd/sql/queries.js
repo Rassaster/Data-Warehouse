@@ -36,9 +36,9 @@ const newCompany =  (last_update, name_company, address_company, email_company, 
     type: sequelize.QueryTypes.INSERT
   });
 };
-const newContact =  (last_update, name_contact, lastName_contact, profile_contact, email_contact, id_company) => {
-  return sequelize.query("INSERT INTO contacts(last_update, name_contact, lastName_contact, profile_contact, email_contact, id_company) VALUES(?, ?, ?, ?, ?, ?)", {
-    replacements: [last_update, name_contact, lastName_contact, profile_contact, email_contact, id_company],
+const newContact =  (last_update, name_contact, lastName_contact, profile_contact, email_contact, id_company, interest_contact) => {
+  return sequelize.query("INSERT INTO contacts(last_update, name_contact, lastName_contact, profile_contact, email_contact, id_company, interest_contact) VALUES(?, ?, ?, ?, ?, ?, ?)", {
+    replacements: [last_update, name_contact, lastName_contact, profile_contact, email_contact, id_company, interest_contact],
     type: sequelize.QueryTypes.INSERT
   });
 };

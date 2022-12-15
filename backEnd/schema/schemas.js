@@ -76,7 +76,8 @@ const contactSchema = {
     lastName_contact: {type: "string"},
     profile_contact: {type: "string"},
     email_contact: { type: "string", pattern: "^[A-Za-z0-9._-]*@[a-z]*[.]com$"},
-    id_company: {type: "number"}
+    id_company: {type: "number"},
+    interest_contact: {type: "string"}
   }
 };
 const channelSchema = {

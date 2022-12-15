@@ -105,6 +105,8 @@ CREATE TABLE Contacts (
     NOT NULL,
   id_company varchar(5)
     NOT NULL,
+  interest_contact varchar(60)
+    NOT NULL,
   last_update datetime
     NOT NULL,
   PRIMARY KEY (id_contact)
