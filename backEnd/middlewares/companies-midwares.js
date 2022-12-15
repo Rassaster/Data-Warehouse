@@ -2,7 +2,7 @@ const moment = require("moment");
 // Import Server Responses:
 const {  okReponse200, createdResponse201, conflictResponse409, internalServerError500 } = require("../serverResponses")
 // Import MYSQL Queries functions:
-const { newCompany, selectFromTableWhereFieldIsValue, selectAllFromTable, selectAllCompaniesWithCity, selectCompaniesFromCityId, updateTableRegisterWhereIdIsValue, deleteTableRegisterWhereIdIsValue } = require("../sql/queries"); 
+const { newCompany, selectFromTableWhereFieldIsValue, selectAllFromTable, selectAllCompaniesWithLocations, selectCompaniesFromCityId, updateTableRegisterWhereIdIsValue, deleteTableRegisterWhereIdIsValue } = require("../sql/queries"); 
 // ***************************************** MIDDLEWARES *********************************************
 // -createNewCompany;
 // Register a new company:
@@ -81,7 +81,7 @@ const getCompanyByName = async (req, res, next) => {
 // -getAllCompanies:
 const getAllCompanies = async (req, res, next) => {
   try {
-    const companiesList = await selectAllCompaniesWithCity();
+    const companiesList = await selectAllCompaniesWithLocations();
     okReponse200["Message"] = "List of all registered companies obtained.";
     okReponse200["Result"] = companiesList;
     req.getAllCompanies = okReponse200

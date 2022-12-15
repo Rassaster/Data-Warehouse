@@ -106,9 +106,9 @@ const selectContactsFromCompanyId = (companyId) => {
   });
 };
 
-// SELECT comp.*, ci.name_city, co.name_country FROM Companies AS comp JOIN Cities as ci ON comp.id_city = ci.id_city JOIN Countries as co ON ci.id_country=co.id_country;
-const selectAllCompaniesWithCity = () => {
-  return sequelize.query("SELECT comp.*, ci.name_city, co.name_country FROM Companies AS comp JOIN Cities as ci ON comp.id_city = ci.id_city JOIN Countries as co ON ci.id_country=co.id_country;", {
+// SELECT comp.*, ci.name_city, co.name_country, re.name_region FROM Companies AS comp JOIN Cities as ci ON comp.id_city = ci.id_city JOIN Countries as co ON ci.id_country=co.id_country JOIN Regions as re ON co.id_region=re.id_region;
+const selectAllCompaniesWithLocations = () => {
+  return sequelize.query("SELECT comp.*, ci.name_city, co.name_country, re.name_region FROM Companies AS comp JOIN Cities as ci ON comp.id_city = ci.id_city JOIN Countries as co ON ci.id_country=co.id_country JOIN Regions as re ON co.id_region=re.id_region;", {
     type: sequelize.QueryTypes.SELECT
   })
 };
@@ -169,7 +169,7 @@ module.exports = {
   selectRegionsTree,
   selectCountriesFromRegionId,
   selectCitiesFromCountryId,
-  selectAllCompaniesWithCity,
+  selectAllCompaniesWithLocations,
   selectCompaniesFromCityId,
   selectContactsFromCompanyId,
   selectChannelsFromContactId,
