@@ -127,8 +127,9 @@ const selectContactJoinedChannels = () => {
   })
 };
 // SELECT ch.*, con.name_contact, con.lastName_contact, con.id_contact FROM Channels AS ch JOIN Contacts as con ON ch.id_contact = con.id_contact;
-const selectChannelsFromContactId = () => {
-  return sequelize.query("SELECT ch.*, con.name_contact, con.lastName_contact, con.id_contact FROM Channels AS ch JOIN Contacts as con ON ch.id_contact = con.id_contact;", {
+const selectChannelsFromContactId = (contactId) => {
+  return sequelize.query("SELECT ch.*, con.name_contact, con.lastName_contact, con.id_contact FROM Channels AS ch JOIN Contacts as con ON ch.id_contact = con.id_contact WHERE ch.id_contact = ?;", {
+    replacements: [ contactId ],
     type: sequelize.QueryTypes.SELECT
   })
 };
