@@ -429,7 +429,7 @@ function Locations() {
 
   return (
     <Container>
-      <Link to="/"> Home </Link>
+      <Link to="/"> Back to Contacts </Link>
       <Head>
         <h1>Locations</h1>
       </Head>

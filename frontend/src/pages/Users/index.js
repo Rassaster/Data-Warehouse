@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Link } from "react-router-dom";
 import api from '../../services/api';
 import UserAuthContext from '../../context/auth';
+
+import { Container, Head } from "./styles";
+
 import './styles.css'
 
 // Global Constants for API Request:
@@ -16,9 +19,15 @@ function Users() {
 
   return (
     <>
-      <h1>USERS</h1>
+    <Container>
+      <Link to="/"> Back to Contacts </Link>
+      <Head>
+        <h1>USERS</h1>
+      </Head>
       <Link to="/users/new">Register a New User</Link>
       <Link to="/users/viewAll">View All Users</Link>
+
+    </Container>
     </>
 
   )

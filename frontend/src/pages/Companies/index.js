@@ -206,7 +206,7 @@ function Companies() {
   return (
 
     <Container>
-      <Link to="/"> Back to Home </Link>
+      <Link to="/"> Back to Contacts </Link>
       <Head>
         <h1>COMPANIES</h1>
       </Head>
