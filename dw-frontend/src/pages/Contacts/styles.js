@@ -175,6 +175,7 @@ transition: all .3s ease-in-out;
 :hover .dots,
 :nth-child(2n):hover .dots {
   opacity: 0;
+  z-index: -10;
 }
 :hover button,
 :nth-child(2n):hover button {
@@ -245,6 +246,77 @@ export const FormContainer = styled.div`
     height: fit-content;
   }
 `;
+export const PrimaryContactInformation = styled.div`
+flex-wrap: wrap;
+  border: 2px solid green;
+  background: #00800078;
+  border-radius: 5px;
+  padding: 10px;
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  .primayLabelInputContact {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .locationContainer {
+    display: flex;
+    
+    div {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+  }  
+`;
+export const SecundaryContactInformation = styled.div`
+  border: 2px solid orange;
+  background: #ffa50057;
+  border-radius: 5px;
+  padding: 10px;
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  
+  .interestContactCont {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    
+    select {
+      width: 20%;
+    }
+  }
+  `;
+  
+  export const ContactChannels = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: end;
+  gap: 18px;
+  
+  .channelContactCont {
+    display: flex;
+    flex-direction: column;
+
+    button {
+      width: 80%;
+      height: 32px;
+    }
+  }
+  .channelAdded {
+    color: green;
+    text-align: center;
+    width: 100%;
+  }
+
+`;
 export const InputLabelContainer = styled.div`
   width: 45%;
 
@@ -287,11 +359,24 @@ export const InputLabelContainer = styled.div`
     background: #000;
     color: #fff;
   }
-
+  button[disabled] {
+    opacity: 0.4
+  }
+  button[disabled]:hover {
+    cursor: not-allowed;
+    background: #fff;
+    color: #000;
+  }
 
   div {
     margin-top: 10px;
     width: 180%;
     font: normal normal 700 normal 14px/120% sans-serif;
   }
+
+  .typeContactChannel {
+    font: normal normal 700 normal 18px/120% sans-serif;
+    color: royalblue;
+  }
+
 `;

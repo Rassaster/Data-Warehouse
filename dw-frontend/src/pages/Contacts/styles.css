@@ -1,3 +1,6 @@
 .selected {
   background: #3cdd3c99 !important;
 }
+*[disabled] {
+  cursor: not-allowed;
+}

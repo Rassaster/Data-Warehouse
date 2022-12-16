@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import api from '../../services/api';
 import UserAuthContext from '../../context/auth';
 
-import { FaTrashAlt, FaEdit, FaTimes, FaPlus, FaSort} from 'react-icons/fa'
+import { FaTrashAlt, FaEdit, FaTimes, FaPlus, FaSort, FaCheck} from 'react-icons/fa'
 import { 
   Container, 
   Head, 
@@ -13,7 +13,10 @@ import {
   TableHeadRow, 
   TableContactRow, 
   OverlayUpdate, 
-  FormContainer, 
+  FormContainer,
+  PrimaryContactInformation,
+  SecundaryContactInformation,
+  ContactChannels,
   InputLabelContainer } from "./styles";
 import './styles.css'
 
@@ -30,6 +33,10 @@ const DELETE_CONTACTS = "/contacts/deleteContactId:";
 
 const ALL_COMPANIES = "/companies/listAll";
 
+const CREATE_CHANNEL = "/channels/create";
+const UPDATE_CHANNEL = "/channels/updateChannelId:";
+const DELETE_CHANNEL = "/channels/deleteChannelId:";
+
 function Contacts() {
   // Declaration of Global Auth Context
   const { authState, setAuthState } = useContext(UserAuthContext);
@@ -37,12 +44,14 @@ function Contacts() {
   // Declaration of States:
   const [contactsList, setContactsList] = useState([])
   const [companiesList, setCompaniesList] = useState([])
+  const [selectedCompany, setSelectedCompany] = useState()
 
   const [popupOpen, setPopupOpen] = useState(false)
   const [createActive, setCreateActive] = useState(false)
   const [editActive, setEditActive] = useState(false)
 
   const [selectedContacts, setSelectedContacts] = useState([])
+  const [channelsToAdd, setChannelsToAdd] = useState([])
 
   const [activeSort, setActiveSort] = useState(false)
   const [activeSortContact, setActiveSortContact] = useState()
@@ -58,7 +67,17 @@ function Contacts() {
   const [contact_CompanyId, setContact_CompanyId] = useState("")
   const [contactInterestValue, setContactInterestValue] = useState("")
   const [contactIdToUpdate, setContactIdToUpdate] = useState()
-  
+
+  const [contact_ChannelAccountFacebookValue, setContact_ChannelAccountFacebookValue] = useState("")
+  const [contact_ChannelPreferenceFacebookValue, setContact_ChannelPreferenceFacebookValue] = useState("")
+  const [facebookAdded, setFacebookAdded] = useState()
+  const [linkedinAdded, setLinkedinAdded] = useState()
+  const [twitterAdded, setTwitterAdded] = useState()
+  const [contact_ChannelAccountLinkedinValue, setContact_ChannelAccountLinkedinValue] = useState("")
+  const [contact_ChannelPreferenceLinkedinValue, setContact_ChannelPreferenceLinkedinValue] = useState("")
+  const [contact_ChannelAccountTwitterValue, setContact_ChannelAccountTwitterValue] = useState("")
+  const [contact_ChannelPreferenceTwitterValue, setContact_ChannelPreferenceTwitterValue] = useState("")
+
   // Declaration of References:
   const refInputContactNameNew = useRef();
   const refInputContactLastNameNew = useRef();
@@ -66,6 +85,13 @@ function Contacts() {
   const refInputContactEmailNew = useRef();
   const refInputContact_CompanyIdNew = useRef();
   const refInputContactInterestlNew = useRef();
+  const refInputContact_ChannelAccountFacebookNew = useRef();
+  const refInputContact_ChannelPreferenceFacebookNew = useRef();
+  const refInputContact_ChannelAccountLinkedinNew = useRef();
+  const refInputContact_ChannelPreferenceLinkedinNew = useRef();
+  const refInputContact_ChannelAccountTwitterNew = useRef();
+  const refInputContact_ChannelPreferenceTwitterNew = useRef();
+
 
   const refInputContactName = useRef();
   const refInputContactLastName = useRef();
@@ -73,6 +99,12 @@ function Contacts() {
   const refInputContactEmail = useRef();
   const refInputContact_CompanyId = useRef();
   const refInputContactInterest = useRef();
+  const refInputContact_ChannelAccountFacebook = useRef();
+  const refInputContact_ChannelPreferenceFacebook = useRef();
+  const refInputContact_ChannelAccountLinkedin = useRef();
+  const refInputContact_ChannelPreferenceLinkedin = useRef();
+  const refInputContact_ChannelAccountTwitter = useRef();
+  const refInputContact_ChannelPreferenceTwitter = useRef();
 
   // Declaration of Request Options: GET All Contacts
   const viewAllContactsRequestHeaders = {
@@ -108,7 +140,7 @@ function Contacts() {
     "profile_contact" : contactProfileValue,
     "email_contact" : contactEmailValue,
     "id_company" : Number(contact_CompanyId),
-    "interest_contact" : contactInterestValue ? contactInterestValue : "0%"
+    "interest_contact" : contactInterestValue 
   });
   const createNewContactRequestInfo = {
     method: 'POST',
@@ -120,12 +152,20 @@ function Contacts() {
     const contactCreationResponse = api(`${BASE_URL}${CREATE_CONTACT}`, createNewContactRequestInfo);
     contactCreationResponse.then(response => {
       console.log("RES", response)
+      if (response.Status === 403 || response.status === 403) {
+        setAuthState(loggedOff)
+      }
       if(response.Status === 201) {
+        channelsToAdd.forEach(channel => {
+          channel.id_contact = response.Result.contact_id
+          triggerChannelCreation(channel)
+        })
+        setChannelsToAdd([])
         triggerViewAllContacts()
         setPopupOpen(false)
         setCreateActive(false)
       }
-    })
+    }).then(re => console.log("RE LOCO", re))
   }
 
   // Declaration of Request Options: GET Contact by Id
@@ -188,7 +228,7 @@ function Contacts() {
       if (response.status === 403 || response.status === 403) {
         setAuthState(loggedOff)
       }
-      if (response.status === 204) {
+      if (response.status === 204 || response.Status === 409) {
         triggerViewAllContacts()
         setPopupOpen(false)
         setEditActive(false)
@@ -240,6 +280,35 @@ function Contacts() {
       }
     })
   }
+  /* **************************************************************** */
+  // Declaration of Request Options: POST New Channel
+  const createNewChannelRequestHeaders = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authState.token}`
+  };
+  // const createNewChannelRequestData = JSON.stringify({
+  //   "type_channel" : contact_ChannelTypeValue,
+  //   "account_channel" : contact_ChannelAccountValue,
+  //   "preference_channel" : contact_ChannelPreferenceValue,
+  //   "id_contact" : Number(contact_ChannelContactIdValue),
+  // });
+  const triggerChannelCreation = (bodyData) => {
+    const channelCreationResponse = api(`${BASE_URL}${CREATE_CHANNEL}`, {
+      method: 'POST',
+      headers: createNewChannelRequestHeaders,
+      body: JSON.stringify(bodyData),
+      redirect: 'follow'
+    });
+    channelCreationResponse.then(response => {
+      console.log("RES", response)
+      if (response.Status === 403 || response.status === 403) {
+        setAuthState(loggedOff)
+      }
+      if(response.Status === 201) {
+        // TO THINK, TO DO
+      }
+    })
+  }
 
   const massiveDelete = () => {
     selectedContacts.forEach(contact => triggerDeleteContact(contact))
@@ -253,6 +322,10 @@ function Contacts() {
   useEffect(()=> {
     setSelectedContacts(selectedContacts)
   }, [selectedContacts])
+
+  useEffect(()=> {
+    setChannelsToAdd(channelsToAdd)
+  }, [channelsToAdd])
   
   return (
 
@@ -439,6 +512,7 @@ function Contacts() {
               <h2>Create Contact</h2>
               <button 
                 onClick={()=>{
+                  setChannelsToAdd([])
                   setPopupOpen(false)
                   setCreateActive(false)
                 }}
@@ -446,101 +520,339 @@ function Contacts() {
               >
                 <FaTimes size={18} />
               </button>
+              <PrimaryContactInformation>
 
-              <InputLabelContainer>
-                <label htmlFor="contactNameNew">Name</label>
-                <input 
-                  id="contactNameNew" 
+                <InputLabelContainer className="primayLabelInputContact">
+                  <label htmlFor="contactNameNew">Name*</label>
+                  <input 
+                    id="contactNameNew" 
                   name="contactNameNew"
                   type="text"
                   ref={refInputContactNameNew}
                   onChange={()=>{
                     setContactNameValue(refInputContactNameNew.current.value)
-                  }} 
-                />
-              </InputLabelContainer>
+                    }} 
+                  />
+                </InputLabelContainer>
+                
+                <InputLabelContainer className="primayLabelInputContact">
+                  <label htmlFor="lastNameNew">Last Name*</label>
+                  <input 
+                    id="lastNameNew" 
+                    name="lastNameNew"
+                    type="text"
+                    ref={refInputContactLastNameNew}
+                    onChange={()=>{
+                      setContactLastNameValue(refInputContactLastNameNew.current.value)
+                    }} 
+                  />
+                </InputLabelContainer>
+                
+                <InputLabelContainer className="primayLabelInputContact">
+                  <label htmlFor="profileNew">Profile*</label>
+                  <input 
+                    id="profileNew" 
+                    name="profileNew"
+                    type="text"
+                    ref={refInputContactProfileNew}
+                    onChange={()=>{
+                      setContactProfileValue(refInputContactProfileNew.current.value)
+                    }} 
+                  />
+                </InputLabelContainer>
 
-              <InputLabelContainer>
-                <label htmlFor="lastNameNew">Last Name</label>
-                <input 
-                  id="lastNameNew" 
-                  name="lastNameNew"
-                  type="text"
-                  ref={refInputContactLastNameNew}
-                  onChange={()=>{
-                    setContactLastNameValue(refInputContactLastNameNew.current.value)
-                  }} 
-                />
-              </InputLabelContainer>
+                <InputLabelContainer className="primayLabelInputContact">
+                  <label htmlFor="emailNew">Email*</label>
+                  <input 
+                    id="emailNew" 
+                    name="emailNew"
+                    type="email"
+                    ref={refInputContactEmailNew}
+                    onChange={()=>{
+                      setContactEmailValue(refInputContactEmailNew.current.value)
+                    }} 
+                  />
+                </InputLabelContainer>
 
-              <InputLabelContainer>
-                <label htmlFor="profileNew">Profile</label>
-                <input 
-                  id="profileNew" 
-                  name="profileNew"
-                  type="text"
-                  ref={refInputContactProfileNew}
-                  onChange={()=>{
-                    setContactProfileValue(refInputContactProfileNew.current.value)
-                  }} 
-                />
-              </InputLabelContainer>
+                <InputLabelContainer className="primayLabelInputContact">
+                  <label htmlFor="companyNew">Company*</label>
+                  <select 
+                    name="companyNew" 
+                    id="companyNew"
+                    ref={refInputContact_CompanyIdNew}
+                    onChange={()=>{
+                      setContact_CompanyId(refInputContact_CompanyIdNew.current.value)
+                      setSelectedCompany(companiesList.find(comp => comp.id_company === Number(refInputContact_CompanyIdNew.current.value)))
+                    }}
+                  >
+                    <option value="" default disabled selected>Select a company</option>
+                    {companiesList.length > 0 ? 
+                      <>
+                        {companiesList.map((company, index) => {
+                          return (
+                            <option key={`company${index}`} value={company.id_company}>{company.  name_company}</option>
+                          )
+                        })}
+                      </>
+                      : 
+                      <></>
+                    }
+                  </select>
+                </InputLabelContainer>
 
-              <InputLabelContainer>
-                <label htmlFor="emailNew">Email</label>
-                <input 
-                  id="emailNew" 
-                  name="emailNew"
-                  type="email"
-                  ref={refInputContactEmailNew}
-                  onChange={()=>{
-                    setContactEmailValue(refInputContactEmailNew.current.value)
-                  }} 
-                />
-              </InputLabelContainer>
+                <InputLabelContainer className="locationContainer">
+                  <div>
+                    <p>Region</p>
+                    <p>{selectedCompany?.name_region}</p>
+                  </div>
+                  <div>
+                    <p>Country</p>
+                    <p>{selectedCompany?.name_country}</p>
+                  </div>
+                  <div>
+                    <p>City</p>
+                    <p>{selectedCompany?.name_city}</p>
+                  </div>
+                </InputLabelContainer>
 
-              <InputLabelContainer>
-                <label htmlFor="companyNew">Company</label>
-                <select 
-                  name="companyNew" 
-                  id="companyNew"
-                  ref={refInputContact_CompanyIdNew}
-                  onChange={()=>{
-                    setContact_CompanyId(refInputContact_CompanyIdNew.current.value)
-                  }}
-                >
-                  <option value="" default disabled selected>Select a company</option>
-                  {companiesList.length > 0 ? 
-                    <>
-                      {companiesList.map((company, index) => {
-                        return (
-                          <option key={`company${index}`} value={company.id_company}>{company.name_company}</option>
-                        )
-                      })}
-                    </>
+              </PrimaryContactInformation>
+              
+              <SecundaryContactInformation>
+
+                <InputLabelContainer className="interestContactCont">
+                  <label htmlFor="interestNew">Interest</label>
+                  <select
+                    id="interestNew" 
+                    name="interestNew"
+                    type="text"
+                    ref={refInputContactInterestlNew}
+                    onChange={()=>{
+                      setContactInterestValue(refInputContactInterestlNew.current.value)
+                    }} 
+                  >
+                    <option value="" default disabled selected>Select your interest</option>
+                    <option value="0%" >0%</option>
+                    <option value="25%" >25%</option>
+                    <option value="50%" >50%</option>
+                    <option value="75%" >75%</option>
+                    <option value="100%" >100%</option>
+                  </select>
+                </InputLabelContainer>
+              
+                {/* CREATE CHANNEL FACEBOOK */}
+                <ContactChannels>
+                  {facebookAdded ? 
+                    <h3 className="channelAdded" > Facebook Channel Added! <FaCheck size={16} /></h3>
                     : 
-                    <></>
+                    <>
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="channelContactNew">Contact Channel</label>
+                        <p className="typeContactChannel" >Facebook</p>
+                      </InputLabelContainer>
+
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="facebookAccountNew">Facebook Account</label>
+                        <input 
+                          id="facebookAccountNew" 
+                          name="facebookAccountNew"
+                          type="text"
+                          placeholder="@myFacebook"
+                          ref={refInputContact_ChannelAccountFacebookNew}
+                          onChange={()=>{
+                            setContact_ChannelAccountFacebookValue    (refInputContact_ChannelAccountFacebookNew.current.value)
+                            }} 
+                        />
+                      </InputLabelContainer>
+                          
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="facebookPreferenceNew">Facebook Preference</label>
+                        <select
+                          disabled={!refInputContact_ChannelAccountFacebookNew?.current?.value ? true :     false }
+                          id="facebookPreferenceNew" 
+                          name="facebookPreferenceNew"
+                          type="text"
+                          ref={refInputContact_ChannelPreferenceFacebookNew}
+                          onChange={()=>{
+                            setContact_ChannelPreferenceFacebookValue   (refInputContact_ChannelPreferenceFacebookNew.current.value)
+                          }} 
+                        >
+                          <option value="" default disabled selected>Choose your preference</option>
+                          <option value="No Preference" >No Preference</option>
+                          <option value="Favorite" >Favorite</option>
+                          <option value="Not Disturb" >Not Disturb</option>
+                        </select>
+                      </InputLabelContainer>
+
+                      <InputLabelContainer className="channelContactCont">
+                        <button 
+                          disabled={!refInputContact_ChannelPreferenceFacebookNew?.current?.value ? true :    false }
+                          className="addChannel"
+                          onClick={()=>{
+                            setChannelsToAdd(prev => [...prev, {
+                                  "type_channel" : "Facebook",
+                                  "account_channel" : contact_ChannelAccountFacebookValue,
+                                  "preference_channel" : contact_ChannelPreferenceFacebookValue,
+                                  "id_contact" : 0,
+                            }])
+                            setFacebookAdded(true)
+                          }}
+                        > 
+                          Add channel 
+                        </button >
+                      </InputLabelContainer>
+                    </>
                   }
-                </select>
-              </InputLabelContainer>
+
+                </ContactChannels>
+
+                {/* CREATE CHANNEL LINKEDIN */}
+                <ContactChannels>
+                  {linkedinAdded ? 
+                    <h3 className="channelAdded" > Linkedin Channel Added! <FaCheck size={16} /></h3>
+                    :
+                    <>
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="channelContactNew">Contact Channel</label>
+                        <p className="typeContactChannel">Linkedin</p>
+                      </InputLabelContainer>
+
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="linkedinAccountNew">Linkedin Account</label>
+                        <input 
+                          id="linkedinAccountNew" 
+                          name="linkedinAccountNew"
+                          type="text"
+                          placeholder="@myLinkedin"
+                          ref={refInputContact_ChannelAccountLinkedinNew}
+                          onChange={()=>{
+                            setContact_ChannelAccountLinkedinValue    (refInputContact_ChannelAccountLinkedinNew.current.value)
+                            }} 
+                        />
+                      </InputLabelContainer>
+                          
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="linkedinPreferenceNew">Linkedin Preference</label>
+                        <select
+                          disabled={!refInputContact_ChannelAccountLinkedinNew?.current?.value ? true :     false }
+                          id="linkedinPreferenceNew" 
+                          name="linkedinPreferenceNew"
+                          type="text"
+                          ref={refInputContact_ChannelPreferenceLinkedinNew}
+                          onChange={()=>{
+                            setContact_ChannelPreferenceLinkedinValue   (refInputContact_ChannelPreferenceLinkedinNew.current.value)
+                          }} 
+                        >
+                          <option value="" default disabled selected>Choose your preference</option>
+                          <option value="No Preference" >No Preference</option>
+                          <option value="Favorite" >Favorite</option>
+                          <option value="Not Disturb" >Not Disturb</option>
+                        </select>
+                      </InputLabelContainer>
+                        
+                      <InputLabelContainer className="channelContactCont">
+                        <button 
+                          disabled={!refInputContact_ChannelPreferenceLinkedinNew?.current?.value ? true :      false }
+                          className="addChannel"
+                          onClick={()=>{
+                            setChannelsToAdd(prev => [...prev, {
+                                  "type_channel" : "Linkedin",
+                                  "account_channel" : contact_ChannelAccountLinkedinValue,
+                                  "preference_channel" : contact_ChannelPreferenceLinkedinValue,
+                                  "id_contact" : 0
+                            }])
+                            setLinkedinAdded(true)
+                          }}
+                        > 
+                          Add channel 
+                        </button >
+                      </InputLabelContainer>
+                    </>
+                  }
+
+                </ContactChannels>
+                
+                {/* CREATE CHANNEL TWITTER */}
+                <ContactChannels>
+                  {twitterAdded ? 
+                    <h3 className="channelAdded" > Twitter Channel Added! <FaCheck size={16} /></h3>
+                    :
+                    <>
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="channelContactNew">Contact Channel</label>
+                        <p className="typeContactChannel" > Twitter</p>
+                      </InputLabelContainer>
+
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="twitterAccountNew">Twitter Account</label>
+                        <input 
+                          id="twitterAccountNew" 
+                          name="twitterAccountNew"
+                          type="text"
+                          placeholder="@myTwitter"
+                          ref={refInputContact_ChannelAccountTwitterNew}
+                          onChange={()=>{
+                            setContact_ChannelAccountTwitterValue(refInputContact_ChannelAccountTwitterNew.   current.value)
+                            }} 
+                        />
+                      </InputLabelContainer>
+                          
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="twitterPreferenceNew">Twitter Preference</label>
+                        <select
+                          disabled={!refInputContact_ChannelAccountTwitterNew?.current?.value ? true :      false }
+                          id="twitterPreferenceNew" 
+                          name="twitterPreferenceNew"
+                          type="text"
+                          ref={refInputContact_ChannelPreferenceTwitterNew}
+                          onChange={()=>{
+                            setContact_ChannelPreferenceTwitterValue    (refInputContact_ChannelPreferenceTwitterNew.current.value)
+                          }} 
+                        >
+                          <option value="" default disabled selected>Choose your preference</option>
+                          <option value="No Preference" >No Preference</option>
+                          <option value="Favorite" >Favorite</option>
+                          <option value="Not Disturb" >Not Disturb</option>
+                        </select>
+                      </InputLabelContainer>
+                        
+                      <InputLabelContainer className="channelContactCont">
+                        <button 
+                        disabled={!refInputContact_ChannelPreferenceTwitterNew?.current?.value ? true :     false }
+                          className="addChannel"
+                          onClick={()=>{
+                            setChannelsToAdd(prev => [...prev, {
+                                  "type_channel" : "Twitter",
+                                  "account_channel" : contact_ChannelAccountTwitterValue,
+                                  "preference_channel" : contact_ChannelPreferenceTwitterValue,
+                                  "id_contact" : 0
+                            }])
+                            setTwitterAdded(true)
+                          }}
+                        > 
+                          Add channel 
+                        </button >
+                      </InputLabelContainer>
+                    </>
+                  }
+                </ContactChannels>
+              </SecundaryContactInformation>        
+            
 
               <InputLabelContainer>
-                <label htmlFor="interestNew">Interest</label>
-                <input 
-                  id="interestNew" 
-                  name="interestNew"
-                  type="text"
-                  ref={refInputContactInterestlNew}
-                  onChange={()=>{
-                    setContactInterestValue(refInputContactInterestlNew.current.value)
-                  }} 
-                />
-              </InputLabelContainer>
-
-              <InputLabelContainer>
-                  <button onClick={()=>{
-                    triggerContactCreation()
-                  }}> Create Contact </button >
+                  
+                  <button 
+                    disabled={
+                      !refInputContactNameNew?.current?.value ||
+                      !refInputContactLastNameNew?.current?.value ||
+                      !refInputContactProfileNew?.current?.value  || 
+                      !refInputContactEmailNew?.current?.value ||
+                      !refInputContact_CompanyIdNew?.current?.value ||
+                      !refInputContactInterestlNew?.current?.value 
+                      ? true :  false }
+                    onClick={()=>{
+                      triggerContactCreation()
+                    }}
+                  > Create Contact </button >
               </InputLabelContainer>
             </FormContainer>      
             : 
@@ -561,71 +873,73 @@ function Contacts() {
                 <FaTimes size={18} />
               </button>
               
-              <InputLabelContainer>
-                <label htmlFor="name">Name*</label>
-                <input 
-                  id="name" 
-                  name="name"
-                  type="text"
-                  ref={refInputContactName}
-                  onChange={()=>{
+              <PrimaryContactInformation>
+
+                <InputLabelContainer className="primayLabelInputContact">
+                  <label htmlFor="name">Name</label>
+                  <input 
+                    id="name" 
+                    name="name"
+                    type="text"
+                    ref={refInputContactName}
+                    onChange={()=>{
                     setContactNameValue(refInputContactName.current.value)
-                  }} 
-                />
-              </InputLabelContainer>
+                    }} 
+                  />
+                </InputLabelContainer>
 
-              <InputLabelContainer>
-                <label htmlFor="lastName">Last Name*</label>
-                <input 
-                  id="lastName" 
-                  name="lastName"
-                  type="text"
-                  ref={refInputContactLastName}
-                  onChange={()=>{
+                <InputLabelContainer className="primayLabelInputContact">
+                  <label htmlFor="lastName">Last Name</label>
+                  <input 
+                    id="lastName" 
+                    name="lastName"
+                    type="text"
+                    ref={refInputContactLastName}
+                    onChange={()=>{
                     setContactLastNameValue(refInputContactLastName.current.value)
-                  }} 
-                />
-              </InputLabelContainer>
+                    }} 
+                  />
+                </InputLabelContainer>
 
-              <InputLabelContainer>
-                <label htmlFor="profile">Profile*</label>
-                <input 
-                  id="profile" 
-                  name="profile"
-                  type="text"
-                  ref={refInputContactProfile}
-                  onChange={()=>{
+                <InputLabelContainer className="primayLabelInputContact">
+                  <label htmlFor="profile">Profile</label>
+                  <input 
+                    id="profile" 
+                    name="profile"
+                    type="text"
+                    ref={refInputContactProfile}
+                    onChange={()=>{
                     setContactProfileValue(refInputContactProfile.current.value)
-                  }} 
-                />
-              </InputLabelContainer>
+                    }} 
+                  />
+                </InputLabelContainer>
 
-              <InputLabelContainer>
-                <label htmlFor="email">Email*</label>
-                <input 
-                  id="email" 
-                  name="email"
-                  type="email"
-                  ref={refInputContactEmail}
-                  onChange={()=>{
+                <InputLabelContainer className="primayLabelInputContact">
+                  <label htmlFor="email">Email</label>
+                  <input 
+                    id="email" 
+                    name="email"
+                    type="email"
+                    ref={refInputContactEmail}
+                    onChange={()=>{
                     setContactEmailValue(refInputContactEmail.current.value)
-                  }} 
-                />
-              </InputLabelContainer>
+                    }} 
+                  />
+                </InputLabelContainer>
 
-              <InputLabelContainer>
-                <label htmlFor="company">Company*</label>
-                <select 
-                  name="company" 
+                <InputLabelContainer className="primayLabelInputContact">
+                  <label htmlFor="company">Company</label>
+                  <select 
+                    name="company" 
                   id="company"
                   ref={refInputContact_CompanyId}
                   onChange={()=>{
                     setContact_CompanyId(refInputContact_CompanyId.current.value)
-                  }}
-                >
-                  <option value="" default disabled >Select a company</option>
-                  {companiesList.length > 0 ? 
-                    <>
+                    }}
+                  >
+                    <option value="" default disabled >Select a company</option>
+                    {companiesList.length > 0 ? 
+                      <>
                       {companiesList.map((company, index) => {
                         return (
                           <option 
@@ -639,15 +953,20 @@ function Contacts() {
                         )
                       })}
                     </>
-                    : 
-                    <></>
-                  }
-                </select>
-              </InputLabelContainer>
+                      : 
+                      <></>
+                    }
+                  </select>
+                </InputLabelContainer>
 
+
+              </PrimaryContactInformation>
+
+              
               <InputLabelContainer>
                 <label htmlFor="interest">Interest</label>
-                <input 
+
+                <select
                   id="interest" 
                   name="interest"
                   type="text"
@@ -655,7 +974,14 @@ function Contacts() {
                   onChange={()=>{
                     setContactInterestValue(refInputContactInterest.current.value)
                   }} 
-                />
+                >
+                  <option value="" default disabled selected>Select your interest</option>
+                  <option value="0%" >0%</option>
+                  <option value="25%" >25%</option>
+                  <option value="50%" >50%</option>
+                  <option value="75%" >75%</option>
+                  <option value="100%" >100%</option>
+                </select>
               </InputLabelContainer>
 
               <InputLabelContainer>

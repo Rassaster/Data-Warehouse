@@ -169,7 +169,7 @@ function Companies() {
       if (response.status === 403 || response.status === 403) {
         setAuthState(loggedOff)
       }
-      if (response.status === 204) {
+      if (response.status === 204 || response.Status === 409) {
         triggerViewAllCompanies()
         setPopupOpen(false)
         setEditActive(false)
