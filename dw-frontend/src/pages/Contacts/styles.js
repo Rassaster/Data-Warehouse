@@ -274,7 +274,7 @@ flex-wrap: wrap;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: start;
+      justify-content: center;
       border: 1px solid grey;
       border-radius: 5px;
       height: 36px;
@@ -328,7 +328,13 @@ export const SecundaryContactInformation = styled.div`
     text-align: center;
     width: 100%;
   }
-
+  .channelContactContEditBtns {
+    display: flex;
+    gap: 10px;
+    button {
+      width: 35%;
+    }
+  }
 `;
 export const InputLabelContainer = styled.div`
   width: 45%;

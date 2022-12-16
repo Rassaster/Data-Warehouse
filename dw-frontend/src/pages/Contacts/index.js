@@ -34,6 +34,7 @@ const DELETE_CONTACTS = "/contacts/deleteContactId:";
 const ALL_COMPANIES = "/companies/listAll";
 
 const CREATE_CHANNEL = "/channels/create";
+const GET_CHANNELS_BYCONTACTID = "/channels/contactId:";
 const UPDATE_CHANNEL = "/channels/updateChannelId:";
 const DELETE_CHANNEL = "/channels/deleteChannelId:";
 
@@ -52,6 +53,16 @@ function Contacts() {
 
   const [selectedContacts, setSelectedContacts] = useState([])
   const [channelsToAdd, setChannelsToAdd] = useState([])
+  const [channelsToUpdate, setChannelsToUpdate] = useState([])
+  const [channelsOfContactEdit, setChannelsOfContactEdit] = useState([])
+  const [facebookChannelToEdit, setFacebookChannelToEdit] = useState({})
+  const [linkedinChannelToEdit, setLinkedinChannelToEdit] = useState({})
+  const [twitterChannelToEdit, setTwitterChannelToEdit] = useState({})
+
+  const [facebookChannelContactIdToBeDeleted, setFacebookChannelContactIdToBeDeleted] = useState()
+  const [linkedinChannelContactIdToBeDeleted, setLinkedinChannelContactIdToBeDeleted] = useState()
+  const [twitterChannelContactIdToBeDeleted, setTwitterChannelContactIdToBeDeleted] = useState()
+  const [contactIdChannelDeleted, setContactIdChannelDeleted] = useState()
 
   const [activeSort, setActiveSort] = useState(false)
   const [activeSortContact, setActiveSortContact] = useState()
@@ -77,6 +88,10 @@ function Contacts() {
   const [contact_ChannelPreferenceLinkedinValue, setContact_ChannelPreferenceLinkedinValue] = useState("")
   const [contact_ChannelAccountTwitterValue, setContact_ChannelAccountTwitterValue] = useState("")
   const [contact_ChannelPreferenceTwitterValue, setContact_ChannelPreferenceTwitterValue] = useState("")
+
+  const [editActiveFacebook, setEditActiveFacebook] = useState(false)
+  const [editActiveLinkedin, setEditActiveLinkedin] = useState(false)
+  const [editActiveTwitter, setEditActiveTwitter] = useState(false)
 
   // Declaration of References:
   const refInputContactNameNew = useRef();
@@ -203,6 +218,7 @@ function Contacts() {
         setContactProfileValue(response.Result.profile_contact)
         setContactEmailValue(response.Result.email_contact)
         setContact_CompanyId(response.Result.id_company)
+        setSelectedCompany(companiesList.find(comp => comp.id_company === Number(refInputContact_CompanyId.current.value)))
       }
     })
   }
@@ -233,6 +249,40 @@ function Contacts() {
         setAuthState(loggedOff)
       }
       if (response.status === 204 || response.Status === 409) {
+        channelsToAdd.forEach(channel => {
+          channel.id_contact = contactId
+          triggerChannelCreation(channel)
+        })
+
+        channelsToUpdate.forEach(channel => {
+          if (channel.type_channel === "Facebook") {
+            channel.id_contact = contactId
+            triggerUpdateChannel(channel, facebookChannelToEdit.id_channel)
+          }
+          if (channel.type_channel === "Linkedin") {
+            channel.id_contact = contactId
+            triggerUpdateChannel(channel, linkedinChannelToEdit.id_channel)
+          }
+          if (channel.type_channel === "Twitter") {
+            channel.id_contact = contactId
+            triggerUpdateChannel(channel, twitterChannelToEdit.id_channel)
+          }
+        })
+
+        setSelectedCompany({})
+        setChannelsToAdd([])
+        setChannelsOfContactEdit([])
+        setFacebookChannelToEdit({})
+        setLinkedinChannelToEdit({})
+        setTwitterChannelToEdit({})
+        setEditActiveFacebook(false)
+        setEditActiveLinkedin(false)
+        setEditActiveTwitter(false)
+        setFacebookAdded(false)
+        setLinkedinAdded(false)
+        setTwitterAdded(false)
+
+        setSelectedCompany({})
         triggerViewAllContacts()
         setPopupOpen(false)
         setEditActive(false)
@@ -313,6 +363,117 @@ function Contacts() {
       }
     })
   }
+  // Declaration of Request Options: GET Channels By ContactId
+  const getChannelsByContactIdRequestHeaders = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authState.token}`
+  };
+  const getChannelsByContactIdRequestInfo = {
+    method: 'GET',
+    headers: getChannelsByContactIdRequestHeaders,
+    redirect: 'follow'
+  }
+  const triggerGetChannelsByContactId = (contactId) => {
+    const getChannelsByContactIdResponse = api(`${BASE_URL}${GET_CHANNELS_BYCONTACTID}${contactId}`,getChannelsByContactIdRequestInfo);
+    getChannelsByContactIdResponse.then(response => {
+      console.log("GET", response)
+      if (response.status === 403 || response.status === 403) {
+        setAuthState(loggedOff)
+      }
+      if (response.Status === 200 || response.status === 200) {
+        setChannelsOfContactEdit(response.Result)
+
+        setTimeout(()=>{
+          response.Result.forEach(channel =>{
+            if (channel.type_channel === "Facebook" ) {
+              setContact_ChannelAccountFacebookValue(channel.type_channel)
+              setContact_ChannelPreferenceFacebookValue(channel.preference_channel)
+              refInputContact_ChannelAccountFacebook.current.value = channel.account_channel
+              refInputContact_ChannelPreferenceFacebook.current.value = channel.preference_channel
+            }
+            if (channel.type_channel === "Linkedin" ) {
+              setContact_ChannelAccountLinkedinValue(channel.type_channel)
+              setContact_ChannelPreferenceLinkedinValue(channel.preference_channel)
+              refInputContact_ChannelAccountLinkedin.current.value = channel.account_channel
+              refInputContact_ChannelPreferenceLinkedin.current.value = channel.preference_channel
+            }
+            if (channel.type_channel === "Twitter" ) {
+              setContact_ChannelAccountTwitterValue(channel.type_channel)
+              setContact_ChannelPreferenceTwitterValue(channel.preference_channel)
+              refInputContact_ChannelAccountTwitter.current.value = channel.account_channel
+              refInputContact_ChannelPreferenceTwitter.current.value = channel.preference_channel
+            }
+          })
+
+        }, 500)
+      }
+    })
+  }
+  // Declaration of Request Options: PUT Channel
+  const updateChannelRequestHeaders = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authState.token}`
+  };
+  const triggerUpdateChannel = (bodyData, channelId) => {
+    const updateChannelResponse = api(`${BASE_URL}${UPDATE_CHANNEL}${channelId}`, {
+      method: 'PUT',
+      headers: updateChannelRequestHeaders,
+      body: JSON.stringify(bodyData),
+      redirect: 'follow'
+    });
+    updateChannelResponse.then(response => {
+      console.log("PUT", response)
+      if (response.status === 403 || response.status === 403) {
+        setAuthState(loggedOff)
+      }
+      if (response.status === 204 || response.Status === 409) {
+        setSelectedCompany({})
+        setChannelsToAdd([])
+        setChannelsToUpdate([])
+        setChannelsOfContactEdit([])
+        setFacebookChannelToEdit({})
+        setLinkedinChannelToEdit({})
+        setTwitterChannelToEdit({})
+        setEditActiveFacebook(false)
+        setEditActiveLinkedin(false)
+        setEditActiveTwitter(false)
+        setFacebookAdded(false)
+        setLinkedinAdded(false)
+        setTwitterAdded(false)
+
+        setSelectedCompany({})
+        triggerViewAllContacts()
+        setPopupOpen(false)
+        setEditActive(false)
+      }
+    })
+  }
+  // Declaration of Request Options: DELETE Channel
+  const deleteChannelRequestHeaders = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authState.token}`
+  };
+  const deleteChannelRequestInfo = {
+    method: 'DELETE',
+    headers: deleteChannelRequestHeaders,
+    redirect: 'follow'
+  }
+  const triggerDeleteChannel = (channelId) => {
+    const deleteChannelResponse = api(`${BASE_URL}${DELETE_CHANNEL}${channelId}`, deleteChannelRequestInfo);
+    deleteChannelResponse.then(response => {
+      console.log("DELETE", response)
+      if (response.status === 403 || response.status === 403) {
+        setAuthState(loggedOff)
+      }
+      if (response.status === 204 || response.Status === 204) {
+        triggerGetChannelsByContactId(contactIdChannelDeleted)
+
+      }
+    })
+  }
+
+
+
 
   const massiveDelete = () => {
     selectedContacts.forEach(contact => triggerDeleteContact(contact))
@@ -330,6 +491,39 @@ function Contacts() {
   useEffect(()=> {
     setChannelsToAdd(channelsToAdd)
   }, [channelsToAdd])
+
+  useEffect(()=> {
+    setChannelsToUpdate(channelsToUpdate)
+  }, [channelsToUpdate])
+  
+  useEffect(()=> {
+    setChannelsOfContactEdit(channelsOfContactEdit)
+    console.log(channelsOfContactEdit)
+    channelsOfContactEdit.forEach(channel => {
+      setContactIdChannelDeleted(channel.id_contact)
+      if (channel.type_channel === "Facebook" ) {
+        setFacebookChannelToEdit(channel)
+      }
+      if (channel.type_channel === "Linkedin" ) setLinkedinChannelToEdit(channel)
+      if (channel.type_channel === "Twitter" ) setTwitterChannelToEdit(channel)
+    })
+  }, [channelsOfContactEdit])
+  
+  useEffect(()=> {
+    setFacebookChannelToEdit(facebookChannelToEdit)
+
+  }, [facebookChannelToEdit])
+  useEffect(()=> {
+    setLinkedinChannelToEdit(linkedinChannelToEdit)
+  }, [linkedinChannelToEdit])
+  useEffect(()=> {
+    setTwitterChannelToEdit(twitterChannelToEdit)
+  }, [twitterChannelToEdit])
+  
+  useEffect(()=> {
+    setContactIdChannelDeleted(contactIdChannelDeleted)
+  }, [contactIdChannelDeleted ])
+  
   
   return (
 
@@ -490,6 +684,7 @@ function Contacts() {
                       className="contacts-Update"
                       onClick={() => {
                         triggerGetContactById(contact.id_contact)
+                        triggerGetChannelsByContactId(contact.id_contact)
                         setPopupOpen(true)
                         setEditActive(true)
                         triggerViewAllCompanies()
@@ -873,6 +1068,20 @@ function Contacts() {
               <h2>Edit Contact</h2>
               <button 
                 onClick={()=>{
+                  setSelectedCompany({})
+                  setChannelsToAdd([])
+                  setChannelsToUpdate([])
+                  setChannelsOfContactEdit([])
+                  setFacebookChannelToEdit({})
+                  setLinkedinChannelToEdit({})
+                  setTwitterChannelToEdit({})
+                  setEditActiveFacebook(false)
+                  setEditActiveLinkedin(false)
+                  setEditActiveTwitter(false)
+                  setFacebookAdded(false)
+                  setLinkedinAdded(false)
+                  setTwitterAdded(false)
+
                   setPopupOpen(false)
                   setEditActive(false)
                 }}
@@ -967,30 +1176,519 @@ function Contacts() {
                   </select>
                 </InputLabelContainer>
 
+                <InputLabelContainer className="locationContainer">
+                  <div>
+                    <h5>Region</h5>
+                    <h4>{selectedCompany?.name_region}</h4>
+                  </div>
+                  <div>
+                    <h5>Country</h5>
+                    <h4>{selectedCompany?.name_country}</h4>
+                  </div>
+                  <div>
+                    <h5>City</h5>
+                    <h4>{selectedCompany?.name_city}</h4>
+                  </div>
+                </InputLabelContainer>
 
               </PrimaryContactInformation>
 
-              
-              <InputLabelContainer>
-                <label htmlFor="interest">Interest</label>
+              <SecundaryContactInformation>
 
-                <select
-                  id="interest" 
-                  name="interest"
-                  type="text"
-                  ref={refInputContactInterest}
-                  onChange={()=>{
-                    setContactInterestValue(refInputContactInterest.current.value)
-                  }} 
-                >
-                  <option value="" default disabled selected>Select your interest</option>
-                  <option value="0%" >0%</option>
-                  <option value="25%" >25%</option>
-                  <option value="50%" >50%</option>
-                  <option value="75%" >75%</option>
-                  <option value="100%" >100%</option>
-                </select>
-              </InputLabelContainer>
+                <InputLabelContainer className="interestContactCont">
+                  <label htmlFor="interest">Interest</label>
+                  <select
+                    id="interest" 
+                    name="interest"
+                    type="text"
+                    ref={refInputContactInterest}
+                    onChange={()=>{
+                      setContactInterestValue(refInputContactInterest.current.value)
+                    }} 
+                  >
+                    <option value="" default disabled selected>Select your interest</option>
+                    <option value="0%" >0%</option>
+                    <option value="25%" >25%</option>
+                    <option value="50%" >50%</option>
+                    <option value="75%" >75%</option>
+                    <option value="100%" >100%</option>
+                  </select>
+                </InputLabelContainer>
+
+                {/* EDIT CHANNEL FACEBOOK */}
+
+                <ContactChannels>
+
+                  {Object.keys(facebookChannelToEdit).length > 0 ? 
+                    <>
+                    {facebookAdded ? 
+                    <h3 className="channelAdded" > Facebook Channel Edition Added! <FaCheck size={16} /></h3>
+                    : 
+                    <>
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="channelContact">Contact Channel</label>
+                        <p className="typeContactChannel" >Facebook</p>
+                      </InputLabelContainer>
+
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="facebookAccount">Facebook Account</label>
+                        <input 
+                          disabled={editActiveFacebook ? false : true}
+                          id="facebookAccount" 
+                          name="facebookAccount"
+                          type="text"
+                          placeholder="@myFacebook"
+                          ref={refInputContact_ChannelAccountFacebook}
+                          onChange={()=>{
+                            setContact_ChannelAccountFacebookValue    (refInputContact_ChannelAccountFacebook.current.value)
+                            }} 
+                        />
+                      </InputLabelContainer>
+                          
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="facebookPreference">Facebook Preference</label>
+                        <select
+                          disabled={editActiveFacebook ? false : true}
+                          id="facebookPreference" 
+                          name="facebookPreference"
+                          type="text"
+                          ref={refInputContact_ChannelPreferenceFacebook}
+                          onChange={()=>{
+                            setContact_ChannelPreferenceFacebookValue   (refInputContact_ChannelPreferenceFacebook.current.value)
+                          }} 
+                        >
+                          <option value="" default disabled selected>Choose your preference</option>
+                          <option value="No Preference" >No Preference</option>
+                          <option value="Favorite" >Favorite</option>
+                          <option value="Not Disturb" >Not Disturb</option>
+                        </select>
+                      </InputLabelContainer>
+
+                      <InputLabelContainer className="channelContactContEditBtns">
+                        <button 
+                          onClick={()=> {
+                            triggerDeleteChannel(facebookChannelToEdit.id_channel)
+                            setFacebookChannelToEdit({})
+                            setContact_ChannelAccountFacebookValue("")
+                            setContact_ChannelPreferenceFacebookValue("")
+                            refInputContact_ChannelAccountFacebook.current.value = ""
+                            refInputContact_ChannelPreferenceFacebook.current.value = ""
+                          }}
+                        > 
+                          <FaTrashAlt size={18} title="Delete Channel"/> 
+                        </button >
+                        {editActiveFacebook ? 
+                          <button 
+                          onClick={()=>{
+                            setChannelsToUpdate(prev => [...prev, {
+                                  "type_channel" : "Facebook",
+                                  "account_channel" : contact_ChannelAccountFacebookValue,
+                                  "preference_channel" : contact_ChannelPreferenceFacebookValue,
+                                  "id_contact" : 0,
+                            }])
+                            setFacebookAdded(true)
+                          }}
+                          > 
+                            Confirm 
+                          </button >
+                          : 
+                          <button 
+                            onClick={()=>{
+                              setEditActiveFacebook(true)
+                            }}
+                          > 
+                            <FaEdit size={18} title="Edit Channel"/> 
+                          </button >
+                        }
+                      </InputLabelContainer>
+                    </>
+                  }
+                    </>
+                    : 
+                    // CREATE FACEBOOK
+                    <>
+                      {facebookAdded ? 
+                    <h3 className="channelAdded" > Facebook Channel Added! <FaCheck size={16} /></h3>
+                    : 
+                    <>
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="channelContactNew">Contact Channel</label>
+                        <p className="typeContactChannel" >Facebook</p>
+                      </InputLabelContainer>
+
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="facebookAccountNew">Facebook Account</label>
+                        <input 
+                          id="facebookAccountNew" 
+                          name="facebookAccountNew"
+                          type="text"
+                          placeholder="@myFacebook"
+                          ref={refInputContact_ChannelAccountFacebookNew}
+                          onChange={()=>{
+                            setContact_ChannelAccountFacebookValue    (refInputContact_ChannelAccountFacebookNew.current.value)
+                            }} 
+                        />
+                      </InputLabelContainer>
+                          
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="facebookPreferenceNew">Facebook Preference</label>
+                        <select
+                          disabled={!refInputContact_ChannelAccountFacebookNew?.current?.value ? true :     false }
+                          id="facebookPreferenceNew" 
+                          name="facebookPreferenceNew"
+                          type="text"
+                          ref={refInputContact_ChannelPreferenceFacebookNew}
+                          onChange={()=>{
+                            setContact_ChannelPreferenceFacebookValue   (refInputContact_ChannelPreferenceFacebookNew.current.value)
+                          }} 
+                        >
+                          <option value="" default disabled selected>Choose your preference</option>
+                          <option value="No Preference" >No Preference</option>
+                          <option value="Favorite" >Favorite</option>
+                          <option value="Not Disturb" >Not Disturb</option>
+                        </select>
+                      </InputLabelContainer>
+
+                      <InputLabelContainer className="channelContactCont">
+                        <button 
+                          disabled={!refInputContact_ChannelPreferenceFacebookNew?.current?.value ? true :    false }
+                          className="addChannel"
+                          onClick={()=>{
+                            setChannelsToAdd(prev => [...prev, {
+                                  "type_channel" : "Facebook",
+                                  "account_channel" : contact_ChannelAccountFacebookValue,
+                                  "preference_channel" : contact_ChannelPreferenceFacebookValue,
+                                  "id_contact" : 0,
+                            }])
+                            setFacebookAdded(true)
+                          }}
+                        > 
+                          Add channel 
+                        </button >
+                      </InputLabelContainer>
+                    </>
+                  }
+                    </>
+                    }
+
+
+                </ContactChannels>
+
+                {/* EDIT CHANNEL LINKEDIN */}
+                <ContactChannels>
+                  {Object.keys(linkedinChannelToEdit).length > 0 ? 
+                    <>
+                      {linkedinAdded ? 
+                    <h3 className="channelAdded" > Linkedin Channel Edition Added! <FaCheck size={16} /></h3>
+                    :
+                    <>
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="channelContactNew">Contact Channel</label>
+                        <p className="typeContactChannel">Linkedin</p>
+                      </InputLabelContainer>
+
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="linkedinAccount">Linkedin Account</label>
+                        <input 
+                          disabled={editActiveLinkedin? false : true}
+                          id="linkedinAccount" 
+                          name="linkedinAccount"
+                          type="text"
+                          placeholder="@myLinkedin"
+                          ref={refInputContact_ChannelAccountLinkedin}
+                          onChange={()=>{
+                            setContact_ChannelAccountLinkedinValue    (refInputContact_ChannelAccountLinkedin.current.value)
+                            }} 
+                        />
+                      </InputLabelContainer>
+                          
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="linkedinPreference">Linkedin Preference</label>
+                        <select
+                          disabled={editActiveLinkedin? false : true}
+                          id="linkedinPreference" 
+                          name="linkedinPreference"
+                          type="text"
+                          ref={refInputContact_ChannelPreferenceLinkedin}
+                          onChange={()=>{
+                            setContact_ChannelPreferenceLinkedinValue   (refInputContact_ChannelPreferenceLinkedin.current.value)
+                          }} 
+                        >
+                          <option value="" default disabled selected>Choose your preference</option>
+                          <option value="No Preference" >No Preference</option>
+                          <option value="Favorite" >Favorite</option>
+                          <option value="Not Disturb" >Not Disturb</option>
+                        </select>
+                      </InputLabelContainer >
+                        
+                      <InputLabelContainer className="channelContactContEditBtns">
+                      <button 
+                        onClick={()=> {
+                          triggerDeleteChannel(linkedinChannelToEdit.id_channel)
+                          setLinkedinChannelToEdit({})
+                          setContact_ChannelAccountLinkedinValue("")
+                          setContact_ChannelPreferenceLinkedinValue("")
+                          refInputContact_ChannelAccountLinkedin.current.value = ""
+                          refInputContact_ChannelPreferenceLinkedin.current.value = ""
+                        }}
+                      > 
+                          <FaTrashAlt size={18} title="Delete Channel"/> 
+                        </button >
+                        {editActiveLinkedin ? 
+                          <button 
+                          onClick={()=>{
+                            setChannelsToUpdate(prev => [...prev, {
+                                  "type_channel" : "Linkedin",
+                                  "account_channel" : contact_ChannelAccountLinkedinValue,
+                                  "preference_channel" : contact_ChannelPreferenceLinkedinValue,
+                                  "id_contact" : 0,
+                            }])
+                            setLinkedinAdded(true)
+                          }}
+                          > 
+                            Confirm 
+                          </button >
+                          : 
+                          <button 
+                            onClick={()=>{
+                              setEditActiveLinkedin(true)
+                            }}
+                          > 
+                            <FaEdit size={18} title="Edit Channel"/> 
+                          </button >
+                        }
+                      </InputLabelContainer>
+                    </>
+                  }
+                    </>
+                    : 
+                    <>
+                      {linkedinAdded ? 
+                    <h3 className="channelAdded" > Linkedin Channel Added! <FaCheck size={16} /></h3>
+                    :
+                    <>
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="channelContactNew">Contact Channel</label>
+                        <p className="typeContactChannel">Linkedin</p>
+                      </InputLabelContainer>
+
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="linkedinAccountNew">Linkedin Account</label>
+                        <input 
+                          id="linkedinAccountNew" 
+                          name="linkedinAccountNew"
+                          type="text"
+                          placeholder="@myLinkedin"
+                          ref={refInputContact_ChannelAccountLinkedinNew}
+                          onChange={()=>{
+                            setContact_ChannelAccountLinkedinValue    (refInputContact_ChannelAccountLinkedinNew.current.value)
+                            }} 
+                        />
+                      </InputLabelContainer>
+                          
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="linkedinPreferenceNew">Linkedin Preference</label>
+                        <select
+                          disabled={!refInputContact_ChannelAccountLinkedinNew?.current?.value ? true :     false }
+                          id="linkedinPreferenceNew" 
+                          name="linkedinPreferenceNew"
+                          type="text"
+                          ref={refInputContact_ChannelPreferenceLinkedinNew}
+                          onChange={()=>{
+                            setContact_ChannelPreferenceLinkedinValue   (refInputContact_ChannelPreferenceLinkedinNew.current.value)
+                          }} 
+                        >
+                          <option value="" default disabled selected>Choose your preference</option>
+                          <option value="No Preference" >No Preference</option>
+                          <option value="Favorite" >Favorite</option>
+                          <option value="Not Disturb" >Not Disturb</option>
+                        </select>
+                      </InputLabelContainer>
+                        
+                      <InputLabelContainer className="channelContactCont">
+                        <button 
+                          disabled={!refInputContact_ChannelPreferenceLinkedinNew?.current?.value ? true :      false }
+                          className="addChannel"
+                          onClick={()=>{
+                            setChannelsToAdd(prev => [...prev, {
+                                  "type_channel" : "Linkedin",
+                                  "account_channel" : contact_ChannelAccountLinkedinValue,
+                                  "preference_channel" : contact_ChannelPreferenceLinkedinValue,
+                                  "id_contact" : 0
+                            }])
+                            setLinkedinAdded(true)
+                          }}
+                        > 
+                          Add channel 
+                        </button >
+                      </InputLabelContainer>
+                    </>
+                  }
+                    </>
+                  }
+                  
+                </ContactChannels>
+                
+                {/* EDIT CHANNEL TWITTER */}
+                <ContactChannels>
+
+                {Object.keys(twitterChannelToEdit).length > 0 ? 
+                  <>
+                    {twitterAdded ? 
+                    <h3 className="channelAdded" > Twitter Channel Edition Added! <FaCheck size={16} /></h3>
+                    :
+                    <>
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="channelContactNew">Contact Channel</label>
+                        <p className="typeContactChannel" > Twitter</p>
+                      </InputLabelContainer>
+
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="twitterAccount">Twitter Account</label>
+                        <input 
+                          disabled={editActiveTwitter ? false : true}
+                          id="twitterAccount" 
+                          name="twitterAccount"
+                          type="text"
+                          placeholder="@myTwitter"
+                          ref={refInputContact_ChannelAccountTwitter}
+                          onChange={()=>{
+                            setContact_ChannelAccountTwitterValue(refInputContact_ChannelAccountTwitter.current.value)
+                            }} 
+                        />
+                      </InputLabelContainer>
+                          
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="twitterPreference">Twitter Preference</label>
+                        <select
+                          disabled={editActiveTwitter ? false : true}
+                          id="twitterPreference" 
+                          name="twitterPreference"
+                          type="text"
+                          ref={refInputContact_ChannelPreferenceTwitter}
+                          onChange={()=>{
+                            setContact_ChannelPreferenceTwitterValue    (refInputContact_ChannelPreferenceTwitter.current.value)
+                          }} 
+                        >
+                          <option value="" default disabled selected>Choose your preference</option>
+                          <option value="No Preference" >No Preference</option>
+                          <option value="Favorite" >Favorite</option>
+                          <option value="Not Disturb" >Not Disturb</option>
+                        </select>
+                      </InputLabelContainer>
+                        
+                      <InputLabelContainer className="channelContactContEditBtns">
+                      <button 
+                        onClick={()=> {
+                          triggerDeleteChannel(twitterChannelToEdit.id_channel)
+                          setTwitterChannelToEdit({})
+                          setContact_ChannelAccountTwitterValue("")
+                          setContact_ChannelPreferenceTwitterValue("")
+                          refInputContact_ChannelAccountTwitter.current.value = ""
+                          refInputContact_ChannelPreferenceTwitter.current.value = ""
+                        }}
+                      > 
+                          <FaTrashAlt size={18} title="Delete Channel"/> 
+                        </button >
+                        {editActiveTwitter ? 
+                          <button 
+                          onClick={()=>{
+                            setChannelsToUpdate(prev => [...prev, {
+                                  "type_channel" : "Twitter",
+                                  "account_channel" : contact_ChannelAccountTwitterValue,
+                                  "preference_channel" : contact_ChannelPreferenceTwitterValue,
+                                  "id_contact" : 0,
+                            }])
+                            setTwitterAdded(true)
+                          }}
+                          > 
+                            Confirm 
+                          </button >
+                          : 
+                          <button 
+                            onClick={()=>{
+                              setEditActiveTwitter(true)
+                            }}
+                          > 
+                            <FaEdit size={18} title="Edit Channel"/> 
+                          </button >
+                        }
+                      </InputLabelContainer>
+                    </>
+                  }
+                  </>
+                  : 
+                  <>
+                    {twitterAdded ? 
+                    <h3 className="channelAdded" > Twitter Channel Added! <FaCheck size={16} /></h3>
+                    :
+                    <>
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="channelContactNew">Contact Channel</label>
+                        <p className="typeContactChannel" > Twitter</p>
+                      </InputLabelContainer>
+
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="twitterAccountNew">Twitter Account</label>
+                        <input 
+                          id="twitterAccountNew" 
+                          name="twitterAccountNew"
+                          type="text"
+                          placeholder="@myTwitter"
+                          ref={refInputContact_ChannelAccountTwitterNew}
+                          onChange={()=>{
+                            setContact_ChannelAccountTwitterValue(refInputContact_ChannelAccountTwitterNew.   current.value)
+                            }} 
+                        />
+                      </InputLabelContainer>
+                          
+                      <InputLabelContainer className="channelContactCont">
+                        <label htmlFor="twitterPreferenceNew">Twitter Preference</label>
+                        <select
+                          disabled={!refInputContact_ChannelAccountTwitterNew?.current?.value ? true :      false }
+                          id="twitterPreferenceNew" 
+                          name="twitterPreferenceNew"
+                          type="text"
+                          ref={refInputContact_ChannelPreferenceTwitterNew}
+                          onChange={()=>{
+                            setContact_ChannelPreferenceTwitterValue    (refInputContact_ChannelPreferenceTwitterNew.current.value)
+                          }} 
+                        >
+                          <option value="" default disabled selected>Choose your preference</option>
+                          <option value="No Preference" >No Preference</option>
+                          <option value="Favorite" >Favorite</option>
+                          <option value="Not Disturb" >Not Disturb</option>
+                        </select>
+                      </InputLabelContainer>
+                        
+                      <InputLabelContainer className="channelContactCont">
+                        <button 
+                        disabled={!refInputContact_ChannelPreferenceTwitterNew?.current?.value ? true :     false }
+                          className="addChannel"
+                          onClick={()=>{
+                            setChannelsToAdd(prev => [...prev, {
+                                  "type_channel" : "Twitter",
+                                  "account_channel" : contact_ChannelAccountTwitterValue,
+                                  "preference_channel" : contact_ChannelPreferenceTwitterValue,
+                                  "id_contact" : 0
+                            }])
+                            setTwitterAdded(true)
+                          }}
+                        > 
+                          Add channel 
+                        </button >
+                      </InputLabelContainer>
+                    </>
+                  }
+                  </>
+                }
+
+                  
+                </ContactChannels>
+              
+              
+              </SecundaryContactInformation> 
+              
 
               <InputLabelContainer>
                   <button onClick={()=>{
