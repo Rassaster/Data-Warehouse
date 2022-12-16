@@ -1,4 +1,5 @@
 {
+  "homepage":"https://Rassaster.github.io/Data-Warehouse",
   "name": "acamica-data-warehouse",
   "version": "0.1.0",
   "private": true,
@@ -16,6 +17,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "predeploy": "DISABLE_ESLINT_PLUGIN=true npm run build",
+    "deploy": "DISABLE_ESLINT_PLUGIN=true gh-pages -d build",
     "start": "DISABLE_ESLINT_PLUGIN=true react-scripts start",
     "build": "DISABLE_ESLINT_PLUGIN=true react-scripts build",
     "test": "DISABLE_ESLINT_PLUGIN=true react-scripts test",
@@ -48,6 +51,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.31.10",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "gh-pages": "^4.0.0",
     "prettier": "^2.7.1"
   }
 }

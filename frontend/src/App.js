@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, HashRouter} from 'react-router-dom';
 import Routing from './routes';
 import GlobalStyle from './styles/global';
 import Header from './components/Header';
@@ -8,10 +8,10 @@ import { UserAuth_ContextProvider } from './context/auth';
 function App() {
   return (
     <UserAuth_ContextProvider>
-      <BrowserRouter>
+      <HashRouter>
         <Header />
         <Routing />
-      </BrowserRouter>
+      </HashRouter>
       <GlobalStyle />
     </UserAuth_ContextProvider>
   );
