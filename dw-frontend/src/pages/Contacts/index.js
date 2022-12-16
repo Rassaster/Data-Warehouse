@@ -161,11 +161,15 @@ function Contacts() {
           triggerChannelCreation(channel)
         })
         setChannelsToAdd([])
+        setSelectedCompany({})
+        setFacebookAdded(false)
+        setLinkedinAdded(false)
+        setTwitterAdded(false)
         triggerViewAllContacts()
         setPopupOpen(false)
         setCreateActive(false)
       }
-    }).then(re => console.log("RE LOCO", re))
+    })
   }
 
   // Declaration of Request Options: GET Contact by Id
@@ -513,6 +517,10 @@ function Contacts() {
               <button 
                 onClick={()=>{
                   setChannelsToAdd([])
+                  setSelectedCompany({})
+                  setFacebookAdded(false)
+                  setLinkedinAdded(false)
+                  setTwitterAdded(false)
                   setPopupOpen(false)
                   setCreateActive(false)
                 }}
@@ -602,16 +610,16 @@ function Contacts() {
 
                 <InputLabelContainer className="locationContainer">
                   <div>
-                    <p>Region</p>
-                    <p>{selectedCompany?.name_region}</p>
+                    <h5>Region</h5>
+                    <h4>{selectedCompany?.name_region}</h4>
                   </div>
                   <div>
-                    <p>Country</p>
-                    <p>{selectedCompany?.name_country}</p>
+                    <h5>Country</h5>
+                    <h4>{selectedCompany?.name_country}</h4>
                   </div>
                   <div>
-                    <p>City</p>
-                    <p>{selectedCompany?.name_city}</p>
+                    <h5>City</h5>
+                    <h4>{selectedCompany?.name_city}</h4>
                   </div>
                 </InputLabelContainer>
 

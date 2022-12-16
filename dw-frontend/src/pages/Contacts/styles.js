@@ -226,6 +226,8 @@ export const FormContainer = styled.div`
   border-radius: 5px;
   width: fit-content;
   height: fit-content;
+  min-width: 95vw;
+  min-height: 92vh;
   padding: 20px 20px;
   display: grid;
   gap: 10px 0;
@@ -264,12 +266,23 @@ flex-wrap: wrap;
 
   .locationContainer {
     display: flex;
-    
+    gap: 5px;
+    align-items: end;
+
     div {
+      background: white;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: start;
+      border: 1px solid grey;
+      border-radius: 5px;
+      height: 36px;
+
+
+      h4 {
+        color: green;
+      }
     }
   }  
 `;
