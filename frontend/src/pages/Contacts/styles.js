@@ -67,6 +67,65 @@ export const SelectedContactsActions = styled.div`
     background: red;
   }
 `;
+
+export const SearchCont = styled.div`
+border-radius: 5px;
+width: 30%;
+position: relative;
+
+.searchInputCont {
+    border: 2px solid grey;
+    border-radius: 5px;
+    width: 100%;
+    padding: 8px 10px;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all .3s ease-in-out;
+  }
+  .searchInputCont:hover {
+    background: grey;
+  }
+  
+  .searchForm {
+    background: white;
+    position: absolute;
+    z-index: 20;
+    overflow-y: hidden;
+    border-radius: 5px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    width: 100%;
+    transition: all .5s ease-in-out;
+
+    button {
+      border: 2px solid black;
+      background: white;
+      padding: 10px;
+      border-radius: 5px;
+      color: black;
+      font: normal normal 700 normal 12px/12px sans-serif;
+      transition: all .3s ease-in-out;
+    }
+    button:hover {
+      background: black;
+      color: white;
+    }
+  }
+  .formOpen {
+    padding: 20px;
+    height: 300px;
+    border: 2px solid grey;
+    border-top: none;
+    box-shadow: 11px 11px 45px -9px rgba(0,0,0,0.75);
+  }
+  .formClosed {
+    border-width: 0;
+    height: 0px;
+
+  }
+`;
+
 export const ActionBtnsContainer = styled.div`
 width: 12%;
 

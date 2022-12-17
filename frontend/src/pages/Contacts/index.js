@@ -3,11 +3,12 @@ import { Link } from "react-router-dom";
 import api from '../../services/api';
 import UserAuthContext from '../../context/auth';
 
-import { FaTrashAlt, FaEdit, FaTimes, FaPlus, FaSort, FaCheck} from 'react-icons/fa'
+import { FaTrashAlt, FaEdit, FaTimes, FaPlus, FaSort, FaCheck, FaCaretDown, FaCaretUp, FaDivide} from 'react-icons/fa'
 import { 
   Container, 
   Head, 
   SelectedContactsActions,
+  SearchCont,
   ActionBtnsContainer,
   ContactsTable, 
   TableHeadRow, 
@@ -31,6 +32,10 @@ const GET_CONTACT_BYID = "/contacts/ContactId:";
 const UPDATE_CONTACTS = "/contacts/updateContactId:";
 const DELETE_CONTACTS = "/contacts/deleteContactId:";
 
+const GET_INTEREST_LIST = "contacts/interest"
+const GET_PROFILES_LIST = "contacts/profiles"
+
+const ALL_CITIES = "/cities/listAll"
 const ALL_COMPANIES = "/companies/listAll";
 
 const CREATE_CHANNEL = "/channels/create";
@@ -38,14 +43,20 @@ const GET_CHANNELS_BYCONTACTID = "/channels/contactId:";
 const UPDATE_CHANNEL = "/channels/updateChannelId:";
 const DELETE_CHANNEL = "/channels/deleteChannelId:";
 
+
+
 function Contacts() {
   // Declaration of Global Auth Context
   const { authState, setAuthState } = useContext(UserAuthContext);
   
   // Declaration of States:
+  const [searchFormOpen, setSearchFormOpen] = useState(false)
+  const [companyIdFilter, setCompanyIdFilter] = useState("")
+
   const [contactsList, setContactsList] = useState([])
   const [companiesList, setCompaniesList] = useState([])
   const [selectedCompany, setSelectedCompany] = useState()
+  const [citiesList, setCitesList] = useState([])
 
   const [popupOpen, setPopupOpen] = useState(false)
   const [createActive, setCreateActive] = useState(false)
@@ -94,6 +105,13 @@ function Contacts() {
   const [editActiveTwitter, setEditActiveTwitter] = useState(false)
 
   // Declaration of References:
+  const refInput_NameFilter = useRef()
+  const refInput_ProfileFilter = useRef()
+  const refInput_InterestFilter = useRef()
+  const refInput_CompanyFilter = useRef()
+  const refInput_CityFilter = useRef()
+
+
   const refInputContactNameNew = useRef();
   const refInputContactLastNameNew = useRef();
   const refInputContactProfileNew = useRef();
@@ -335,6 +353,29 @@ function Contacts() {
     })
   }
   /* **************************************************************** */
+  // Declaration of Request Options: GET All Cities
+  const viewAllCitiesRequestHeaders = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authState.token}`
+  };
+  const viewAllCitiesRequestInfo = {
+    method: 'GET',
+    headers: viewAllCitiesRequestHeaders,
+    redirect: 'follow'
+  }
+  const triggerViewAllCities = () => {
+    const viewAllCitiesResponse = api(`${BASE_URL}${ALL_CITIES}`, viewAllCitiesRequestInfo);
+    viewAllCitiesResponse.then(response => {
+      console.log(response)
+      if (response.Status === 403 || response.status === 403) {
+        setAuthState(loggedOff)
+      }
+      if (response.Status === 200) {
+        setCitesList(response.Result)
+      }
+    })
+  }
+  /* **************************************************************** */
   // Declaration of Request Options: POST New Channel
   const createNewChannelRequestHeaders = {
     "Content-Type": "application/json",
@@ -543,6 +584,148 @@ function Contacts() {
             Add Contact<FaPlus size={16} title="Add Country" />  
           </button>
         </ActionBtnsContainer>
+        <SearchCont>
+          <div 
+            className="searchInputCont"
+            onClick={()=>{
+              searchFormOpen ? null : triggerViewAllCompanies()
+              searchFormOpen ? null : triggerViewAllCities()
+              searchFormOpen ? setSearchFormOpen(false) : setSearchFormOpen(true)
+            }} 
+          >
+            <p>Open Search/Filter options</p>
+            <FaCaretDown size={18} style={{transform: searchFormOpen ? "rotate(180deg)" : "rotate(0)"}} />
+          </div>
+
+          <div 
+            className={`searchForm ${searchFormOpen ? "formOpen" : "formClosed"}`}
+          >
+            {/* CONTACT NAME FILTER */}
+            <div>
+              <label htmlFor="contactName">Contact Name:</label>
+              <input 
+                id="contactName" 
+                type="text" 
+                ref={refInput_NameFilter}
+                onInput={()=>{
+                  console.log("Name Filter:", refInput_NameFilter.current.value)
+                }}  
+              />
+            </div>
+
+            {/* PROFILE FILTER */}
+            <div>
+              <label htmlFor="profileFilter">Profile</label>
+                <select
+                  id="profileFilter" 
+                  name="profileFilter"
+                  type="text"
+                  ref={refInput_ProfileFilter}
+                  onChange={()=>{
+                    console.log("Profile Filter:", refInput_ProfileFilter.current.value)
+                  }} 
+                >
+                  <option value="" default disabled selected>Select your interest</option>
+                  <option value="%" >%</option>
+                  <option value="%" >%</option>
+                  <option value="%" >%</option>
+                  <option value="%" >%</option>
+                  <option value="%" >%</option>
+                </select>
+            </div>
+            
+            {/* INTEREST FILTER */}
+            <div>
+              <label htmlFor="interestFilter">Interest</label>
+                <select
+                  id="interestFilter" 
+                  name="interestFilter"
+                  type="text"
+                  ref={refInput_InterestFilter}
+                  onChange={()=>{
+                    console.log("Interest Filter:", refInput_InterestFilter.current.value)
+                  }} 
+                >
+                  <option value="" default disabled selected>Select your interest</option>
+                  <option value="0%" >0%</option>
+                  <option value="25%" >25%</option>
+                  <option value="50%" >50%</option>
+                  <option value="75%" >75%</option>
+                  <option value="100%" >100%</option>
+                </select>
+            </div>
+            
+            {/* COMPANY FILTER */}
+            <div>
+              <label htmlFor="companyFilter">Company:</label>
+                <select 
+                  name="companyFilter" 
+                  id="companyFilter"
+                  ref={refInput_CompanyFilter}
+                  onChange={()=>{
+                    console.log("Company Filter:", refInput_CompanyFilter.current.value)
+                  }}
+                >
+                  <option value="" default disabled selected>Select a company</option>
+                  {companiesList.length > 0 ? 
+                    <>
+                      {companiesList.map((company, index) => {
+                        return (
+                          <option key={`company${index}`} value={company.name_company}>{company. name_company}</option>
+                        )
+                      })}
+                    </>
+                    : 
+                    <></>
+                  }
+                </select>
+            </div>
+
+            {/* CITY FILTER */}
+            <div>
+              <label htmlFor="cityFilter">City:</label>
+                <select 
+                  name="cityFilter" 
+                  id="cityFilter"
+                  ref={refInput_CityFilter}
+                  onChange={()=>{
+                    console.log("City Filter: ", refInput_CityFilter.current.value)
+                  }}
+                >
+                  <option value="" default disabled selected>Select a city</option>
+                  {citiesList.length > 0 ? 
+                    <>
+                      {citiesList.map((city, index) => {
+                        return (
+                          <option key={`city${index}`} value={city.name_city}>{city.name_city}</option>
+                        )
+                      })}
+                    </>
+                    : 
+                    <></>
+                  }
+                </select>
+            </div>
+
+            <div>
+              <button
+              onClick={()=>{
+                
+              }}
+            >
+              Search / Apply
+            </button>
+              <button
+                onClick={()=>{
+                triggerViewAllContacts()
+                }}
+              >
+                Clear
+              </button>
+            </div>
+          
+          </div>
+        </SearchCont>
         <SelectedContactsActions>
           <p className="contactsCounter">Selected contacts: {selectedContacts.length}</p>
           <button className="contacts-Delete"
