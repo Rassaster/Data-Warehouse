@@ -1,8 +1,8 @@
 /* Data Manipulation Language */
 USE DelilahResto;
 -- Initial data in table: Users
--- INSERT INTO Users (name, last_name, profile, email, is_admin, user_password, salt, last_update)
--- VALUES ("Juan", "Rassa", "Front End Dev.", "juan.rassa@gmail.com", "T", "adminpass", "2", "2021-07-08 14:41:50");
+-- Password = User1#
+INSERT INTO users(last_update, name, last_name, email, profile, is_admin, user_password, salt) VALUES('2022-11-26 17:48:28', 'Admin', 'Admin', 'admin@gmail.com', 'Admin', 'T', '977b34441dc1c0f70cab6aa5d774c7daa1161c9109c585c6306729f96d871bc7', '3a8634e6-bddc-48fb-88c5-41d267adf235');
 -- *********************************************************
 -- Initial data in table: Regions
 -- *********************************************************

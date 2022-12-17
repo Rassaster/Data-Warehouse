@@ -134,6 +134,22 @@ const selectChannelsFromContactId = (contactId) => {
   })
 };
 
+const selectContactsFilter = (whereClause) => {
+  return sequelize.query(`SELECT contacts.*, companies.name_company, cities.name_city, countries.name_country, regions.name_region 
+  FROM Contacts as contacts 
+  JOIN Companies as companies 
+  ON contacts.id_company=companies.id_company 
+  JOIN Cities as cities 
+  ON companies.id_city=cities.id_city 
+  JOIN Countries as countries 
+  ON cities.id_country=countries.id_country 
+  JOIN Regions as regions ON countries.id_region=regions.id_region
+  ${whereClause}
+  ;`, {
+    type: sequelize.QueryTypes.SELECT
+  })
+};
+
 
 // ***** SQL UPDATE QUERIES ***** 
 const updateTableRegisterWhereIdIsValue = (table, updatedJsonData, field, value) => {
@@ -176,6 +192,7 @@ module.exports = {
   selectChannelsFromContactId,
   selectAllContactsJoinedCompanyLocations,
   selectContactJoinedChannels,
+  selectContactsFilter,
   // 
   updateTableRegisterWhereIdIsValue,
   deleteTableRegisterWhereIdIsValue

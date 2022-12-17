@@ -19,7 +19,7 @@ CREATE TABLE Users (
     NOT NULL,
   email varchar(60)
     NOT NULL,
-  is_admin enum("T", "F")
+  is_admin enum('T', 'F')
     NOT NULL,
   user_password varchar(100)
     NOT NULL,
@@ -127,3 +127,19 @@ CREATE TABLE Channels (
     NOT NULL,
   PRIMARY KEY (id_channel)
 );
+
+-- SELECT contacts.*, companies.name_company, cities.name_city, countries.name_country, regions.name_region FROM Contacts as contacts JOIN Companies as companies ON contacts.id_company=companies.id_company JOIN Cities as cities ON companies.id_city=cities.id_city JOIN Countries as countries ON cities.id_country=countries.id_country JOIN Regions as regions ON countries.id_region=regions.id_region WHERE companies.name_company = 'Aloe JBL';
+
+-- SELECT contacts.*, companies.name_company, cities.name_city, countries.name_country, regions.name_region FROM Contacts as contacts JOIN Companies as companies ON contacts.id_company=companies.id_company JOIN Cities as cities ON companies.id_city=cities.id_city JOIN Countries as countries ON cities.id_country=countries.id_country JOIN Regions as regions ON countries.id_region=regions.id_region WHERE cities.name_city = 'Bogota' AND WHERE contacts.interest_contact = '25%';
+
+-- SELECT contacts.*, companies.name_company, cities.name_city, countries.name_country, regions.name_region 
+-- FROM Contacts as contacts 
+-- JOIN Companies as companies 
+-- ON contacts.id_company=companies.id_company 
+-- JOIN Cities as cities 
+-- ON companies.id_city=cities.id_city 
+-- JOIN Countries as countries 
+-- ON cities.id_country=countries.id_country 
+-- JOIN Regions as regions ON countries.id_region=regions.id_region  
+-- WHERE contacts.interest_contact = '25%' 
+-- AND cities.name_city = 'Bogota';

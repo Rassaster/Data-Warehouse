@@ -4,6 +4,7 @@ const app = express();
 const helmet = require("helmet");
 const cors = require('cors');
 const rateLimit = require("express-rate-limit");
+const sequelize = require("./dataBase/dbConnect");
 
 // Requiring Data Base connection's module from dbConnect.js:
 require("./dataBase/dbConnect")

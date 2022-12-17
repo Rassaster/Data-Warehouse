@@ -2,7 +2,7 @@ const moment = require("moment");
 // Import Server Responses:
 const {  okReponse200, createdResponse201, conflictResponse409, internalServerError500 } = require("../serverResponses")
 // Import MYSQL Queries functions:
-const { newContact, selectFromTableWhereFieldIsValue, selectAllFromTable, selectAllContactsJoinedCompanyLocations, selectContactJoinedChannels, selectContactsFromCompanyId, updateTableRegisterWhereIdIsValue, deleteTableRegisterWhereIdIsValue } = require("../sql/queries"); 
+const { newContact, selectFromTableWhereFieldIsValue, selectAllFromTable, selectAllContactsJoinedCompanyLocations, selectContactsFilter, selectContactJoinedChannels, selectContactsFromCompanyId, updateTableRegisterWhereIdIsValue, deleteTableRegisterWhereIdIsValue } = require("../sql/queries"); 
 // ***************************************** MIDDLEWARES *********************************************
 // -createNewContact;
 // Register a new contact:
@@ -89,6 +89,20 @@ const getAllContacts = async (req, res, next) => {
     return next();
   } catch {
     internalServerError500["Message"] = "An error has occurred while obtaining all the registered cities.";
+    return res.status(500).send(internalServerError500);
+  };
+};
+// -getContactsFilter:
+const getContactsFilter = async (req, res, next) => {
+  try {
+    const contactsFilter = await selectContactsFilter(req.params.filterParams);
+    console.log("RASSSAA", req.params.filterParams)
+    okReponse200["Message"] = "List of filtered contacts obtained.";
+    okReponse200["Result"] = contactsFilter;
+    req.getContactsFilter = okReponse200
+    return next();
+  } catch {
+    internalServerError500["Message"] = "An error has occurred while obtaining the filtered query.";
     return res.status(500).send(internalServerError500);
   };
 };
@@ -188,6 +202,7 @@ module.exports = {
   getContactById,
   getContactByName,
   getAllContacts,
+  getContactsFilter,
   getAllContactsChannels,
   getContactsByCompanyId,
   updateContactById,
