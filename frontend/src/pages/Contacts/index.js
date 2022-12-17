@@ -32,7 +32,8 @@ const GET_CONTACT_BYID = "/contacts/ContactId:";
 const UPDATE_CONTACTS = "/contacts/updateContactId:";
 const DELETE_CONTACTS = "/contacts/deleteContactId:";
 
-const GET_INTEREST_LIST = "contacts/interest"
+const CONTACTS_FILTER = "/contacts/filter:"
+
 const GET_PROFILES_LIST = "contacts/profiles"
 
 const ALL_CITIES = "/cities/listAll"
@@ -51,12 +52,23 @@ function Contacts() {
   
   // Declaration of States:
   const [searchFormOpen, setSearchFormOpen] = useState(false)
-  const [companyIdFilter, setCompanyIdFilter] = useState("")
 
   const [contactsList, setContactsList] = useState([])
   const [companiesList, setCompaniesList] = useState([])
   const [selectedCompany, setSelectedCompany] = useState()
   const [citiesList, setCitesList] = useState([])
+
+  const [nameFilterValue, setNameFilterValue] = useState("")
+  const [interestFilterValue, setInterestFilterValue] = useState("")
+  const [companyFilterValue, setCompanyFilterValue] = useState("")
+  const [cityFilterValue, setCityFilterValue] = useState("")
+  const [numberOfActiveFilters, setNumberOfActiveFilters] = useState(0)
+  const [filterSearchQuery, setFilterSearchQuery] = useState("WHERE cities.name_city='Bogotá'")
+
+  useEffect(()=>{
+    setFilterSearchQuery(filterSearchQuery)
+
+  }, [filterSearchQuery])
 
   const [popupOpen, setPopupOpen] = useState(false)
   const [createActive, setCreateActive] = useState(false)
@@ -106,7 +118,6 @@ function Contacts() {
 
   // Declaration of References:
   const refInput_NameFilter = useRef()
-  const refInput_ProfileFilter = useRef()
   const refInput_InterestFilter = useRef()
   const refInput_CompanyFilter = useRef()
   const refInput_CityFilter = useRef()
@@ -152,6 +163,28 @@ function Contacts() {
   const triggerViewAllContacts = () => {
     const viewAllContactsResponse = api(`${BASE_URL}${ALL_CONTACTS}`, viewAllContactsRequestInfo);
     viewAllContactsResponse.then(response => {
+      console.log(response)
+      if (response.Status === 403 || response.status === 403) {
+        setAuthState(loggedOff)
+      }
+      if (response.Status === 200) {
+        setContactsList(response.Result)
+      }
+    })
+  }
+  // Declaration of Request Options: GET All Contacts
+  const viewContactsFilterRequestHeaders = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authState.token}`
+  };
+  const viewContactsFilterRequestInfo = {
+    method: 'GET',
+    headers: viewContactsFilterRequestHeaders,
+    redirect: 'follow'
+  }
+  const triggerViewContactsFilter = (query) => {
+    const viewContactsFilterResponse = api(`${BASE_URL}${CONTACTS_FILTER}${decodeURI(query)}`, viewContactsFilterRequestInfo);
+    viewContactsFilterResponse.then(response => {
       console.log(response)
       if (response.Status === 403 || response.status === 403) {
         setAuthState(loggedOff)
@@ -251,7 +284,7 @@ function Contacts() {
     "email_contact" : contactEmailValue,
     "profile_contact" : contactProfileValue,
     "id_company" : Number(contact_CompanyId),
-    "interest_contact" : contactInterestValue ? contactInterestValue : "0%"
+    "interest_contact" : contactInterestValue ? contactInterestValue : "0"
   });
   const updateContactRequestInfo = {
     method: 'PUT',
@@ -601,68 +634,50 @@ function Contacts() {
             className={`searchForm ${searchFormOpen ? "formOpen" : "formClosed"}`}
           >
             {/* CONTACT NAME FILTER */}
-            <div>
+            <div className="filterInputLabel">
               <label htmlFor="contactName">Contact Name:</label>
               <input 
                 id="contactName" 
                 type="text" 
                 ref={refInput_NameFilter}
                 onInput={()=>{
+                  setNameFilterValue(refInput_NameFilter.current.value)
                   console.log("Name Filter:", refInput_NameFilter.current.value)
                 }}  
               />
             </div>
-
-            {/* PROFILE FILTER */}
-            <div>
-              <label htmlFor="profileFilter">Profile</label>
-                <select
-                  id="profileFilter" 
-                  name="profileFilter"
-                  type="text"
-                  ref={refInput_ProfileFilter}
-                  onChange={()=>{
-                    console.log("Profile Filter:", refInput_ProfileFilter.current.value)
-                  }} 
-                >
-                  <option value="" default disabled selected>Select your interest</option>
-                  <option value="%" >%</option>
-                  <option value="%" >%</option>
-                  <option value="%" >%</option>
-                  <option value="%" >%</option>
-                  <option value="%" >%</option>
-                </select>
-            </div>
             
             {/* INTEREST FILTER */}
-            <div>
-              <label htmlFor="interestFilter">Interest</label>
+            <div className="filterInputLabel"> 
+              <label htmlFor="interestFilter"> Interest (in %):</label>
                 <select
                   id="interestFilter" 
                   name="interestFilter"
                   type="text"
                   ref={refInput_InterestFilter}
                   onChange={()=>{
+                    setInterestFilterValue(refInput_InterestFilter.current.value)
                     console.log("Interest Filter:", refInput_InterestFilter.current.value)
                   }} 
                 >
                   <option value="" default disabled selected>Select your interest</option>
-                  <option value="0%" >0%</option>
-                  <option value="25%" >25%</option>
-                  <option value="50%" >50%</option>
-                  <option value="75%" >75%</option>
-                  <option value="100%" >100%</option>
+                  <option value="0" >0</option>
+                  <option value="25" >25</option>
+                  <option value="50" >50</option>
+                  <option value="75" >75</option>
+                  <option value="100" >100</option>
                 </select>
             </div>
             
             {/* COMPANY FILTER */}
-            <div>
+            <div className="filterInputLabel">
               <label htmlFor="companyFilter">Company:</label>
                 <select 
                   name="companyFilter" 
                   id="companyFilter"
                   ref={refInput_CompanyFilter}
                   onChange={()=>{
+                    setCompanyFilterValue(refInput_CompanyFilter.current.value)
                     console.log("Company Filter:", refInput_CompanyFilter.current.value)
                   }}
                 >
@@ -682,13 +697,14 @@ function Contacts() {
             </div>
 
             {/* CITY FILTER */}
-            <div>
+            <div className="filterInputLabel">
               <label htmlFor="cityFilter">City:</label>
                 <select 
                   name="cityFilter" 
                   id="cityFilter"
                   ref={refInput_CityFilter}
                   onChange={()=>{
+                    setCityFilterValue(refInput_CityFilter.current.value)
                     console.log("City Filter: ", refInput_CityFilter.current.value)
                   }}
                 >
@@ -707,10 +723,17 @@ function Contacts() {
                 </select>
             </div>
 
-            <div>
+            <div className="filterInputLabel filterActionBtns">
               <button
               onClick={()=>{
-                
+                if (nameFilterValue) {
+                  let p = encodeURIComponent("Daniel")
+                  triggerViewContactsFilter("WHERE contacts.name_contact ="+p )
+                  // triggerViewContactsFilter("WHERE contacts.name_contact = 'Daniel'" )
+                  // triggerViewContactsFilter(`WHERE contacts.name_contact = ${refInput_NameFilter.current.value}` )
+                }
+
+                setNumberOfActiveFilters(0)
               }}
             >
               Search / Apply
@@ -805,12 +828,12 @@ function Contacts() {
               setActiveSort(true)
               activeSortInterest ? setActiveSortInterest(false) : setActiveSortInterest(true)
               activeSortInterest ? 
-                setContactsList(contactsList.sort((a, b) => (a.interest_contact > b.interest_contact) ? 1 : -1))
+                setContactsList(contactsList.sort((a, b) => (Number(a.interest_contact) > Number(b.interest_contact)) ? 1 : -1))
                 :
-                setContactsList(contactsList.sort((a, b) => (a.interest_contact < b.interest_contact) ? 1 : -1))
+                setContactsList(contactsList.sort((a, b) => (Number(a.interest_contact) < Number(b.interest_contact)) ? 1 : -1))
             }}
           >
-            Interest
+            Interest (in %)
             <FaSort size={14} />
           </h5>
           <h5>
@@ -1006,7 +1029,7 @@ function Contacts() {
               <SecundaryContactInformation>
 
                 <InputLabelContainer className="interestContactCont">
-                  <label htmlFor="interestNew">Interest</label>
+                  <label htmlFor="interestNew">Interest (in %)</label>
                   <select
                     id="interestNew" 
                     name="interestNew"
@@ -1017,11 +1040,11 @@ function Contacts() {
                     }} 
                   >
                     <option value="" default disabled selected>Select your interest</option>
-                    <option value="0%" >0%</option>
-                    <option value="25%" >25%</option>
-                    <option value="50%" >50%</option>
-                    <option value="75%" >75%</option>
-                    <option value="100%" >100%</option>
+                    <option value="0" >0</option>
+                    <option value="25" >25</option>
+                    <option value="50" >50</option>
+                    <option value="75" >75</option>
+                    <option value="100" >100</option>
                   </select>
                 </InputLabelContainer>
               
@@ -1379,7 +1402,7 @@ function Contacts() {
               <SecundaryContactInformation>
 
                 <InputLabelContainer className="interestContactCont">
-                  <label htmlFor="interest">Interest</label>
+                  <label htmlFor="interest">Interest (in %)</label>
                   <select
                     id="interest" 
                     name="interest"
@@ -1390,11 +1413,11 @@ function Contacts() {
                     }} 
                   >
                     <option value="" default disabled selected>Select your interest</option>
-                    <option value="0%" >0%</option>
-                    <option value="25%" >25%</option>
-                    <option value="50%" >50%</option>
-                    <option value="75%" >75%</option>
-                    <option value="100%" >100%</option>
+                    <option value="0" >0</option>
+                    <option value="25" >25</option>
+                    <option value="50" >50</option>
+                    <option value="75" >75</option>
+                    <option value="100" >100</option>
                   </select>
                 </InputLabelContainer>
 

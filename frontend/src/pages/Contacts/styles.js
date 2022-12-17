@@ -97,7 +97,29 @@ position: relative;
     border-top-right-radius: 0px;
     width: 100%;
     transition: all .5s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 
+    .filterInputLabel {
+
+      padding: 5px 20px;
+      display: flex;
+      justify-content: start;
+
+
+      label,
+      input,
+      select {
+        width: 50%;
+      }
+    } 
+    .filterActionBtns {
+      justify-content: space-around;
+      button {
+        width: 43%;
+      } 
+    }
     button {
       border: 2px solid black;
       background: white;
@@ -127,7 +149,8 @@ position: relative;
 `;
 
 export const ActionBtnsContainer = styled.div`
-width: 12%;
+  width: 12%;
+  align-self: end;
 
   button {
     width: 100%;
