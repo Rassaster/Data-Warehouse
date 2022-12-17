@@ -39,7 +39,7 @@ export const Actions = styled.div`
 
   width: 250px;
   height: 120px;
-  border: 1px solid green;
+  border: 2px solid green;
   border-radius: 5px;
   margin: 100px auto 0;
   padding: 20px;
@@ -51,8 +51,9 @@ export const Actions = styled.div`
   align-items: center;
 
   a {
+    font-weight: 700;
     color: blue;
-    border: 1px solid black;
+    border: 2px solid black;
     background: white;
     color: black;
     height: 33px;
