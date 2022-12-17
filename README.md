@@ -20,6 +20,6 @@ Please follow the next steps for setting up the server and database prior to tes
 
 ## FrontEnd - User Interface Access: 
 IMPORTANT: First lift up the server and database before accessing the UI.
-The page can be found in the following link: [Data Warehouse Front](https://rassaster.github.io/Data-Warehouse/#/login)
+The page can be found in the following link: [Data Warehouse Front](https://rassaster.github.io/Data-Warehouse/#/login) https://rassaster.github.io/Data-Warehouse/#/login.
 
 You can find the OAP3 [documentation here](https://app.swaggerhub.com/apis/Rassaster/data-warehouse/1.0.0#/Z-Wave/setDimmer).
