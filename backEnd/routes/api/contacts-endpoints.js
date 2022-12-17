@@ -9,7 +9,7 @@ const { jwtokenExtraction, jwtokenVerification } = require("../../middlewares/jw
 // Security/Credentials middlewares:
 const { checkUserPermissions, justAdminGate } = require("../../middlewares/users-midwares");
 // CRUD middlewares:
-const { createNewContact, getContactById, getContactByName, getAllContacts, getAllContactsChannels,getContactsByCompanyId, getContactsFilter, updateContactById, deleteContactById } = require("../../middlewares/contacts-midwares");
+const { createNewContact, getContactById, getContactByName, getAllContacts, getAllContactsChannels,getContactsByCompanyId, getContactsFilterNAME, getContactsFilterINTEREST, getContactsFilterCOMPANY, getContactsFilterCITY, updateContactById, deleteContactById } = require("../../middlewares/contacts-midwares");
 // ******************** ENDPOINTS ******************** //
 // -> /dataWarehouse/contacts/create Create new company. Just Admin:
 router.post("/create", jwtokenExtraction, jwtokenVerification, checkUserPermissions, justAdminGate, validateJSONSchema(contactSchema), createNewContact, (req, res) => {
@@ -31,9 +31,21 @@ router.get("/contactName::contactName", jwtokenExtraction, jwtokenVerification, 
 router.get("/listAll", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getAllContacts, (req, res) => {
   res.status(200).json(req.getAllContacts);
 });
-// -> /dataWarehouse/contacts. For both Admins and Users.
-router.get("/filter::filterParams", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getContactsFilter, (req, res) => {
-  res.status(200).json(req.getContactsFilter);
+// -> /dataWarehouse/contacts/filterName::value. For both Admins and Users.
+router.get("/filterName::value", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getContactsFilterNAME, (req, res) => {
+  res.status(200).json(req.getContactsFilterNAME);
+});
+// -> /dataWarehouse/contacts/filterInterest::value. For both Admins and Users.
+router.get("/filterInterest::value", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getContactsFilterINTEREST, (req, res) => {
+  res.status(200).json(req.getContactsFilterINTEREST);
+});
+// -> /dataWarehouse/contacts/filterCompany::value. For both Admins and Users.
+router.get("/filterCompany::value", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getContactsFilterCOMPANY, (req, res) => {
+  res.status(200).json(req.getContactsFilterCOMPANY);
+});
+// -> /dataWarehouse/contacts/filterCITY::value. For both Admins and Users.
+router.get("/filterCITY::value", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getContactsFilterCITY, (req, res) => {
+  res.status(200).json(req.getContactsFilterCITY);
 });
 // -> /dataWarehouse/contacts. For both Admins and Users.
 router.get("/listAllChannels", jwtokenExtraction, jwtokenVerification, checkUserPermissions, getAllContactsChannels, (req, res) => {

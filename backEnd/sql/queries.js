@@ -134,7 +134,7 @@ const selectChannelsFromContactId = (contactId) => {
   })
 };
 
-const selectContactsFilter = (whereClause) => {
+const selectContactsFilterNAME = (value) => {
   return sequelize.query(`SELECT contacts.*, companies.name_company, cities.name_city, countries.name_country, regions.name_region 
   FROM Contacts as contacts 
   JOIN Companies as companies 
@@ -144,8 +144,53 @@ const selectContactsFilter = (whereClause) => {
   JOIN Countries as countries 
   ON cities.id_country=countries.id_country 
   JOIN Regions as regions ON countries.id_region=regions.id_region
-  ${whereClause}
-  ;`, {
+  WHERE contacts.name_contact = ?;`, {
+    replacements: [value],
+    type: sequelize.QueryTypes.SELECT
+  })
+};
+const selectContactsFilterINTEREST = (value) => {
+  return sequelize.query(`SELECT contacts.*, companies.name_company, cities.name_city, countries.name_country, regions.name_region 
+  FROM Contacts as contacts 
+  JOIN Companies as companies 
+  ON contacts.id_company=companies.id_company 
+  JOIN Cities as cities 
+  ON companies.id_city=cities.id_city 
+  JOIN Countries as countries 
+  ON cities.id_country=countries.id_country 
+  JOIN Regions as regions ON countries.id_region=regions.id_region
+  WHERE contacts.interest_contact = ?;`, {
+    replacements: [value],
+    type: sequelize.QueryTypes.SELECT
+  })
+};
+const selectContactsFilterCOMPANY = (value) => {
+  return sequelize.query(`SELECT contacts.*, companies.name_company, cities.name_city, countries.name_country, regions.name_region 
+  FROM Contacts as contacts 
+  JOIN Companies as companies 
+  ON contacts.id_company=companies.id_company 
+  JOIN Cities as cities 
+  ON companies.id_city=cities.id_city 
+  JOIN Countries as countries 
+  ON cities.id_country=countries.id_country 
+  JOIN Regions as regions ON countries.id_region=regions.id_region
+  WHERE companies.name_company = ?;`, {
+    replacements: [value],
+    type: sequelize.QueryTypes.SELECT
+  })
+};
+const selectContactsFilterCITY = (value) => {
+  return sequelize.query(`SELECT contacts.*, companies.name_company, cities.name_city, countries.name_country, regions.name_region 
+  FROM Contacts as contacts 
+  JOIN Companies as companies 
+  ON contacts.id_company=companies.id_company 
+  JOIN Cities as cities 
+  ON companies.id_city=cities.id_city 
+  JOIN Countries as countries 
+  ON cities.id_country=countries.id_country 
+  JOIN Regions as regions ON countries.id_region=regions.id_region
+  WHERE cities.name_city = ?;`, {
+    replacements: [value],
     type: sequelize.QueryTypes.SELECT
   })
 };
@@ -192,7 +237,10 @@ module.exports = {
   selectChannelsFromContactId,
   selectAllContactsJoinedCompanyLocations,
   selectContactJoinedChannels,
-  selectContactsFilter,
+  selectContactsFilterNAME,
+  selectContactsFilterINTEREST,
+  selectContactsFilterCOMPANY,
+  selectContactsFilterCITY,
   // 
   updateTableRegisterWhereIdIsValue,
   deleteTableRegisterWhereIdIsValue
