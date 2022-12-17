@@ -73,7 +73,7 @@ const getChannelsByContactId = async (req, res, next) => {
     const listOfChannels = await selectChannelsFromContactId(req.params.contactId)
     if (listOfChannels.length === 0) {
       okReponse200["Message"] = "Empty response: Either the contactId doesn't exists, or the contactId doesn't have any channel related.";
-      okReponse200["Result"] = `The region with id ${req.params.contactId} doesn't exist.`;
+      okReponse200["Result"] = [{}];
       okReponse200["ListOfChannels"] = false;
       req.channelsByContactId = okReponse200;
     } 
