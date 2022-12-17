@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import api from '../../services/api';
 import UserAuthContext from '../../context/auth';
 
-import { FaTrashAlt, FaEdit, FaTimes, FaPlus, FaSort, FaCheck, FaCaretDown, FaCaretUp, FaDivide} from 'react-icons/fa'
+import { FaTrashAlt, FaEdit, FaTimes, FaPlus, FaSort, FaCheck, FaCaretDown, FaSearch} from 'react-icons/fa'
 import { 
   Container, 
   Head, 
@@ -18,7 +18,8 @@ import {
   PrimaryContactInformation,
   SecundaryContactInformation,
   ContactChannels,
-  InputLabelContainer } from "./styles";
+  InputLabelContainer,
+  deleteConfirmPopup } from "./styles";
 import './styles.css'
 
 const loggedOff = {isLoggedIn: false, token: '', isAdmin: ''}
@@ -32,9 +33,10 @@ const GET_CONTACT_BYID = "/contacts/ContactId:";
 const UPDATE_CONTACTS = "/contacts/updateContactId:";
 const DELETE_CONTACTS = "/contacts/deleteContactId:";
 
-const CONTACTS_FILTER = "/contacts/filter:"
-
-const GET_PROFILES_LIST = "contacts/profiles"
+const CONTACTS_FILTER_NAME = "/contacts/filterName:"
+const CONTACTS_FILTER_INTEREST = "/contacts/filterInterest:"
+const CONTACTS_FILTER_COMPANY = "/contacts/filterCompany:"
+const CONTACTS_FILTER_CITY = "/contacts/filterCity:"
 
 const ALL_CITIES = "/cities/listAll"
 const ALL_COMPANIES = "/companies/listAll";
@@ -51,7 +53,16 @@ function Contacts() {
   const { authState, setAuthState } = useContext(UserAuthContext);
   
   // Declaration of States:
+  const [deleteContactId ,setDeleteContactId] = useState()
+  const [deleteConfirmation ,setDeleteConfirmation] = useState(false)
+  
+  useEffect(()=>{
+    setDeleteContactId(deleteContactId)
+  }, [deleteContactId])
+  
   const [searchFormOpen, setSearchFormOpen] = useState(false)
+
+
 
   const [contactsList, setContactsList] = useState([])
   const [companiesList, setCompaniesList] = useState([])
@@ -63,12 +74,6 @@ function Contacts() {
   const [companyFilterValue, setCompanyFilterValue] = useState("")
   const [cityFilterValue, setCityFilterValue] = useState("")
   const [numberOfActiveFilters, setNumberOfActiveFilters] = useState(0)
-  const [filterSearchQuery, setFilterSearchQuery] = useState("WHERE cities.name_city='Bogotá'")
-
-  useEffect(()=>{
-    setFilterSearchQuery(filterSearchQuery)
-
-  }, [filterSearchQuery])
 
   const [popupOpen, setPopupOpen] = useState(false)
   const [createActive, setCreateActive] = useState(false)
@@ -172,19 +177,19 @@ function Contacts() {
       }
     })
   }
-  // Declaration of Request Options: GET All Contacts
-  const viewContactsFilterRequestHeaders = {
+   // Declaration of Request Options: GET All Contacts by NAME
+  const viewContactsFilterNAMERequestHeaders = {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${authState.token}`
   };
-  const viewContactsFilterRequestInfo = {
+  const viewContactsFilterNAMERequestInfo = {
     method: 'GET',
-    headers: viewContactsFilterRequestHeaders,
+    headers: viewContactsFilterNAMERequestHeaders,
     redirect: 'follow'
   }
-  const triggerViewContactsFilter = (query) => {
-    const viewContactsFilterResponse = api(`${BASE_URL}${CONTACTS_FILTER}${decodeURI(query)}`, viewContactsFilterRequestInfo);
-    viewContactsFilterResponse.then(response => {
+  const triggerViewContactsFilterNAME = (value) => {
+    const viewContactsFilterNAMEResponse = api(`${BASE_URL}${CONTACTS_FILTER_NAME}${value}`, viewContactsFilterNAMERequestInfo);
+    viewContactsFilterNAMEResponse.then(response => {
       console.log(response)
       if (response.Status === 403 || response.status === 403) {
         setAuthState(loggedOff)
@@ -194,7 +199,72 @@ function Contacts() {
       }
     })
   }
-
+  // Declaration of Request Options: GET All Contacts by INTEREST
+  const viewContactsFilterINTERESTRequestHeaders = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authState.token}`
+  };
+  const viewContactsFilterINTERESTRequestInfo = {
+    method: 'GET',
+    headers: viewContactsFilterINTERESTRequestHeaders,
+    redirect: 'follow'
+  }
+  const triggerViewContactsFilterINTEREST = (value) => {
+    const viewContactsFilterINTERESTResponse = api(`${BASE_URL}${CONTACTS_FILTER_INTEREST}${value}`, viewContactsFilterINTERESTRequestInfo);
+    viewContactsFilterINTERESTResponse.then(response => {
+      console.log(response)
+      if (response.Status === 403 || response.status === 403) {
+        setAuthState(loggedOff)
+      }
+      if (response.Status === 200) {
+        setContactsList(response.Result)
+      }
+    })
+  }
+  // Declaration of Request Options: GET All Contacts by COMPANY
+  const viewContactsFilterCOMPANYRequestHeaders = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authState.token}`
+  };
+  const viewContactsFilterCOMPANYRequestInfo = {
+    method: 'GET',
+    headers: viewContactsFilterCOMPANYRequestHeaders,
+    redirect: 'follow'
+  }
+  const triggerViewContactsFilterCOMPANY = (value) => {
+    const viewContactsFilterCOMPANYResponse = api(`${BASE_URL}${CONTACTS_FILTER_COMPANY}${value}`,  viewContactsFilterCOMPANYRequestInfo);
+    viewContactsFilterCOMPANYResponse.then(response => {
+      console.log(response)
+      if (response.Status === 403 || response.status === 403) {
+        setAuthState(loggedOff)
+      }
+      if (response.Status === 200) {
+        setContactsList(response.Result)
+      }
+    })
+  }
+  // Declaration of Request Options: GET All Contacts by CITY
+  const viewContactsFilterCITYRequestHeaders = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authState.token}`
+  };
+  const viewContactsFilterCITYRequestInfo = {
+    method: 'GET',
+    headers: viewContactsFilterCITYRequestHeaders,
+    redirect: 'follow'
+  }
+  const triggerViewContactsFilterCITY = (value) => {
+    const viewContactsFilterCITYResponse = api(`${BASE_URL}${CONTACTS_FILTER_CITY}${value}`, viewContactsFilterCITYRequestInfo);
+    viewContactsFilterCITYResponse.then(response => {
+      console.log(response)
+      if (response.Status === 403 || response.status === 403) {
+        setAuthState(loggedOff)
+      }
+      if (response.Status === 200) {
+        setContactsList(response.Result)
+      }
+    })
+  }
   // Declaration of Request Options: POST New Contact
   const createNewContactRequestHeaders = {
     "Content-Type": "application/json",
@@ -414,12 +484,6 @@ function Contacts() {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${authState.token}`
   };
-  // const createNewChannelRequestData = JSON.stringify({
-  //   "type_channel" : contact_ChannelTypeValue,
-  //   "account_channel" : contact_ChannelAccountValue,
-  //   "preference_channel" : contact_ChannelPreferenceValue,
-  //   "id_contact" : Number(contact_ChannelContactIdValue),
-  // });
   const triggerChannelCreation = (bodyData) => {
     const channelCreationResponse = api(`${BASE_URL}${CREATE_CHANNEL}`, {
       method: 'POST',
@@ -573,7 +637,7 @@ function Contacts() {
   useEffect(()=> {
     setChannelsOfContactEdit(channelsOfContactEdit)
     console.log(channelsOfContactEdit)
-    channelsOfContactEdit.forEach(channel => {
+    channelsOfContactEdit?.forEach(channel => {
       setContactIdChannelDeleted(channel.id_contact)
       if (channel.type_channel === "Facebook" ) {
         setFacebookChannelToEdit(channel)
@@ -606,17 +670,6 @@ function Contacts() {
         <h1>CONTACTS</h1>
       </Head>
         <ActionBtnsContainer>
-          <button
-            onClick={()=>{
-              setPopupOpen(true)
-              setCreateActive(true)
-              triggerViewAllCompanies()
-            }}
-            className="add-contact"
-          >
-            Add Contact<FaPlus size={16} title="Add Country" />  
-          </button>
-        </ActionBtnsContainer>
         <SearchCont>
           <div 
             className="searchInputCont"
@@ -634,7 +687,7 @@ function Contacts() {
             className={`searchForm ${searchFormOpen ? "formOpen" : "formClosed"}`}
           >
             {/* CONTACT NAME FILTER */}
-            <div className="filterInputLabel">
+            <div className="filterInputLabel searchNameCont">
               <label htmlFor="contactName">Contact Name:</label>
               <input 
                 id="contactName" 
@@ -645,6 +698,13 @@ function Contacts() {
                   console.log("Name Filter:", refInput_NameFilter.current.value)
                 }}  
               />
+              <button classNam="searchNameBtn"
+              onClick={()=>{
+                triggerViewContactsFilterNAME(refInput_NameFilter.current.value)
+              }}
+            >
+              <FaSearch size={16} />
+            </button>
             </div>
             
             {/* INTEREST FILTER */}
@@ -658,6 +718,7 @@ function Contacts() {
                   onChange={()=>{
                     setInterestFilterValue(refInput_InterestFilter.current.value)
                     console.log("Interest Filter:", refInput_InterestFilter.current.value)
+                    triggerViewContactsFilterINTEREST(refInput_InterestFilter.current.value)
                   }} 
                 >
                   <option value="" default disabled selected>Select your interest</option>
@@ -679,6 +740,7 @@ function Contacts() {
                   onChange={()=>{
                     setCompanyFilterValue(refInput_CompanyFilter.current.value)
                     console.log("Company Filter:", refInput_CompanyFilter.current.value)
+                    triggerViewContactsFilterCOMPANY(refInput_CompanyFilter.current.value)
                   }}
                 >
                   <option value="" default disabled selected>Select a company</option>
@@ -706,6 +768,7 @@ function Contacts() {
                   onChange={()=>{
                     setCityFilterValue(refInput_CityFilter.current.value)
                     console.log("City Filter: ", refInput_CityFilter.current.value)
+                    triggerViewContactsFilterCITY(refInput_CityFilter.current.value)
                   }}
                 >
                   <option value="" default disabled selected>Select a city</option>
@@ -724,23 +787,14 @@ function Contacts() {
             </div>
 
             <div className="filterInputLabel filterActionBtns">
-              <button
-              onClick={()=>{
-                if (nameFilterValue) {
-                  let p = encodeURIComponent("Daniel")
-                  triggerViewContactsFilter("WHERE contacts.name_contact ="+p )
-                  // triggerViewContactsFilter("WHERE contacts.name_contact = 'Daniel'" )
-                  // triggerViewContactsFilter(`WHERE contacts.name_contact = ${refInput_NameFilter.current.value}` )
-                }
-
-                setNumberOfActiveFilters(0)
-              }}
-            >
-              Search / Apply
-            </button>
+              
               <button
                 onClick={()=>{
-                triggerViewAllContacts()
+                  triggerViewAllContacts()
+                  refInput_NameFilter.current.value = ""
+                  refInput_InterestFilter.current.value = ""
+                  refInput_CompanyFilter.current.value = ""
+                  refInput_CityFilter.current.value = ""
                 }}
               >
                 Clear
@@ -749,6 +803,19 @@ function Contacts() {
           
           </div>
         </SearchCont>
+        
+          <button
+            onClick={()=>{
+              setPopupOpen(true)
+              setCreateActive(true)
+              triggerViewAllCompanies()
+            }}
+            className="add-contact"
+          >
+            Add Contact<FaPlus size={16} title="Add Contact" />  
+          </button>
+        </ActionBtnsContainer>
+        
         <SelectedContactsActions>
           <p className="contactsCounter">Selected contacts: {selectedContacts.length}</p>
           <button className="contacts-Delete"
@@ -881,10 +948,13 @@ function Contacts() {
                     <button 
                       className="contacts-Delete"
                       onClick={() => {
-                        triggerDeleteContact(contact.id_contact)
+                        setDeleteContactId(contact.id_contact)
+                        setPopupOpen(true)
+                        setDeleteConfirmation(true)
+                        // triggerDeleteContact(contact.id_contact)
                       }}
                     >
-                      <FaTrashAlt size={18} title="Delete" />  
+                      <FaTrashAlt size={18} title="Delete Contact" />  
                     </button>
                     <button 
                       className="contacts-Update"
@@ -896,7 +966,7 @@ function Contacts() {
                         triggerViewAllCompanies()
                       }}
                     >
-                      <FaEdit size={18} title="Edit" />  
+                      <FaEdit size={18} title="Edit Contact" />  
                     </button>
                   </div>
 
@@ -1902,6 +1972,35 @@ function Contacts() {
                   }}> Update Contact </button >
               </InputLabelContainer>
             </FormContainer>      
+            : 
+            <></>
+          }
+
+          {deleteConfirmation ? 
+            <FormContainer>
+              <div className="confirmDeletion">
+              <h3>Are you sure about deleting the contact?</h3>
+              <button
+              className="yesDelete"
+                onClick={() => {
+                  triggerDeleteContact(deleteContactId)
+                  setPopupOpen(false)
+                  setDeleteConfirmation(false)
+                }}
+              >
+                Yes, delete
+              </button>
+              <button
+                className="noCancel"
+                onClick={() => {
+                  setPopupOpen(false)
+                  setDeleteConfirmation(false)
+                }}
+              >
+                Cancel
+              </button>
+              </div>
+            </FormContainer>
             : 
             <></>
           }

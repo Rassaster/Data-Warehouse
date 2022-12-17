@@ -4,8 +4,8 @@ export const Container = styled.main`
   position: relative;
   width: 100%;
   padding: 25px 20px;
-  height: 100vh;
-  max-height: calc(90vh - 110px);
+  height: 110vh;
+  // max-height: calc(90vh - 110px);
 
   display: flex;
   flex-direction: column;
@@ -35,6 +35,7 @@ export const Head = styled.div`
   gap: 20px;
 `;
 export const SelectedContactsActions = styled.div`
+  align-self: end;
   width: 30%;
   margin: 0; 
   padding: 10px;
@@ -102,7 +103,6 @@ position: relative;
     gap: 15px;
 
     .filterInputLabel {
-
       padding: 5px 20px;
       display: flex;
       justify-content: start;
@@ -114,6 +114,20 @@ position: relative;
         width: 50%;
       }
     } 
+
+    .searchNameCont {
+      align-items: center;
+      
+      input {
+        height: 25px;
+      }
+
+      button {
+        margin-left: 3px;
+        height: 25px;
+      }
+    }
+
     .filterActionBtns {
       justify-content: space-around;
       button {
@@ -149,11 +163,12 @@ position: relative;
 `;
 
 export const ActionBtnsContainer = styled.div`
-  width: 12%;
-  align-self: end;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 
   button {
-    width: 100%;
+    width: 12%;
     font-weight: 700;
     display: flex;
     justify-content: space-around;
@@ -329,6 +344,46 @@ export const FormContainer = styled.div`
     width: fit-content;
     height: fit-content;
   }
+
+  .confirmDeletion {
+    position: absolute;
+    left: 0; 
+  right: 0; 
+  margin-left: auto; 
+  margin-right: auto; 
+    width: 40%;
+    heigth: 50%;
+    border: 2px solid red;
+    border-radius: 5px;
+    padding: 30px;
+    margin: 0 auto;
+
+    h3 {
+      margin: 0 auto;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    button {
+      font-wight: 700;
+      width: 50%;
+      transition: all .3s ease-in-out;
+      height: 33px;
+      border-radius: 5px;
+    }
+    .yesDelete:hover {
+      background: red;
+      border-color: red;
+      color: white;
+    }
+    .noCancel:hover {
+      background: royalblue;
+      border-color: royalblue;
+      color: white;
+    }
+  }
+
+
 `;
 export const PrimaryContactInformation = styled.div`
 flex-wrap: wrap;
@@ -390,7 +445,7 @@ export const SecundaryContactInformation = styled.div`
   }
   `;
   
-  export const ContactChannels = styled.div`
+export const ContactChannels = styled.div`
   width: 100%;
   display: flex;
   align-items: end;
@@ -480,4 +535,11 @@ export const InputLabelContainer = styled.div`
     color: royalblue;
   }
 
+`;
+export const deleteConfirmPopup = styled.div`
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border: 1px solid red;
+  background: red;
 `;
