@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import api from '../../services/api';
 import UserAuthContext from '../../context/auth';
 
-import { Container, Head } from "./styles";
+import { Container, Head, Actions } from "./styles";
 
 import './styles.css'
 
@@ -24,8 +24,10 @@ function Users() {
       <Head>
         <h1>USERS</h1>
       </Head>
-      <Link to="/users/new">Register a New User</Link>
-      <Link to="/users/viewAll">View All Users</Link>
+      <Actions>
+        <Link to="/users/new">Register a New User</Link>
+        <Link to="/users/viewAll">View All Users</Link>
+      </Actions>
 
     </Container>
     </>

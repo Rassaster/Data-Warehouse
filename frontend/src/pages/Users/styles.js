@@ -34,3 +34,39 @@ export const Head = styled.div`
   align-items: flex-start;
   gap: 20px;
 `;
+
+export const Actions = styled.div`
+
+  width: 250px;
+  height: 120px;
+  border: 1px solid green;
+  border-radius: 5px;
+  margin: 100px auto 0;
+  padding: 20px;
+
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+
+  a {
+    color: blue;
+    border: 1px solid black;
+    background: white;
+    color: black;
+    height: 33px;
+    padding: 8px;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    transition: all .3s ease-in-out;
+  }
+
+  a:hover {
+    background: black;
+    color: white;
+  }
+`;
