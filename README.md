@@ -24,7 +24,7 @@ The page can be found in the following link: [Data Warehouse Front](https://rass
 
 You can find the OAP3 [documentation here](https://app.swaggerhub.com/apis/Rassaster/data-warehouse/1.0.0#/Z-Wave/setDimmer).
 
-##  - Users' Credential Access: 
+## Users' Credential Access: 
 ### As Admin:
     - Email: admin@gmail.com
     - Password: User1#
