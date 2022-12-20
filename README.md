@@ -26,9 +26,9 @@ You can find the OAP3 [documentation here](https://app.swaggerhub.com/apis/Rassa
 
 ##  - Users' Credential Access: 
 ### As Admin:
-Email: admin@gmail.com
-Password: User1#
+    - Email: admin@gmail.com
+    - Password: User1#
 
 ### As User:
-Email: user@gmail.com
-Password: User1#
+    - Email: user@gmail.com
+    - Password: User1#
